@@ -12,19 +12,18 @@ function request(method, url, onSuccess, onFail, data) {
 
   fetch(url, {
     method: method,
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body: payload
   })
   .then((response) => {
     if (!response.ok) {
-      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
     }
     return response.json()
   })
   .then(onSuccess)
   .catch(onFail)
 }
-
 
 // calls func1 with the object returned by the server
 // or, if HTTP/network/JSON decode error (any type of failure) occurs, call func2 with the error object
