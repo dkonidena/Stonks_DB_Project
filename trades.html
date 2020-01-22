@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./bootstrap-4.4.1-dist/css/bootstrap.min.css">
+		<script src="./idInput.js"></script>
+    <title>CS261 GROUP32</title>
+  </head>
+  <body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <a class="navbar-brand" href="./home.html">Stonks</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+		  <li class="nav-item active">
+			<a class="nav-link" href="./home.html">Home <span class="sr-only">(current)</span></a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="./trades.html">Trades</a>
+		  </li>
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			  Dropdown
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			  <a class="dropdown-item" href="#">Action</a>
+			  <a class="dropdown-item" href="#">Another action</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="#">Something else here</a>
+			</div>
+		  </li>
+		</ul>
+		<!-- <form class="form-inline my-2 my-lg-0">
+		  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+		  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		</form> -->
+	  </div>
+	</nav>
+
+	<div class="container">
+	  <form>
+	    <div class="form-group">
+	      <label for="dateInput">Date</label>
+	      <input type="text" class="form-control" id="dateInput" placeholder="01-01-1990">
+	    </div>
+			<div class="form-group">
+				<label for="idInput">ID</label>
+				<input type="text" class="form-control" id="idInput" placeholder="000000000">
+			</div>
+	    <div class="form-group">
+	      <label for="productInput">Product</label>
+	      <select class="form-control" id="productInnput">
+	        <option>Product 1</option>
+	        <option>Product 2</option>
+	        <option>...</option>
+	      </select>
+				<label for="buyerInput">Buyer</label>
+				<select class="form-control" id="uyerInnput">
+					<option>Company 1</option>
+					<option>Company 2</option>
+					<option>...</option>
+				</select>
+				<label for="sellerInput">Seller</label>
+				<select class="form-control" id="sellerInnput">
+					<option>Company 1</option>
+					<option>Company 2</option>
+					<option>...</option>
+				</select>
+	    </div>
+	    <div class="form-group">
+				<label for="amountInput">Notional Amount</label>
+				<input type="number" class="form-control" id="amountInput" placeholder="0">
+				<label for="quantityInput">Quantity</label>
+				<input type="number" class="form-control" id="quantityInput" placeholder="0">
+				<label for="currencyInput">Notional Currency</label>
+				<select class="form-control" id="currencyInput">
+					<option>$</option>
+					<option>£</option>
+					<option>€</option>
+					<option>...</option>
+				</select>
+	    </div>
+			<div class="form-group">
+	      <label for="expiryInput">Maturity Date</label>
+	      <input type="text" class="form-control" id="expiryInput" placeholder="01-01-1990">
+	    </div>
+			<div class="form-group">
+				<label for="realPriceInput">Underlying Price</label>
+				<input type="number" class="form-control" id="realPriceInput" placeholder="0">
+				<label for="realCurrencyInput">Underlying Currency</label>
+				<select class="form-control" id="realCurrencyInput">
+					<option>$</option>
+					<option>£</option>
+					<option>€</option>
+					<option>...</option>
+				</select>
+				<label for="strikeInput">Strike Price</label>
+				<input type="number" class="form-control" id="strikeInput" placeholder="0">
+			</div>
+	  </form>
+	</div>
+
+
+
+
+	<script>
+		function setInputFilter(textbox, inputFilter) {
+		  ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+		    textbox.addEventListener(event, function() {
+		      if (inputFilter(this.value)) {
+		        this.oldValue = this.value;
+		        this.oldSelectionStart = this.selectionStart;
+		        this.oldSelectionEnd = this.selectionEnd;
+		      } else if (this.hasOwnProperty("oldValue")) {
+		        this.value = this.oldValue;
+		        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+		      } else {
+		        this.value = "";
+		      }
+		    });
+		  });
+		}
+
+		setInputFilter(document.getElementById("realPriceInput"), function(value) {
+		  return /^\d*\.?\d*$/.test(value);
+		});
+
+		setInputFilter(document.getElementById("amountInput"), function(value) {
+		  return /^\d*\.?\d*$/.test(value);
+		});
+
+		setInputFilter(document.getElementById("quantityInput"), function(value) {
+		  return /^\d*\.?\d*$/.test(value);
+		});
+
+		setInputFilter(document.getElementById("strikeInput"), function(value) {
+		  return /^\d*\.?\d*$/.test(value);
+		});
+
+		setInputFilter(document.getElementById("idInput"), function(value) {
+		  return /^\d*$/.test(value);
+		});
+
+	</script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
