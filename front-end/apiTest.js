@@ -1,3 +1,5 @@
+const TIMEOUT = 10000
+
 function request(method, url, onSuccess, onFail, data) {
   let payload
 
@@ -10,14 +12,23 @@ function request(method, url, onSuccess, onFail, data) {
     }
   }
 
-  fetch(url, {
-    method: method,
-    headers: { 'Content-Type': 'application/json' },
-    body: payload
+  let timeout = new Promise((resolve) => {
+    setTimeout(resolve, TIMEOUT, { timeExpired: true })
   })
+
+  Promise.race([
+    fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: payload
+    }),
+    timeout
+  ])
   .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
+    if (response.timeExpired) {
+      throw new TypeError(`NetworkError: timeout after ${TIMEOUT}ms`)
+    } else if (!response.ok) {
+      throw new TypeError(`HTTP Error: ${response.status} - ${response.statusText}`)
     }
     return response.json()
   })
