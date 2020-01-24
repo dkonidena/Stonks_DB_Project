@@ -1,12 +1,12 @@
 
-$("#notionalCurrencySelect").on("change", function () {
+$("#notionalCurrencySelect").on("change", () => {
     var selected = $("#notionalCurrencySelect option:selected");
     $("#notionalCurrencySymbol").text(selected.data("symbol"))
     $("#notionalValueInput").prop("placeholder", selected.data("placeholder"))
 })
 
 
-$("#underlyingCurrencySelect").on("change", function () {
+$("#underlyingCurrencySelect").on("change", () => {
     var selected = $("#underlyingCurrencySelect option:selected");
     $("#underlyingCurrencySymbol").text(selected.data("symbol"))
     $("#strikePriceCurrencyCymbol").text(selected.data("symbol"))

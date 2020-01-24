@@ -12,17 +12,15 @@ function request(method, url, onSuccess, onFail, data) {
     }
   }
 
-  let timeout = new Promise((resolve) => {
-    setTimeout(resolve, TIMEOUT, { timeExpired: true })
-  })
-
   Promise.race([
     fetch(url, {
       method: method,
       headers: { 'Content-Type': 'application/json' },
       body: payload
     }),
-    timeout
+    new Promise((resolve) => {
+      setTimeout(resolve, TIMEOUT, { timeExpired: true })
+    })
   ])
   .then((response) => {
     if (response.timeExpired) {

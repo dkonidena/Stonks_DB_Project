@@ -15,30 +15,30 @@ function setInputFilter(textbox, inputFilter) {
 	});
 }
 
-setInputFilter(document.getElementById("quantityInput"), function (value) {
+setInputFilter(document.getElementById("quantityInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("strikePriceInput"), function (value) {
+setInputFilter(document.getElementById("strikePriceInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("idInput"), function (value) {
+setInputFilter(document.getElementById("idInput"), (value) => {
 	return /^\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("notionalValueInput"), function (value) {
+setInputFilter(document.getElementById("notionalValueInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("underlyingValueInput"), function (value) {
+setInputFilter(document.getElementById("underlyingValueInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-//setInputFilter(document.getElementById("dateInput"), function (value) {
+//setInputFilter(document.getElementById("dateInput"), (value) => {
 //	return /^\d{1,2}(-|\/|\.)\d{1,2}\1\d{2}(\d{2})?$/.test(value);
 //});
 
-//setInputFilter(document.getElementById("expiryInput"), function (value) {
+//setInputFilter(document.getElementById("expiryInput"), (value) => {
 //	return /^\d{1,2}(-|\/|\.)\d{1,2}\1\d{2}(\d{2})?$/.test(value);
 //});
