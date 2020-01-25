@@ -1,36 +1,38 @@
-function setInputFilter(textbox, inputFilter) {
-	["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function (event) {
-		textbox.addEventListener(event, function () {
-			if (inputFilter(this.value)) {
-				this.oldValue = this.value;
-				this.oldSelectionStart = this.selectionStart;
-				this.oldSelectionEnd = this.selectionEnd;
-			} else if (this.hasOwnProperty("oldValue")) {
-				this.value = this.oldValue;
-				this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-			} else {
-				this.value = "";
-			}
-		});
-	});
+const events = ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"];
+const filters = [
+    ["#tradeIdInput", /^\d{0,9}$/],
+    ["#quantityInput", /^\d*$/],
+    ["#notionalPriceInput", /^\d*\.?\d*$/],
+    ["#underlyingPriceInput", /^\d*\.?\d*$/],
+    ["#strikePriceInput", /^\d*\.?\d*$/],
+    ["#tradeDateDayInput", /^\d{0,2}$/],
+    ["#tradeDateMonthInput", /^\d{0,2}$/],
+    ["#tradeDateYearInput", /^\d{0,4}$/],
+    ["#maturityDateDayInput", /^\d{0,2}$/],
+    ["#maturityDateMonthInput", /^\d{0,2}$/],
+    ["#maturityDateYearInput", /^\d{0,4}$/],
+];
+
+function setInputFilter(t, filter) {
+    events.forEach((e) => {
+        $(t).on(e, function () {
+            if (filter(this.value)) {
+                this.oldValue = this.value;
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+            }
+            else if (this.hasOwnProperty("oldValue")) {
+                this.value = this.oldValue;
+                this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+            }
+            else {
+                this.value = "";
+            }
+        });
+    });
 }
 
-setInputFilter(document.getElementById("quantityInput"), (value) => {
-	return /^\d*\.?\d*$/.test(value);
-});
-
-setInputFilter(document.getElementById("strikePriceInput"), (value) => {
-	return /^\d*\.?\d*$/.test(value);
-});
-
-setInputFilter(document.getElementById("tradeIdInput"), (value) => {
-	return /^\d*$/.test(value);
-});
-
-setInputFilter(document.getElementById("notionalPriceInput"), (value) => {
-	return /^\d*\.?\d*$/.test(value);
-});
-
-setInputFilter(document.getElementById("underlyingPriceInput"), (value) => {
-	return /^\d*\.?\d*$/.test(value);
+filters.forEach((x) => {
+    var t = x[0];
+    setInputFilter(t, (v) => { return x[1].test(v) });
 });
