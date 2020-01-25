@@ -30,8 +30,16 @@ function addTrade(trade) {
 
 function loadTrade(trade) {
     $("#tradeIdInput").val(trade.tradeId);
-    $("#tradeDateInput").val(trade.tradeDate);
-    $("#maturityDateInput").val(trade.maturityDate);
+
+    $("#tradeDateDayInput").val(trade.tradeDate.getDate());
+    $("#tradeDateMonthInput").val(trade.tradeDate.getMonth()+1);
+    $("#tradeDateYearInput").val(trade.tradeDate.getFullYear());
+
+    $("#maturityDateDayInput").val(trade.maturityDate.getDate());
+    $("#maturityDateMonthInput").val(trade.maturityDate.getMonth()+1);
+    $("#maturityDateYearInput").val(trade.maturityDate.getFullYear());
+
+
     $("#quantityInput").val(trade.quantity);
     $("#strikePriceInput").val(trade.strikePrice);
 }

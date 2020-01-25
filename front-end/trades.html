@@ -57,7 +57,7 @@
                         <div class="text-left h4 mb-0">
                             <i class="material-icons align-bottom" style="font-size:28px;">assessment</i>
                             Trades
-                            <i class="material-icons align-bottom float-right" style="font-size:28px;">expand_more</i>
+                            <i class="material-icons align-bottom float-right" id="tradeListCollapseSymbol" style="font-size:28px;">expand_more</i>
                         </div>
                     </button>
                     <div class="collapse trade-list" id="tradeList">
@@ -68,37 +68,32 @@
             </nav>
 
             <div class="col-md-10 ml-auto">
+
+                <div class="row justify-content-center border-bottom">
+                    <div class="col-auto display-4 py-3">Trade Editor</div>
+                </div>
+
                 <form>
 
-                    <div class="row">
+                    <div class="row pb-4">
+                        <label class="col-1 col-form-label-lg" for="tradeIdInput">Trade ID</label>
                         <div class="col-auto">
-                            <label for="tradeIdInput">ID</label>
-                            <input type="text" class="form-control" id="tradeIdInput" placeholder="000000000">
+                            <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-2">
-                            <label for="tradeDateInput">Trade Date</label>
+                        <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
+                        <div class="col-3">
                             <div class="form-inline" id="tradeDateInput">
-                                <input type="text" class="form-control w-25" id="tradeDateDayInput" placeholder="01" />
-                                <input type="text" class="form-control w-25" id="tradeDateMonthInput" placeholder="01" />
-                                <input type="text" class="form-control w-50" id="tradeDateYearInput" placeholder="1990" />
+                                <input type="text" class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n4">-</span>
+                                <input type="text" class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateMonthInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n4">-</span>
+                                <input type="text" class="form-control-lg form-control-plaintext text-center col-md-3" id="tradeDateYearInput"/>
                             </div>
                         </div>
-                        <div class="col-2">
-                            <label for="maturityDateInput">Maturity Date</label>
-                            <div class="form-inline" id="maturityDateInput">
-                                <input type="text" class="form-control w-25" id="maturityDateDayInput" placeholder="01" />
-                                <input type="text" class="form-control w-25" id="maturityDateMonthInput" placeholder="01" />
-                                <input type="text" class="form-control w-50" id="maturityDateYearInput" placeholder="1990" />
-                            </div>
-                        </div>
-                        <div class="col"></div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-auto">
+                    <div class="row pb-3">
+                        <div class="col-3">
                             <label for="productInput">Product</label>
                             <select class="form-control" id="productInput">
                                 <option>Product 1</option>
@@ -106,14 +101,14 @@
                                 <option>...</option>
                             </select>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-2">
                             <label for="quantityInput">Quantity</label>
                             <input type="text" class="form-control" id="quantityInput" placeholder="0">
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-auto">
+                    <div class="row pb-3">
+                        <div class="col-3">
                             <label for="buyingPartyInput">Buyer</label>
                             <select class="form-control" id="buyingPartyInput">
                                 <option>Company 1</option>
@@ -121,7 +116,7 @@
                                 <option>...</option>
                             </select>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-3">
                             <label for="sellingPartyInput">Seller</label>
                             <select class="form-control" id="sellingPartyInput">
                                 <option>Company 1</option>
@@ -131,8 +126,8 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-auto">
+                    <div class="row pb-3">
+                        <div class="col-3">
                             <label for="notionalPriceInput">Notional Value and Currency</label>
                             <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                 <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
@@ -149,7 +144,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-3">
                             <label for="underlyingPriceInput">Underlying Value and Currency</label>
                             <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                 <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
@@ -168,15 +163,40 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-auto">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
                             <label for="strikePriceInput">Strike Price</label>
                             <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                 <div class="input-group-prepend input-group-text" id="strikePriceCurrencyCymbol">$</div>
                                 <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
                             </div>
                         </div>
+                        <div class="col-3">
+                            <label for="maturityDateInput">Maturity Date</label>
+                            <div class="form-inline" id="maturityDateInput">
+                                <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="01" />
+                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                <input type="text" class="form-control col-md-2" id="maturityDateMonthInput" placeholder="01" />
+                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                <input type="text" class="form-control col-md-3" id="maturityDateYearInput" placeholder="1990" />
+                            </div>
+                        </div>
                     </div>
                 </form>
+
+                <div class="row mt-5">
+                    <div class="col-auto offset-md-2">
+                        <button class="btn btn-lg btn-block btn-primary">Save</button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-lg btn-block btn-danger">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="row mb-3"></div>
+
             </div>
 
 
