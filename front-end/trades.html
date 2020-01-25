@@ -78,13 +78,21 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-auto">
-                            <label for="dateOfTradeInput">Date of Trade</label>
-                            <input type="text" class="form-control" id="dateOfTradeInput" placeholder="01-01-1990" />
+                        <div class="col-2">
+							<label for="tradeDateInput">Trade Date</label>
+							<div class="form-inline" id="tradeDateInput">
+								<input type="text" class="form-control w-25" id="tradeDateDayInput" placeholder="01" />
+								<input type="text" class="form-control w-25" id="tradeDateMonthInput" placeholder="01" />
+								<input type="text" class="form-control w-50" id="tradeDateYearInput" placeholder="1990" />
+							</div>
                         </div>
-                        <div class="col-auto">
-                            <label for="maturityDateInput">Maturity Date</label>
-                            <input type="text" class="form-control" id="maturityDateInput" placeholder="01-01-1990">
+						<div class="col-2">
+							<label for="maturityDateInput">Maturity Date</label>
+							<div class="form-inline" id="maturityDateInput">
+								<input type="text" class="form-control w-25" id="maturityDateDayInput" placeholder="01" />
+								<input type="text" class="form-control w-25" id="maturityDateMonthInput" placeholder="01" />
+								<input type="text" class="form-control w-50" id="maturityDateYearInput" placeholder="1990" />
+							</div>
                         </div>
                         <div class="col"></div>
                     </div>

@@ -1,9 +1,9 @@
 class Trade {
 	constructor(id) {
 		this.tradeId = id;
-		this.dateOfTrade = new Date();
+		this.tradeDate = new Date();
 		this.userIdCreatedBy = 0;
-		this.lastModified = new Date();
+		this.lastModifiedDate = new Date();
 
 		this.product = "";
 		this.buyingParty = "";
@@ -29,13 +29,20 @@ function addTrade(trade) {
 };
 
 function loadTrade(trade) {
-	let a = trade.tradeId;
-	$("#tradeIdInput").val(a);
+	$("#tradeIdInput").val(trade.tradeId);
+	$("#tradeDateInput").val(trade.tradeDate);
+	$("#maturityDateInput").val(trade.maturityDate);
+	$("#quantityInput").val(trade.quantity);
+	$("#strikePriceInput").val(trade.strikePrice);
 }
 
 
 $("#addTradeButton").on("click", () => {
 	let id = ($("#trades").children().length + 1).toString().padStart(9, "0");
 	let trade = new Trade(id);
+	trade.tradeDate = new Date(1990, 0, 1, 0, 0, 0, 0);
+	trade.maturityDate = new Date(1990, 0, 1, 0, 0, 0, 0);
+	trade.quantity = 100;
+	trade.strikePrice = "320.20";
 	addTrade(trade);
 });
