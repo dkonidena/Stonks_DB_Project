@@ -23,22 +23,14 @@ setInputFilter(document.getElementById("strikePriceInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("idInput"), (value) => {
+setInputFilter(document.getElementById("tradeIdInput"), (value) => {
 	return /^\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("notionalValueInput"), (value) => {
+setInputFilter(document.getElementById("notionalPriceInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
 
-setInputFilter(document.getElementById("underlyingValueInput"), (value) => {
+setInputFilter(document.getElementById("underlyingPriceInput"), (value) => {
 	return /^\d*\.?\d*$/.test(value);
 });
-
-//setInputFilter(document.getElementById("dateInput"), (value) => {
-//	return /^\d{1,2}(-|\/|\.)\d{1,2}\1\d{2}(\d{2})?$/.test(value);
-//});
-
-//setInputFilter(document.getElementById("expiryInput"), (value) => {
-//	return /^\d{1,2}(-|\/|\.)\d{1,2}\1\d{2}(\d{2})?$/.test(value);
-//});
