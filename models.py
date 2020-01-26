@@ -22,48 +22,28 @@ class CompanyModel(db.Model):
         return cls.query.filter(CompanyModel.DateFounded <= dateTruncate(date))
     
     @classmethod
-    def update_company(cls, companycode, name):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.CompanyName = name
-        db.session.commit()
-    @classmethod
-    def update_company(cls, companycode, datefounded):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.DateFounded = datefounded
-        db.session.commit()
-    @classmethod
-    def update_company(cls, companycode, code):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.CompanyCode = code
-        db.session.commit()
-    @classmethod
-    def update_company(cls, companycode, name, code):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.CompanyName = name
-        row.CompanyCode = code
-        db.session.commit()
-    @classmethod
     def update_company(cls, companycode, name, datefounded):
         row = cls.query.filter_by(CompanyCode = companycode).first()
         row.CompanyName = name
         row.DateFounded = datefounded
         db.session.commit()
+
     @classmethod
-    def update_company(cls, companycode, datefounded, code):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.DateFounded = datefounded
-        row.CompanyCode = code
-        db.session.commit()
-    @classmethod
-    def update_company(cls, companycode, name, datefounded, code):
-        row = cls.query.filter_by(CompanyCode = companycode).first()
-        row.CompanyName = name
-        row.DateFounded = datefounded
-        row.CompanyCode = code
+    def delete_company(cls, companycode):
+        cls.query.filter_by(CompanyCode = companycode).delete()
+
+class CurrencyTypesModel(db.Model):
+    __tablename__ = 'CurrencyTypes'
+    CurrencyCode = db.Column(db.String(120), primary_key = True, nullable = False)
+    CurrencyName = db.Column(db.String(120), nullable = False)
+    Country = db.Column(db.String(120), nullable = False)
+
+    def save_to_db(self):
+        db.session.add(self)
         db.session.commit()
 
-class CurrencyModel(db.Model):
-    __tablename__ = 'CurrencyValues'
+class CurrencyValuationsModel(db.Model):
+    __tablename__ = 'CurrencyValuations'
     CurrencyCode = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
     ValueInUSD = db.Column(db.Numeric(10), nullable = False)
@@ -81,17 +61,29 @@ class DerivativeTradesModel(db.Model):
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfTrade = db.Column(db.String(120), nullable = False)
     AssetType = db.Column(db.String(120), nullable = False)
-    BuyingParty = db.Column(db.String(120), nullable = False)
-    SellingParty = db.Column(db.String(120), nullable = False)
-    NotionalAmount = db.Column(db.Float, nullable = False)
+    BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
+    SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
+    NotionalValue = db.Column(db.Float, nullable = False)
     Quantity = db.Column(db.Integer, nullable = False)
     NotionalCurrency = db.Column(db.String(120), ForeignKey("CurrencyValues.CurrencyCode"), nullable = False)
     MaturityDate = db.Column(db.String(120), nullable = False)
-    UnderlyingPrice = db.Column(db.Float, nullable = False)
+    UnderlyingValue = db.Column(db.Float, nullable = False)
     UnderlyingCurrency = db.Column(db.String(120), ForeignKey("CurrencyValues.CurrencyCode"), nullable = False)
     StrikePrice = db.Column(db.Float, nullable = False)
-    LastUserID = db.Column(db.Integer, nullable = False)
-    DateLastModified = db.Column(db.String(120), nullable = False)
+    # LastUserID = db.Column(db.Integer, nullable = False)
+    # DateLastModified = db.Column(db.String(120), nullable = False)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+class EventLogModel(db.Model):
+    __tablename__ = 'EventLog'
+    EventID = db.Column(db.Integer, primary_key = True, nullable = False)
+    UserAction = db.Column(db.String(120), nullable = False)
+    DateOfEvent = db.Column(db.String(120), nullable = False)
+    EmployeeID = db.Column(db.String(120), ForeignKey("Employees.EmployeeID"), nullable = False)
+    # Password = db.Column(db.String(120), nullable = False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -121,8 +113,8 @@ class ProductPricesModel(db.Model):
 
 class ProductSellersModel(db.Model):
     __tablename__ = 'ProductSellers'
-    CompanyCode = db.Column(db.String(120), primary_key = True,  nullable = False)
     ProductID = db.Column(db.Integer, primary_key = True,  nullable = False)
+    CompanyCode = db.Column(db.String(120), primary_key = True,  nullable = False)
     
     def save_to_db(self):
         db.session.add(self)
@@ -146,13 +138,31 @@ class ProductModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-class StockPricesModel(db.Model):
-    __tablename__ = 'StockPrices'
+class ProductValuationsModel(db.Model):
+    __tablename__ = 'ProductValuations'
+    ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
+    ProductPrice = db.Column(db.Float, nullable = False)
+    DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
+    
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+class StockValuationsModel(db.Model):
+    __tablename__ = 'StockValuations'
     StockID = db.Column(db.Integer, primary_key = True, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
     StockPrice = db.Column(db.Numeric(10), nullable = False)
-    CompanyCode = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+class StocksModel(db.Model):
+    __tablename__ = 'Stocks'
+    StockID = db.Column(db.Integer, primary_key = True, nullable = False)
+    CompanyID = db.Column(db.Integer, ForeignKey("Companies.CompanyCode"), nullable = False)
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -160,8 +170,8 @@ class StockPricesModel(db.Model):
 class StockTradesModel(db.Model):
     __tablename__ = 'StockTrades'
     StockID = db.Column(db.Integer, primary_key = True, nullable = False)
-    TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
-
+    TradeID = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
+    
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
