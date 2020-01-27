@@ -26,6 +26,29 @@ class Trade {
     }
 };
 
+function * tradeGenerator() {
+    while(true) {
+        let t = new Trade();
+        t.tradeId = randInt(0, 999999999);
+        t.tradeDate = randDate();
+        t.userIdCreatedBy = randInt(0,9999999);
+        t.lastModifiedDate = randDate();
+        t.product = "";
+        t.buyingParty = "";
+        t.sellingParty = "";
+        t.quantity = randInt(0, 100);
+        let c1 = randCurrency();
+        let c2 = randCurrency();
+        t.notionalCurrency = c1.code;
+        t.notionalPrice = randCurrencyString(c1);
+        t.underlyingCurrency = c2.code;
+        t.underlyingPrice = randCurrencyString(c2);
+        t.maturityDate = randDate();
+        t.strikePrice = randCurrencyString(c2);
+        yield t;
+    }
+}
+
 function addTrade(trade) {
     let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
     let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
@@ -35,6 +58,7 @@ function addTrade(trade) {
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#trades").append(li);
 };
+
 
 function loadTrade(trade) {
     $("#tradeIdInput").val(trade.tradeId);
@@ -50,7 +74,7 @@ function loadTrade(trade) {
     $("#notionalCurrencyInput").val(trade.notionalCurrency).trigger("change");
     $("#notionalPriceInput").val(trade.notionalPrice);
     $("#underlyingCurrencyInput").val(trade.underlyingCurrency).trigger("change");
-    $("#underlyigPriceInput").val(trade.underlyingPrice);
+    $("#underlyingPriceInput").val(trade.underlyingPrice);
 
 
     $("#quantityInput").val(trade.quantity);

@@ -37,17 +37,7 @@ function init() {
     });
 
     $("#addTradeButton").on("click", () => {
-        let id = ($("#trades").children().length + 1).toString().padStart(9, "0");
-        let trade = new Trade(id);
-        trade.tradeDate = new Date(1990, 0, 1, 0, 0, 0, 0);
-        trade.maturityDate = new Date(1990, 0, 1, 0, 0, 0, 0);
-        trade.quantity = 100;
-        trade.strikePrice = "320.20";
-        trade.notionalPrice = "56000";
-        trade.notionalCurrency = "JPY";
-        trade.underlyingPrice = "4830.00";
-        trade.underlyingCurrency = "EUR";
-        addTrade(trade);
+        addTrade(tradeGenerator().next().value);
     });
 
     filters.forEach((x) => {
