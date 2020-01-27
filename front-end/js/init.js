@@ -43,6 +43,10 @@ function init() {
         trade.maturityDate = new Date(1990, 0, 1, 0, 0, 0, 0);
         trade.quantity = 100;
         trade.strikePrice = "320.20";
+        trade.notionalPrice = "56000";
+        trade.notionalCurrency = "JPY";
+        trade.underlyingPrice = "4830.00";
+        trade.underlyingCurrency = "EUR";
         addTrade(trade);
     });
 

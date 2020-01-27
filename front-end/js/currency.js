@@ -7,6 +7,8 @@ class Currency {
     }
 };
 
+var currencies = [];
+
 function addCurrency(cur) {
     let o = "<option></option>";
     let c = $(o).text(cur.code).attr({
@@ -17,11 +19,12 @@ function addCurrency(cur) {
 };
 
 function getCurrencyList() {
-    let currencyList = [];
-    currencyData.forEach((c) => {
-        currencyList.push(new Currency(c[0], c[1], c[2], c[3]));
-    });
-    return currencyList;
+    if (currencies.length == 0) {
+        currencyData.forEach((c) => {
+            currencies.push(new Currency(c[0], c[1], c[2], c[3]));
+        });
+    }
+    return currencies;
 }
 
 //the ten global most traded currencies

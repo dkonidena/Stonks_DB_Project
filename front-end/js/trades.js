@@ -16,6 +16,14 @@ class Trade {
         this.maturityDate = new Date();
         this.strikePrice = "";
     }
+
+    getNotionalCurrencyObject() {
+        return getCurrencyList().filter((x) => { x.code == this.notionalCurrency })[0];
+    }
+
+    getUnderlyingCurrencyObject() {
+        return getCurrencyList().filter((x) => { x.code == this.underlyingCurrency })[0];
+    }
 };
 
 function addTrade(trade) {
@@ -38,6 +46,11 @@ function loadTrade(trade) {
     $("#maturityDateDayInput").val(trade.maturityDate.getDate());
     $("#maturityDateMonthInput").val(trade.maturityDate.getMonth()+1);
     $("#maturityDateYearInput").val(trade.maturityDate.getFullYear());
+
+    $("#notionalCurrencyInput").val(trade.notionalCurrency).trigger("change");
+    $("#notionalPriceInput").val(trade.notionalPrice);
+    $("#underlyingCurrencyInput").val(trade.underlyingCurrency).trigger("change");
+    $("#underlyigPriceInput").val(trade.underlyingPrice);
 
 
     $("#quantityInput").val(trade.quantity);
