@@ -57,9 +57,9 @@ function init() {
 
     $('.select2-cur').select2({
         maximumInputLength: 3,
-        //containerCss: {"height": "100%"},
         theme: "bootstrap4",
-        width: "element"
+        width: "auto",
+        dropdownCss: {"font-size": "0.8rem"}
     });
 
     $("span[aria-labelledby='select2-notionalCurrencyInput-container']").css("background-color", "#e9ecef");
