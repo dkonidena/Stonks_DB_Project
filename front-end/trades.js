@@ -20,7 +20,7 @@ class Trade {
 
 function addTrade(trade) {
     let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
-      let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
+    let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
     b.on("click", () => {
         loadTrade(trade);
     })
@@ -43,14 +43,3 @@ function loadTrade(trade) {
     $("#quantityInput").val(trade.quantity);
     $("#strikePriceInput").val(trade.strikePrice);
 }
-
-
-$("#addTradeButton").on("click", () => {
-    let id = ($("#trades").children().length + 1).toString().padStart(9, "0");
-    let trade = new Trade(id);
-    trade.tradeDate = new Date(1990, 0, 1, 0, 0, 0, 0);
-    trade.maturityDate = new Date(1990, 0, 1, 0, 0, 0, 0);
-    trade.quantity = 100;
-    trade.strikePrice = "320.20";
-    addTrade(trade);
-});
