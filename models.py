@@ -46,7 +46,7 @@ class CurrencyValuationsModel(db.Model):
     __tablename__ = 'CurrencyValuations'
     CurrencyCode = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
-    ValueInUSD = db.Column(db.Numeric(10), nullable = False)
+    ValueInUSD = db.Column(db.Float, nullable = False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -83,7 +83,6 @@ class EventLogModel(db.Model):
     UserAction = db.Column(db.String(120), nullable = False)
     DateOfEvent = db.Column(db.String(120), nullable = False)
     EmployeeID = db.Column(db.String(120), ForeignKey("Employees.EmployeeID"), nullable = False)
-    # Password = db.Column(db.String(120), nullable = False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -96,16 +95,6 @@ class EmployeesModel(db.Model):
     LastName = db.Column(db.String(120), nullable = False)
     Email = db.Column(db.String(120), nullable = False)
     # Password = db.Column(db.String(120), nullable = False)
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-class ProductPricesModel(db.Model):
-    __tablename__ = 'ProductPrices'
-    ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
-    DateOfValuation = db.Column(db.String(120), primary_key = True,  nullable = False)
-    MarketPrice = db.Column(db.Float, nullable = False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -152,7 +141,7 @@ class StockValuationsModel(db.Model):
     __tablename__ = 'StockValuations'
     StockID = db.Column(db.Integer, primary_key = True, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
-    StockPrice = db.Column(db.Numeric(10), nullable = False)
+    StockPrice = db.Column(db.Float, nullable = False)
     
     def save_to_db(self):
         db.session.add(self)
