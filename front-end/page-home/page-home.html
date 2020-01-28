@@ -19,7 +19,7 @@
             <a class="nav-link" href="./home.html">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./trades.html">Trades</a>
+            <a class="nav-link" href="../page-trades/trades.html">Trades</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -41,7 +41,38 @@
     </nav>
 
     <div class="container">
-      <h1>Home Page</h1>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Confirm Modal Mockup
+        </button>
+
+      <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Automated Changes Made</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        The Buying Party field has been automatically edited:</br>
+                        <b>Example Compan 1</b> changed to <b>Example Company 1</b></br>
+                        </br>
+                        This change was made for the following reason:</br>
+                        <i>Close match to existing item in database.</i></br>
+                        </br>
+                        Would you like to keep or discard this change?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Keep</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Discard</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
