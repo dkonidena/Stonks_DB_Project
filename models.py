@@ -15,7 +15,7 @@ class CompanyModel(db.Model):
     CompanyCode = db.Column(db.String(120), primary_key = True, nullable = False)
     CompanyName = db.Column(db.String(120), nullable = False)
     DateEnteredInSystem = db.Column(db.String(120))
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -79,6 +79,7 @@ class DerivativeTradesModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+        return self.TradeID
 
 class EventLogModel(db.Model):
     __tablename__ = 'EventLog'
@@ -125,10 +126,12 @@ class ProductModel(db.Model):
     __tablename__ = 'Products'
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
     ProductName = db.Column(db.String(120), nullable = False)
+    DateEnteredInSystem = db.Column(db.String(120))
     
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+        return self.ProductID
 
 class ProductValuationsModel(db.Model):
     __tablename__ = 'ProductValuations'

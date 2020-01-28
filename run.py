@@ -20,7 +20,7 @@ api.add_resource(resources.Products, '/api/products')
 api.add_resource(resources.Trades, '/api/trades')
 api.add_resource(resources.Reports, '/api/reports')
 api.add_resource(resources.Rules, '/api/rules')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_2.0.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

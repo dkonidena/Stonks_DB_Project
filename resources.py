@@ -3,6 +3,7 @@ import models
 from flask import request
 import json
 import uuid
+import random
 from datetime import datetime
 
 def dateTruncate(dateString):
@@ -48,19 +49,23 @@ class Companies(Resource):
         except:
             return {'message':'error occurred'}, 202
     def post(self):
-        try:
-            # data = request.form.to_dict()
-            json_data = request.data
-            data = json.loads(json_data)
-            code = str(uuid.uuid4())
-            name = data['companyname']
-            date = data['date']
-            dateO = dateTruncate(date)
-            new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = dateO)
-            new_company.save_to_db()
-            return {'message': 'Company has been added'}, 201
-        except:
-            return {'message': 'error has occurred'}, 202
+        # data = request.form.to_dict()
+        json_data = request.data
+        data = json.loads(json_data)
+        code = str(uuid.uuid4())
+        name = data['companyname']
+        date = data['date']
+        dateO = dateTruncate(date)
+        new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = dateO)
+        new_company.save_to_db()
+        #Logging the user action
+        userAction = "User has inserted a new record in the Companies table with the code: " + code
+        dateOfEvent = datetime.now()
+        employeeid = 1 #placeholder for now
+        new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+        new_event.save_to_db()
+        return {'message': 'Company has been added'}, 201
+
 
     def patch(self):
         try:
@@ -86,17 +91,33 @@ class Products(Resource):
     def get(self):
         return request.args.get('date')
     def post(self):
+        # data = request.form.to_dict()
         try:
-            # data = request.form.to_dict()
             json_data = request.data
             data = json.loads(json_data)
             name = data['productname']
             value = data['value']
-            new_product = models.ProductModel(ProductName = name)
-            new_product.save_to_db()
+            companyCode = data['companycode']
+            dateEnteredInSystem = datetime.now()
+            #Adds the new product
+            new_product = models.ProductModel(ProductName = name, DateEnteredInSystem = dateEnteredInSystem)
+            new_productID = new_product.save_to_db()
+            #Adds the new product seller
+            new_product_seller = models.ProductSellersModel(ProductID = new_productID, CompanyCode = companyCode)
+            new_product_seller.save_to_db()
+            #Adds the new product valuation
+            date = datetime.now()
+            new_product_valuation = models.ProductValuationsModel(ProductID = new_productID, ProductPrice = value, DateOfValuation = date)
+            new_product_valuation.save_to_db()
+            #Logging the user action
+            userAction = "User has inserted a new record in the Products table with the code: " + str(new_productID)
+            dateOfEvent = datetime.now()
+            employeeid = 1 #placeholder for testing
+            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+            new_event.save_to_db()
             return {'message': 'product has been added'}, 201
         except:
-            return {'message': 'error has occurred'}, 202
+            return {'message': 'error occured'}, 202
         return 1
     def patch(self):
         return 1
@@ -114,6 +135,8 @@ class Trades(Resource):
             id = str(uuid.uuid4())
             # tradeObject = data['tradeObject']
             product = data['product']
+            assetType = data['assettype']
+            assetID = data['assetid'] #require an asset ID for front-end to link the trade to a particular stock or product depending on asset type
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
@@ -127,7 +150,7 @@ class Trades(Resource):
             DateLastModified = datetime.now()
             new_trade = models.DerivativeTradesModel(TradeID= id, 
             DateOfTrade= DateOfTrade, 
-            AssetType= "",
+            AssetType= assetType,
             BuyingParty= buyingParty, 
             SellingParty= sellingParty,
             NotionalAmount= 0.00,
@@ -140,7 +163,24 @@ class Trades(Resource):
             LastUserID= 0,
             DateLastModified= DateLastModified)
 
-            models.DerivativeTradesModel.save_to_db()
+            new_tradeID = new_trade.save_to_db()
+
+            #Adding the trade ID to either StockTrades or ProductTrades depending on the type of the asset
+            if AssetType == "Stock":
+                new_stock_trade = models.StockTradesModel(TradeID = new_tradeID, StockID = assetID)
+                new_stock_trade.save_to_db()
+            else:
+                new_product_trade = models.StockTradesModel(TradeID = new_tradeID, ProductID = assetID)
+                new_product_trade.save_to_db()
+
+            #Logging the user action
+            userAction = "User has inserted a new record in the Trades table with the code: " + str(new_tradeID)
+            dateOfEvent = datetime.now()
+            employeeid = 1 #placeholder
+            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+            new_event.save_to_db()
+
+            #Check if the added 
             return {'message': 'trade has been added'}, 201
         except:
             return {'message': 'error occured'}, 202
