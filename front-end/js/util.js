@@ -3,12 +3,22 @@ function randInt(min, max) {
 }
 
 function randDate() {
-    return new Date(randInt(1990,2020), randInt(0,11), randInt(1,30) ,0 ,0 ,0 ,0);
+    return new Date(randInt(1990,2020), randInt(0,11), randInt(1,30), 0, 0, 0, 0);
 }
 
 function randCurrency() {
     let l = getCurrencyList();
     return l[randInt(0,l.length-1)];
+}
+
+function randCompany() {
+    let c = getCompanyList();
+    return c[randInt(0,c.length-1)];
+}
+
+function randProduct() {
+    let p = getProductList();
+    return p[randInt(0,p.length-1)];
 }
 
 function randCurrencyString(c) {
@@ -23,10 +33,10 @@ function randCurrencyString(c) {
     return x;
 }
 
-function randProduct() {
-    return "";
+function randCompanyString() {
+    return randCompany().name;
 }
 
-function randCompany() {
-    return "";
+function randProductString() {
+    return randProduct().name;
 }

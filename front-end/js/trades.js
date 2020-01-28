@@ -29,13 +29,13 @@ class Trade {
 function * tradeGenerator() {
     while(true) {
         let t = new Trade();
-        t.tradeId = randInt(0, 999999999);
+        t.tradeId = randInt(0, 999999999).toString().padStart(9, "0");
         t.tradeDate = randDate();
         t.userIdCreatedBy = randInt(0,9999999);
         t.lastModifiedDate = randDate();
-        t.product = "";
-        t.buyingParty = "";
-        t.sellingParty = "";
+        t.product = randProductString();
+        t.buyingParty = randCompanyString();
+        t.sellingParty = randCompanyString();
         t.quantity = randInt(0, 100);
         let c1 = randCurrency();
         let c2 = randCurrency();
@@ -62,6 +62,10 @@ function addTrade(trade) {
 
 function loadTrade(trade) {
     $("#tradeIdInput").val(trade.tradeId);
+
+    $("#productInput").val(trade.product).trigger("change");
+    $("#buyingPartyInput").val(trade.buyingParty).trigger("change");
+    $("#sellingPartyInput").val(trade.sellingParty).trigger("change");
 
     $("#tradeDateDayInput").val(trade.tradeDate.getDate());
     $("#tradeDateMonthInput").val(trade.tradeDate.getMonth()+1);

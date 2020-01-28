@@ -48,12 +48,22 @@ function init() {
     getCurrencyList().forEach((c) => {
         addCurrency(c);
     });
+    getCompanyList().forEach((c) => {
+        addCompany(c);
+    });
+    getProductList().forEach((p) => {
+        addProduct(p);
+    });
 
     $('.select2-cur').select2({
         maximumInputLength: 3,
         theme: "bootstrap4",
         width: "auto",
         dropdownCss: {"font-size": "0.8rem"}
+    });
+
+    $('.select2-comp, .select2-prod').select2({
+        theme: "bootstrap4"
     });
 
     $("span[aria-labelledby='select2-notionalCurrencyInput-container']").css("background-color", "#e9ecef");
