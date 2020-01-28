@@ -54,6 +54,9 @@ function init() {
     getProductList().forEach((p) => {
         addProduct(p);
     });
+    getTradeList().forEach((t) => {
+        addTrade(t);
+    });
 
     $('.select2-cur').select2({
         maximumInputLength: 3,
