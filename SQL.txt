@@ -12,20 +12,17 @@ GET
 
 •	/api/companies?date=<date>
 
-  SELECT CompanyCode, CompanyName
+  SELECT CompanyName, CompanyID, DateEnteredInSystem
   FROM Companies
   WHERE datetime(DateEnteredInSystem) <= datetime(<string date>);
 
 •	/api/products?date=<date>
 
-  SELECT ProductName, MarketPrice
-  FROM ProductValuations NATURAL JOIN Products
+  SELECT ProductName, MarketPrice, CompanyCode, ProductID, DateEnteredInSystem
+  FROM ProductValuations NATURAL JOIN Products NATURAL JOIN ProductSellers
   WHERE datetime(DateOfValuation) = datetime(<string date>);
 
 •	/api/trades?filter=<filter object>
-
-  very dependent on what the filter is
-  need to refine these as currently select * is a lot of fields
 
   - isDryRun (return the number of matches and not the matches themselves)
 
@@ -35,8 +32,8 @@ GET
 
   - date range (startData, endDate) (date when created or last modified?)
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE datetime(DateOfTrade) BETWEEN datetime(<string date>) AND datetime(<string date>)
     ORDER BY datetime(DateOfTrade) DESC;
 
@@ -44,43 +41,45 @@ GET
 
   - exact tradeID
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE TradeID = ?
-    ORDER BY DateOfTrade DESC;
+    ORDER BY datetime(DateOfTrade) DESC;
 
   - companies involved
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE BuyingParty = ? OR SellingParty = ?
-    ORDER BY DateOfTrade DESC;
+    ORDER BY datetime(DateOfTrade) DESC;
 
     could be split into 2 more, just filtering on BuyingParty/SellingParty not both as well as this one
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE BuyingParty = ?
-    ORDER BY DateOfTrade DESC;
+    ORDER BY datetime(DateOfTrade) DESC;
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE SellingParty = ?
-    ORDER BY DateOfTrade DESC;
+    ORDER BY datetime(DateOfTrade) DESC;
 
   - product name
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
-    WHERE ProductName = ?
-    ORDER BY DateOfTrade DESC;
+    trades not linked to product table at all, just asset type field
+
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
+    WHERE AssetType = ?
+    ORDER BY datetime(DateOfTrade) DESC;
 
   - currency
 
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
+    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
+    FROM DerivativeTrades
     WHERE UnderlyingCurrency = ?
-    ORDER BY DateOfTrade DESC;
+    ORDER BY datetime(DateOfTrade) DESC;
 
   - commodity value (which exact value are we filtering by though)
 
@@ -88,12 +87,7 @@ GET
 
   - userID created by
 
-    we only have last edited in database right now UNFINISHED
-
-    SELECT *
-    FROM DerivativeTrades NATURAL JOIN ProductTrades NATURAL JOIN Products
-    WHERE LastUserID = ?
-    ORDER BY DateOfTrade DESC;
+    log table not linked to trades
 
 •	/api/reports?filter=<filter object>
 
@@ -125,11 +119,17 @@ POST
   INSERT INTO DerivativeTrades
   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
 
+  IF PRODUCT
+    INSERT INTO ProductTrades
+    VALUES(?, ?);
 
-  INSERT INTO ProductTrades
-  VALUES(?, ?);
+    parameter order is ProductID, TradeID
 
-  parameter order is ProductID, TradeID
+  IF STOCK
+    INSERT INTO StockTrades
+    VALUES(?, ?);
+
+    parameter order is StockID, TradeID
 
   INSERT INTO EventLog
   VALUES(?, 'Added', datetime('now'), ?);
@@ -151,9 +151,9 @@ POST
 •	/api/products
 
   INSERT INTO Products
-  VALUES(?, ?)
+  VALUES(?, ?, ?)
 
-  parameter order is CompanyCode, ProductName
+  parameter order is ProductID, ProductName, DateEnteredInSystem
 
   INSERT INTO ProductValuations
   VALUES(?, ?, ?);
@@ -161,10 +161,21 @@ POST
   parameter order is DateOfValuation, ProductID, ProductPrice
 
   INSERT INTO ProductSellers
-  VALUES(?, ?, ?);
+  VALUES(?, ?);
 
   parameter order is ProductID, CompanyCode
 
+•	/api/stocks (should be added)
+
+  INSERT INTO Stocks
+  VALUES(?, ?)
+
+  parameter order is StockID, CompanyCode
+
+  INSERT INTO StockValuations
+  VALUES(?, ?, ?);
+
+  parameter order is DateOfValuation, StockID, StockPrice
 
 PATCH
 
@@ -189,12 +200,16 @@ are these replacing every field? might be faster if it only updates the changed 
 •	/api/products/<productID>
 
   UPDATE ProductValuations
-  SET DateOfValuation = ?, ProductPrice = ?
-  WHERE ProductID = ?;
+  SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
+  WHERE ProductID = ? AND DateOfValuation = ?;
 
   UPDATE Products
   SET ProductName = ?, DateEnteredInSystem = ?
   WHERE ProductID = ?;
+
+  UPDATE ProductSellers
+  SET ProductID = ?, CompanyCode = ?
+  WHERE ProductID = ? AND CompanyCode = ?;
 
 
 DELETE
