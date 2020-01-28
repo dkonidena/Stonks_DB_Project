@@ -1,17 +1,20 @@
 from run import db
 from datetime import datetime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, join 
 
 # expecting in YYYY-MM-DD HH:MM:SS
 def dateTruncate(dateString):
-    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19]))
+    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S")
+
+def get_date(dateString):
+    return (dateString[0:4]) + '-' + (dateString[5:7]) + '-' + (dateString[8:10])
 
 
 class CompanyModel(db.Model):
     __tablename__ = 'Companies'
     CompanyCode = db.Column(db.String(120), primary_key = True, nullable = False)
     CompanyName = db.Column(db.String(120), nullable = False)
-    DateFounded = db.Column(db.String(120))
+    DateEnteredInSystem = db.Column(db.String(120))
     
     def save_to_db(self):
         db.session.add(self)
@@ -19,13 +22,13 @@ class CompanyModel(db.Model):
 
     @classmethod
     def retrieve_companies_before(cls, date):
-        return cls.query.filter(CompanyModel.DateFounded <= dateTruncate(date))
+        return cls.query.filter(CompanyModel.DateEnteredInSystem <= dateTruncate(date))
     
     @classmethod
     def update_company(cls, companycode, name, datefounded):
         row = cls.query.filter_by(CompanyCode = companycode).first()
         row.CompanyName = name
-        row.DateFounded = datefounded
+        row.DateEnteredInSystem = datefounded
         db.session.commit()
 
     @classmethod
@@ -51,10 +54,10 @@ class CurrencyValuationsModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
-    
     @classmethod
-    def retrieve_currency_values(cls, date):
-        return cls.query.filter_by(DateOfValuation = dateTruncate(date))
+    def retrieve_currency(cls, date):
+        print(get_date(date))
+        return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(get_date(date)+"%")).all()
 
 class DerivativeTradesModel(db.Model):
     __tablename__ = 'DerivativeTrades'
