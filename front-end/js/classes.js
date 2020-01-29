@@ -29,7 +29,34 @@ class Trade {
     getUnderlyingCurrencyObject() {
         return getCurrencyList().filter((x) => { x.code == this.underlyingCurrency })[0];
     }
+
+    getAPIObject() {
+        let a = new APITrade();
+        a.buyingParty = this.buyingParty;
+        a.sellingParty = this.buyingParty;
+        a.quantity = this.quantity;
+        a.notionalPrice = this.notionalPrice;
+        a.notionalCurrency = this.notionalCurrency;
+        a.underlyingPrice = this.underlyingPrice;
+        a.underlyingCurrency = this.underlyingCurrency;
+        a.maturityDate = this.maturityDate.toISOString();
+        a.strikePrice = this.strikePrice;
+    }
 };
+
+class APITrade {
+    constructor() {
+        this.buyingParty = "";
+        this.sellingParty = "";
+        this.quantity = 0;
+        this.notionalPrice = "";
+        this.notionalCurrency = "";
+        this.underlyingPrice = "";
+        this.underlyingCurrency = "";
+        this.maturityDate = "";
+        this.strikePrice = "";
+    }
+}
 
 function * tradeGenerator(e) {
     while(true) {
