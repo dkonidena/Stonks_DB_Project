@@ -86,7 +86,7 @@ function request(method, url, onSuccess, onFail, data) {
     const debugData = {
         url: url,
         method: method,
-        body: payload
+        body: data
     }
 
     Promise.race([
