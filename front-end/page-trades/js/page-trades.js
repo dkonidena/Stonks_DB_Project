@@ -92,6 +92,8 @@ function saveTradeButton_OnPressed() {
     trade.quantity = $("#quantityInput").val();
     trade.strikePrice = $("#strikePriceInput").val();
 
+    api.post.trades(trade.getAPIObject(), console.log, showError)
+
     //TODO add visual feedback of the save to user
 }
 
