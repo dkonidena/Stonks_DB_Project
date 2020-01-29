@@ -36,9 +36,9 @@ function init() {
         $("#tradeListCollapseSymbol").text("expand_more");
     });
 
-    $("#addTradeButton").on("click", () => {
-        addTrade(tradeGenerator().next().value);
-    });
+    $("#addTradeButton").on("click", addTradeButton_OnPressed);
+    $("#saveTradeButton").on("click",saveTradeButton_OnPressed);
+    $("#discardChangesButton").on("click", cancelTradeButton_OnPressed);
 
     filters.forEach((x) => {
         var t = x[0];
@@ -46,16 +46,16 @@ function init() {
     });
 
     getCurrencyList().forEach((c) => {
-        addCurrency(c);
+        addCurrencyToUI(c);
     });
     getCompanyList().forEach((c) => {
-        addCompany(c);
+        addCompanyToUI(c);
     });
     getProductList().forEach((p) => {
-        addProduct(p);
+        addProductToUI(p);
     });
     getTradeList().forEach((t) => {
-        addTrade(t);
+        addTradeToUI(t);
     });
 
     $('.select2-cur').select2({

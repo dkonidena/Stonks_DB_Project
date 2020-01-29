@@ -166,10 +166,30 @@
 
                 <div class="row mt-5">
                     <div class="col-auto offset-md-2">
-                        <button class="btn btn-lg btn-block btn-primary">Save</button>
+                        <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton">Save Trade</button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-lg btn-block btn-danger">Cancel</button>
+                        <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="confirmCancelTradeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelTradeModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirm Discard</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to discard your changes made to this trade?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" id="discardChangesButton" data-dismiss="modal">Discard Changes</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Return to Editor</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
