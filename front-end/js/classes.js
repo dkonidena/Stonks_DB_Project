@@ -41,6 +41,7 @@ class Trade {
         a.underlyingCurrency = this.underlyingCurrency;
         a.maturityDate = this.maturityDate.toISOString();
         a.strikePrice = this.strikePrice;
+        return a;
     }
 };
 
