@@ -56,8 +56,10 @@ function loadTradeToForm(trade) {
     $("#strikePriceInput").val(trade.strikePrice);
 }
 
+
+var tg = tradeGenerator(true);
 function addTradeButton_OnPressed() {
-    var t = tradeGenerator(true).next().value;
+    var t = tg.next().value;
     addTradeToUI(t);
     trades.push(t);
 }

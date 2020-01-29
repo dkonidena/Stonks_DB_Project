@@ -60,11 +60,11 @@ class APITrade {
 }
 
 function * tradeGenerator(e) {
+    let x = 0;
     while(true) {
         let t = new Trade();
-        t.tradeId = randInt(0, 999999999).toString().padStart(9, "0");
-        //t.tradeId = tradeIdGenerator(e).next().value;
-        t.tradeDate = randDate();
+        t.tradeId = e ? "NEW " + x++ : randInt(0, 999999999).toString().padStart(9, "0");
+        t.tradeDate = new Date();
         t.userIdCreatedBy = randInt(0,9999999);
         t.lastModifiedDate = randDate();
         t.product = randProductString();
@@ -82,21 +82,6 @@ function * tradeGenerator(e) {
         yield t;
     }
 };
-
-function * tradeIdGenerator(e) {
-    let i = 0;
-    let j = 0;
-    while (true) {
-        if (e) {
-            j += 1;
-            yield "NEW " + j;
-        }
-        else {
-            i += 1;
-            yield i.toString().padStart(9, "0");
-        }
-    }
-}
 
 function getTradeList() {
     if (trades.length == 0) {
