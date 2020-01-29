@@ -31,10 +31,11 @@ class Trade {
     }
 };
 
-function * tradeGenerator() {
+function * tradeGenerator(e) {
     while(true) {
         let t = new Trade();
         t.tradeId = randInt(0, 999999999).toString().padStart(9, "0");
+        //t.tradeId = tradeIdGenerator(e).next().value;
         t.tradeDate = randDate();
         t.userIdCreatedBy = randInt(0,9999999);
         t.lastModifiedDate = randDate();
@@ -54,10 +55,25 @@ function * tradeGenerator() {
     }
 };
 
+function * tradeIdGenerator(e) {
+    let i = 0;
+    let j = 0;
+    while (true) {
+        if (e) {
+            j += 1;
+            yield "NEW " + j;
+        }
+        else {
+            i += 1;
+            yield i.toString().padStart(9, "0");
+        }
+    }
+}
+
 function getTradeList() {
     if (trades.length == 0) {
         for (let i = 0; i < 10; i++) {
-            trades.push(tradeGenerator().next().value);
+            trades.push(tradeGenerator(false).next().value);
         }
     }
     return trades;

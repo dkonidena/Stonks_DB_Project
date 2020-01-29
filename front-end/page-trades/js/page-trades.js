@@ -1,4 +1,14 @@
-function addCurrency(cur) {
+function addTradeToUI(trade) {
+    let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
+    let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
+    b.on("click", () => {
+        loadTradeToForm(trade);
+    })
+    let li = $("<li class=\"nav-item\"></li>").html(b);
+    $("#trades").append(li);
+};
+
+function addCurrencyToUI(cur) {
     let o = "<option></option>";
     let c = $(o).text(cur.code).attr({
         "data-symbol": cur.symbol,
@@ -7,30 +17,21 @@ function addCurrency(cur) {
     $("#notionalCurrencyInput, #underlyingCurrencyInput").append(c);
 };
 
-function addProduct(p) {
+function addProductToUI(p) {
     let o = "<option></option>";
     let c = $(o).text(p.name);
     $("#productInput").append(c);
 }
 
-function addCompany(c) {
+function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
     $("#buyingPartyInput, #sellingPartyInput").append(d);
 }
 
-function addTrade(trade) {
-    let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
-    let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
-    b.on("click", () => {
-        loadTrade(trade);
-    })
-    let li = $("<li class=\"nav-item\"></li>").html(b);
-    $("#trades").append(li);
-};
 
 
-function loadTrade(trade) {
+function loadTradeToForm(trade) {
     $("#tradeIdInput").val(trade.tradeId);
 
     $("#productInput").val(trade.product).trigger("change");
@@ -53,4 +54,42 @@ function loadTrade(trade) {
 
     $("#quantityInput").val(trade.quantity);
     $("#strikePriceInput").val(trade.strikePrice);
+}
+
+function addTradeButton_OnPressed() {
+    var t = tradeGenerator(true).next().value;
+    addTradeToUI(t);
+    trades.push(t);
+}
+
+function saveTradeButton_OnPressed() {
+    var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+    trade.lastModifiedDate = new Date();
+
+    trade.product = $("#productInput").val();
+    trade.buyingParty = $("#buyingPartyInput").val();
+    trade.sellingParty = $("#sellingPartyInput").val();
+
+    trade.tradeDate.setDate($("#tradeDateDayInput").val());
+    trade.tradeDate.setMonth($("#tradeDateMonthInput").val()-1);
+    trade.tradeDate.setFullYear($("#tradeDateYearInput").val());
+
+    trade.maturityDate.setDate($("#maturityDateDayInput").val());
+    trade.maturityDate.setMonth($("#maturityDateMonthInput").val()-1);
+    trade.maturityDate.setFullYear($("#maturityDateYearInput").val());
+
+    trade.notionalCurrency = $("#notionalCurrencyInput").val();
+    trade.notionalPrice = $("#notionalPriceInput").val();
+    trade.underlyingCurrency = $("#underlyingCurrencyInput").val();
+    trade.underlyingPrice = $("#underlyingPriceInput").val();
+
+    trade.quantity = $("#quantityInput").val();
+    trade.strikePrice = $("#strikePriceInput").val();
+
+    //TODO add visual feedback of the save to user
+}
+
+function cancelTradeButton_OnPressed() {
+    var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+    loadTradeToForm(trade);
 }
