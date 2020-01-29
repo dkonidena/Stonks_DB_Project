@@ -43,6 +43,25 @@ class Trade {
         a.strikePrice = this.strikePrice;
         return a;
     }
+
+    populateFromServerJSON(o) {
+        this.tradeId = o.tradeId;
+        this.tradeDate = new Date(o.tradeDate);
+        this.userIdCreatedBy = o.userIdCreatedBy;
+        this.lastModifiedDate = new Date(o.lastModifiedDate);
+
+        this.product = o.product;
+        this.buyingParty = o.buyingParty;
+        this.sellingParty = o.sellingParty;
+        this.quantity = o.quantity;
+        this.notionalPrice = o.notionalPrice;
+        this.notionalCurrency = o.notionalCurrency;
+        this.underlyingPrice = o.underlyingPrice;
+        this.underlyingCurrency = o.underlyingCurrency;
+        this.maturityDate = new Date(o.maturityDate);
+        this.strikePrice = o.strikePrice;
+        return this;
+    }
 };
 
 class APITrade {
