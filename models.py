@@ -113,6 +113,9 @@ class ProductSellersModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def getProductID(cls, productName, companyID):
+        return cls.query.filter(ProductSellersModel.CompanyCode == companyID).filter(ProductSellersModel.ProductID == ProductModel.ProductID).filter(ProductModel.ProductName == productName)
+
 class ProductTradesModel(db.Model):
     __tablename__ = 'ProductTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
@@ -161,6 +164,9 @@ class StocksModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    def getStockID(cls, companyID):
+        return cls.query.filter(StocksModel.CompanyCode == companyID)
 
 class StockTradesModel(db.Model):
     __tablename__ = 'StockTrades'

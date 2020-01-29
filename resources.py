@@ -135,8 +135,6 @@ class Trades(Resource):
             id = str(uuid.uuid4())
             # tradeObject = data['tradeObject']
             product = data['product']
-            assetType = data['assettype']
-            assetID = data['assetid'] #require an asset ID for front-end to link the trade to a particular stock or product depending on asset type
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
@@ -158,7 +156,8 @@ class Trades(Resource):
             Quantity= quantity,
             NotionalCurrency = notionalCurrency,
             MaturityDate= maturityDate,
-            UnderlyingPrice= underlyingCurrency,
+            UnderlyingPrice= underlyingPrice,
+            UnderlyingCurrency = underlyingCurrency,
             StrikePrice= strikePrice,
             LastUserID= 0,
             DateLastModified= DateLastModified)
@@ -166,10 +165,22 @@ class Trades(Resource):
             new_tradeID = new_trade.save_to_db()
 
             #Adding the trade ID to either StockTrades or ProductTrades depending on the type of the asset
-            if AssetType == "Stock":
+            if product == "Stock":
+                #make a query to check if the stock exists
+                result = models.StocksModel.getStockID(companyID = SellingParty)
+                if result.count() == 0:
+                    print("Stock does not exist")
+                    return {'message' : 'not found'}, 404
+                assetID = result.StockID
                 new_stock_trade = models.StockTradesModel(TradeID = new_tradeID, StockID = assetID)
                 new_stock_trade.save_to_db()
             else:
+                #make a query to check if the product exists
+                result = models.ProductSellersModel.getProductID(productName = name, companyID = SellingParty)
+                if result.count() == 0:
+                    print("Product does not exist")
+                    return {'message' : 'not found'}, 404
+                assetID = result.ProductID
                 new_product_trade = models.StockTradesModel(TradeID = new_tradeID, ProductID = assetID)
                 new_product_trade.save_to_db()
 
