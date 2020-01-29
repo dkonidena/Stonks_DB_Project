@@ -18,9 +18,17 @@ GET
 
 •	/api/products?date=<date>
 
-  SELECT ProductName, MarketPrice, CompanyCode, ProductID, DateEnteredInSystem
+  SELECT ProductName, ProductPrice, CompanyCode, ProductID, DateEnteredInSystem
   FROM ProductValuations NATURAL JOIN Products NATURAL JOIN ProductSellers
   WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  SELECT 'Stocks', StockPrice, CompanyCode, StockID
+  FROM Stocks NATURAL JOIN StockValuations
+  WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  These will need to be combined in python as they have different attribute names
+
+  Stocks has no DateEnteredInSystem
 
 •	/api/trades?filter=<filter object>
 
@@ -192,17 +200,29 @@ are these replacing every field? might be faster if it only updates the changed 
 
 •	/api/products/<productID>
 
-  UPDATE ProductValuations
-  SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
-  WHERE ProductID = ? AND DateOfValuation = ?;
+  IF PRODUCT
 
-  UPDATE Products
-  SET ProductName = ?, DateEnteredInSystem = ?
-  WHERE ProductID = ?;
+    UPDATE ProductValuations
+    SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
+    WHERE ProductID = ? AND DateOfValuation = ?;
 
-  UPDATE ProductSellers
-  SET ProductID = ?, CompanyCode = ?
-  WHERE ProductID = ? AND CompanyCode = ?;
+    UPDATE Products
+    SET ProductName = ?, DateEnteredInSystem = ?
+    WHERE ProductID = ?;
+
+    UPDATE ProductSellers
+    SET ProductID = ?, CompanyCode = ?
+    WHERE ProductID = ? AND CompanyCode = ?;
+
+  IF STOCK
+
+    UPDATE StockValuations
+    SET DateOfValuation = ?, StockID = ?, StockPrice = ?
+    WHERE StockID = ? AND DateOfValuation = ?;
+
+    UPDATE Stocks
+    SET StockID = ?, CompanyCode = ?
+    WHERE StockID = ?;
 
 
 DELETE
