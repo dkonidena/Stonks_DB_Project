@@ -102,6 +102,18 @@ GET
 •	/api/rules?filter=<filter object>
 
   no rules table
+  
+•	ordered list of companies for drop downs
+
+  SELECT BuyingParty
+  FROM DerivativeTrades
+  GROUP BY BuyingParty
+  ORDER BY count(BuyingParty) DESC
+
+  SELECT SellingParty
+  FROM DerivativeTrades
+  GROUP BY SellingParty
+  ORDER BY count(SellingParty) DESC
 
 
 
