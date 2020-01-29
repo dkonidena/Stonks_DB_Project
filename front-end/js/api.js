@@ -83,6 +83,12 @@ function request(method, url, onSuccess, onFail, data) {
         }
     }
 
+    const debugData = {
+        url: url,
+        method: method,
+        body: payload
+    }
+
     Promise.race([
         fetch(encodeURI(url), {
             method: method,
@@ -102,7 +108,9 @@ function request(method, url, onSuccess, onFail, data) {
         return response.json();
     })
     .then(onSuccess)
-    .catch(onFail);
+    .catch((err) => {
+        onFail(err, debugData);
+    });
 }
 
 // calls func1 with the object returned by the server
