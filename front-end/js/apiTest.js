@@ -1,37 +1,37 @@
 const TIMEOUT = 10000
 
 function request(method, url, onSuccess, onFail, data) {
-  let payload
+    let payload;
 
-  if (['POST', 'PATCH'].includes(method)) {
-    try {
-      payload = JSON.stringify(data)
-    } catch (error) {
-      onFail(error)
-      return
+    if (['POST', 'PATCH'].includes(method)) {
+        try {
+            payload = JSON.stringify(data);
+        } catch (error) {
+            onFail(error);
+            return;
+        }
     }
-  }
 
-  Promise.race([
-    fetch(url, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: payload
-    }),
-    new Promise((resolve) => {
-      setTimeout(resolve, TIMEOUT, { timeExpired: true })
+    Promise.race([
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: payload
+        }),
+        new Promise((resolve) => {
+            setTimeout(resolve, TIMEOUT, { timeExpired: true });
+        })
+    ])
+    .then((response) => {
+        if (response.timeExpired) {
+            throw new TypeError(`NetworkError: timeout after ${TIMEOUT}ms`);
+        } else if (!response.ok) {
+            throw new TypeError(`HTTP Error: ${response.status} - ${response.statusText}`);
+        }
+        return response.json();
     })
-  ])
-  .then((response) => {
-    if (response.timeExpired) {
-      throw new TypeError(`NetworkError: timeout after ${TIMEOUT}ms`)
-    } else if (!response.ok) {
-      throw new TypeError(`HTTP Error: ${response.status} - ${response.statusText}`)
-    }
-    return response.json()
-  })
-  .then(onSuccess)
-  .catch(onFail)
+    .then(onSuccess)
+    .catch(onFail);
 }
 
 // calls func1 with the object returned by the server
