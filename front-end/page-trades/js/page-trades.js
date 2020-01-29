@@ -29,7 +29,11 @@ function addCompanyToUI(c) {
     $("#buyingPartyInput, #sellingPartyInput").append(d);
 }
 
-
+function showError(error) {
+    $('#errorShort').text(error.message)
+    $('#errorDetailContent').text('Error long')
+    $('#apiErrorModal').modal('show')
+}
 
 function loadTradeToForm(trade) {
     $("#tradeIdInput").val(trade.tradeId);
