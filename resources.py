@@ -11,26 +11,26 @@ def dateTruncate(dateString):
 
 class Currencies(Resource):
     def get(self):
-        # try:
-        date = request.args.get('date')
-        result = models.CurrencyValuationsModel.retrieve_currency(date = date)
-        # print(result)
-        i = 1
-        res = {}
-        for row in result:
-            dicto = {}
-            dicto['currencycode'] = row.CurrencyCode
-            # dictionary need to be written
-            # need to be transformed into a object
-            dicto['symbol'] = "$"
-            dicto['allowDecimal'] = True
-            dicto['valueInUSD'] = str(row.ValueInUSD)
-            res[i] = dicto
-            i+=1
-        return res, 200
+        try:
+            date = request.args.get('date')
+            result = models.CurrencyValuationsModel.retrieve_currency(date = date)
+            # print(result)
+            i = 1
+            res = {}
+            for row in result:
+                dicto = {}
+                dicto['currencycode'] = row.CurrencyCode
+                # dictionary need to be written
+                # need to be transformed into a object
+                dicto['symbol'] = "$"
+                dicto['allowDecimal'] = True
+                dicto['valueInUSD'] = str(row.ValueInUSD)
+                res[i] = dicto
+                i+=1
+            return res, 200
 
-        # except:
-        #     return {'message':'error has occured'}, 201
+        except:
+            return {'message':'error has occured'}, 201
 
 class Companies(Resource):
     def get(self):
@@ -128,7 +128,7 @@ class Trades(Resource):
     def get(self):
         return 1
     def post(self):
-        try:
+        # try:
             # data = request.form.to_dict()
             json_data = request.data
             data = json.loads(json_data)
@@ -138,9 +138,9 @@ class Trades(Resource):
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
-            notionalPrice = data['notionalPrice']
-            notionalCurrency = data['notionalcurrency']
-            underlyingPrice = data['underlyingPrice']
+            notionalValue = data['notionalValue']
+            notionalCurrency = data['notionalCurrency']
+            underlyingValue = data['underlyingValue']
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = data['maturityDate']
@@ -151,20 +151,27 @@ class Trades(Resource):
             AssetType= assetType,
             BuyingParty= buyingParty, 
             SellingParty= sellingParty,
-            NotionalAmount= 0.00,
-            NotionalPrice = notionalPrice,
+            NotionalValue = notionalValue,
             Quantity= quantity,
             NotionalCurrency = notionalCurrency,
             MaturityDate= maturityDate,
+<<<<<<< HEAD
             UnderlyingPrice= underlyingPrice,
             UnderlyingCurrency = underlyingCurrency,
             StrikePrice= strikePrice,
             LastUserID= 0,
             DateLastModified= DateLastModified)
+=======
+            UnderlyingValue= underlyingValue,
+            UnderlyingCurrency= underlyingCurrency,
+            StrikePrice= strikePrice
+            )
+>>>>>>> cf2f4dab30a58b0b2f0af5c18379e4542c96ef2d
 
             new_tradeID = new_trade.save_to_db()
 
             #Adding the trade ID to either StockTrades or ProductTrades depending on the type of the asset
+<<<<<<< HEAD
             if product == "Stock":
                 #make a query to check if the stock exists
                 result = models.StocksModel.getStockID(companyID = SellingParty)
@@ -182,6 +189,13 @@ class Trades(Resource):
                     return {'message' : 'not found'}, 404
                 assetID = result.ProductID
                 new_product_trade = models.StockTradesModel(TradeID = new_tradeID, ProductID = assetID)
+=======
+            if assetType == "Stock":
+                new_stock_trade = models.StockTradesModel(TradeID = new_tradeID, StockID = assetID)
+                new_stock_trade.save_to_db()
+            else:
+                new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetID)
+>>>>>>> cf2f4dab30a58b0b2f0af5c18379e4542c96ef2d
                 new_product_trade.save_to_db()
 
             #Logging the user action
