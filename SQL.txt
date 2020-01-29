@@ -102,7 +102,7 @@ GET
 •	/api/rules?filter=<filter object>
 
   no rules table
-  
+
 •	ordered list of companies for drop downs
 
   SELECT BuyingParty
@@ -197,7 +197,7 @@ are these replacing every field? might be faster if it only updates the changed 
 •	/api/trades/<tradeID>
 
   UPDATE DerivativeTrades
-  SET DateOfTrade = ?, AssetType = ?, BuyingParty = ?, SellingParty = ?, NotionalValue = ?, NotionalCurrency = ?, Quantity = ?, MaturityDate = ?, UnderlyingValue = ?, UnderlyingCurrency = ?, StrikePrice = ?, LastUserID = ?
+  SET DateOfTrade = ?, AssetType = ?, BuyingParty = ?, SellingParty = ?, NotionalValue = ?, NotionalCurrency = ?, Quantity = ?, MaturityDate = ?, UnderlyingValue = ?, UnderlyingCurrency = ?, StrikePrice = ?
   WHERE TradeID = ?;
 
 •	/api/rules/<ruleID>
@@ -207,7 +207,7 @@ are these replacing every field? might be faster if it only updates the changed 
 •	/api/companies/<companyID>
 
   UPDATE Companies
-  SET CompanyName = ?, DateEnteredInSystem = ?, CompanyCode = ?
+  SET CompanyName = ?, DateEnteredInSystem = ?
   WHERE CompanyCode = ?;
 
 •	/api/products/<productID>
@@ -233,7 +233,7 @@ are these replacing every field? might be faster if it only updates the changed 
     WHERE StockID = ? AND DateOfValuation = ?;
 
     UPDATE Stocks
-    SET StockID = ?, CompanyCode = ?
+    SET CompanyCode = ?
     WHERE StockID = ?;
 
 
