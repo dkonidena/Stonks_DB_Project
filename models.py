@@ -1,10 +1,13 @@
 from run import db
 from datetime import datetime
-from sqlalchemy import ForeignKey, join, func, or_
+from sqlalchemy import ForeignKey, join, func, or_, Date, cast
 
 # expecting in YYYY-MM-DD HH:MM:SS
 def dateTruncate(dateString):
     return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S")
+
+def returnDatetime(dateString):
+    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10])).strftime("%Y-%m-%d")
 
 def get_date(dateString):
     return (dateString[0:4]) + '-' + (dateString[5:7]) + '-' + (dateString[8:10])
@@ -22,7 +25,7 @@ class CompanyModel(db.Model):
 
     @classmethod
     def retrieve_companies_before(cls, date):
-        return cls.query.filter(CompanyModel.DateEnteredInSystem <= dateTruncate(date))
+        return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= returnDatetime(date))
     
     @classmethod
     def update_company(cls, companycode, name, datefounded):
@@ -86,7 +89,7 @@ class DerivativeTradesModel(db.Model):
 
     @classmethod
     def get_trades_between(cls, startDate, endDate):
-        return cls.query.filter(DerivativeTradesModel.DateOfTrade >= startDate, DerivativeTradesModel.DateOfTrade <= endDate)
+        return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= returnDatetime(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= returnDatetime(endDate))
     
     @classmethod
     def get_trade_with_ID(cls, tradeID):
@@ -178,8 +181,8 @@ class ProductModel(db.Model):
         return self.ProductID
     
     @classmethod
-    def retrieve_products_before(cls, date):
-        return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, cls.DateEnteredInSystem == date).\
+    def retrieve_products_on_date(cls, date):
+        return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == returnDatetime(date)).\
             with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice)
 
 class ProductValuationsModel(db.Model):

@@ -13,6 +13,9 @@ def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF"}
     return currencyDict[currencyCode]
 
+def returnDatetime(dateString):
+    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10])).strftime("%Y-%m-%d")
+
 class Currencies(Resource):
     def get(self):
         date = request.args.get('date')
@@ -46,7 +49,7 @@ class Currencies(Resource):
                 dicto['currencycode'] = row.CurrencyCode
                 # dictionary need to be written
                 # need to be transformed into a object
-                dicto['symbol'] = "$"
+                dicto['symbol'] = returnCurrencySymbol(row.currencyCode)
                 dicto['allowDecimal'] = True
                 dicto['valueInUSD'] = str(row.ValueInUSD)
                 res[i] = dicto
@@ -114,7 +117,7 @@ class Products(Resource):
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
-                result = models.ProductModel.retrieve_products_before(date = date)
+                result = models.ProductModel.retrieve_products_on_date(date = date)
                 message = {"noOfMatches" : result.count()}
                 i = 1
                 res = {}
@@ -129,7 +132,7 @@ class Products(Resource):
                 message['matches'] = res
                 return message, 201
             else:
-                result = models.ProductModel.retrieve_products_before(date = date)
+                result = models.ProductModel.retrieve_products_on_date(date = date)
                 i = 1
                 res = {}
                 for row in result:
@@ -187,9 +190,9 @@ class Trades(Resource):
         notionalCurrency = request.args.get('notionalcurrency')
         underlyingCurrency = request.args.get('underlyingcurrency')
         userIDcreatedBy = request.args.get('useridcreatedby')
-        filters = [dateCreated, tradeID, buyingParty, sellingParty, product, notionalCurrency, underlyingCurrency, userIDcreatedBy]
+        isDryRun = request.args.get('isDryRun')
     
-        results = list()
+        results = list() #stores results for each query/filter that is applied by the user
         if len(dateCreated) > 0:
             results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
 
@@ -214,10 +217,39 @@ class Trades(Resource):
         if userIDcreatedBy is not None:
             results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
         
+        #performs intersections on each result set from each query to find the filtered results
+        final_results = None
         for each in results:
-            print(each.count())
+            if final_results is None:
+                final_results = each
+            else:
+                final_results = final_results.intersect(each)
 
-        return {'message' : 'found'}, 201
+        message = {}
+        if isDryRun == "true":
+            message['noOfMatches'] = final_results.count()
+
+        i = 1
+        res = {}
+        for row in final_results:
+            dicto = {}
+            dicto['product'] = row.Product
+            dicto['quantity'] = row.Quantity
+            dicto['buyingparty'] = row.BuyingParty
+            dicto['sellingparty'] = row.SellingParty
+            dicto['notionalvalue'] = row.NotionalValue
+            dicto['notionalcurrency'] = row.NotionalCurrency
+            dicto['underlyingvalue'] = row.UnderlyingValue
+            dicto['underlyingcurrency'] = row.UnderlyingCurrency
+            dicto['maturitydate'] = row.MaturityDate
+            dicto['strikeprice'] = row.StrikePrice
+            dicto['useridcreatedby'] = row.UserIDCreatedBy
+            res[i] = dicto
+            i += 1
+        
+        message['matches'] = res
+        return message, 201
+
     def post(self):
         #try:
         # data = request.form.to_dict()
@@ -279,8 +311,42 @@ class Trades(Resource):
 class Reports(Resource):
     def get(self):
         try: 
-            date = request.args.get('date')
-            result = models.DerivativeTradesModel.get_trades_on_day(date = date)
+            dateCreated = request.args.getlist('date')
+            tradeID = request.args.get('tradeid')
+            buyingParty = request.args.get('buyingparty')
+            sellingParty = request.args.get('sellingparty')
+            product = request.args.get('product')
+            notionalCurrency = request.args.get('notionalcurrency')
+            underlyingCurrency = request.args.get('underlyingcurrency')
+            userIDcreatedBy = request.args.get('useridcreatedby')
+            isDryRun = request.args.get('isDryRun')
+
+            results = list() #stores results for each query/filter that is applied by the user
+            if len(dateCreated) > 0:
+                results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+
+            if tradeID is not None:
+                results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
+            
+            if buyingParty is not None:
+                results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+            
+            if sellingParty is not None:
+                results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
+
+            if product is not None:
+                results.append(models.DerivativeTradesModel.get_trade_by_product(product))
+
+            if notionalCurrency is not None:
+                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
+            
+            if underlyingCurrency is not None:
+                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
+            
+            if userIDcreatedBy is not None:
+                results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
+            
+            return {'message' : 'need to finish'}, 201
         except:
             return {'message' : 'error occured'}, 202
 
