@@ -9,10 +9,34 @@ from datetime import datetime
 def dateTruncate(dateString):
     return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S.%f")
 
+def returnCurrencySymbol(currencyCode):
+    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF"}
+    return currencyDict[currencyCode]
+
 class Currencies(Resource):
     def get(self):
-        try:
-            date = request.args.get('date')
+        date = request.args.get('date')
+        isDryRun = request.args.get('isDryRun')
+        if isDryRun == "true":
+            #fetch the no. of values in the currencies table with the date argument
+            results = models.CurrencyValuationsModel.retrieve_currency(date = date)
+            message = {'noOfMatches' : len(results)}
+            i = 1
+            res = {}
+            for row in results:
+                dicto = {}
+                dicto['currencycode'] = row.CurrencyCode
+                # dictionary need to be written
+                # need to be transformed into a object
+                symbol = returnCurrencySymbol(row.CurrencyCode)
+                dicto['symbol'] = symbol
+                dicto['allowDecimal'] = True
+                dicto['valueInUSD'] = str(row.ValueInUSD)
+                res[i] = dicto
+                i+=1
+            message['matches'] = res
+            return message, 201
+        else:
             result = models.CurrencyValuationsModel.retrieve_currency(date = date)
             # print(result)
             i = 1
@@ -28,9 +52,6 @@ class Currencies(Resource):
                 res[i] = dicto
                 i+=1
             return res, 200
-
-        except:
-            return {'message':'error has occured'}, 201
 
 class Companies(Resource):
     def get(self):
@@ -89,7 +110,39 @@ class Companies(Resource):
 
 class Products(Resource):
     def get(self):
-        return request.args.get('date')
+        try:
+            date =  request.args.get('date')
+            isDryRun = request.args.get('isDryRun')
+            if isDryRun == "true":
+                result = models.ProductModel.retrieve_products_before(date = date)
+                message = {"noOfMatches" : result.count()}
+                i = 1
+                res = {}
+                for row in result:
+                    dicto = {}
+                    dicto['productid'] = row.ProductID
+                    dicto['productName'] = row.ProductName
+                    dicto['companycode'] = row.CompanyCode
+                    dicto['value'] = str(row.ProductPrice)
+                    res[i] = dicto
+                    i += 1
+                message['matches'] = res
+                return message, 201
+            else:
+                result = models.ProductModel.retrieve_products_before(date = date)
+                i = 1
+                res = {}
+                for row in result:
+                    dicto = {}
+                    dicto['productid'] = row.ProductID
+                    dicto['productName'] = row.ProductName
+                    dicto['companycode'] = row.CompanyCode
+                    dicto['value'] = str(row.ProductPrice)
+                    res[i] = dicto
+                    i += 1
+                return res, 201
+        except:
+            return {'message': 'error occurred'}, 202
     def post(self):
         # data = request.form.to_dict()
         try:
@@ -126,89 +179,98 @@ class Products(Resource):
 
 class Trades(Resource):
     def get(self):
-        return 1
+        dateCreated = request.args.getlist('date')
+        tradeID = request.args.get('tradeid')
+        buyingParty = request.args.get('buyingparty')
+        sellingParty = request.args.get('sellingparty')
+        product = request.args.get('product')
+        notionalCurrency = request.args.get('notionalcurrency')
+        underlyingCurrency = request.args.get('underlyingcurrency')
+        userIDcreatedBy = request.args.get('useridcreatedby')
+        filters = [dateCreated, tradeID, buyingParty, sellingParty, product, notionalCurrency, underlyingCurrency, userIDcreatedBy]
+    
+        results = list()
+        if len(dateCreated) > 0:
+            results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+
+        if tradeID is not None:
+            results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
+        
+        if buyingParty is not None:
+            results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+        
+        if sellingParty is not None:
+            results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
+
+        if product is not None:
+            results.append(models.DerivativeTradesModel.get_trade_by_product(product))
+
+        if notionalCurrency is not None:
+            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
+        
+        if underlyingCurrency is not None:
+            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
+        
+        if userIDcreatedBy is not None:
+            results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
+        
+        for each in results:
+            print(each.count())
+
+        return {'message' : 'found'}, 201
     def post(self):
-        # try:
-            # data = request.form.to_dict()
-            json_data = request.data
-            data = json.loads(json_data)
-            id = str(uuid.uuid4())
-            # tradeObject = data['tradeObject']
-            product = data['product']
-            quantity = data['quantity']
-            buyingParty = data['buyingParty']
-            sellingParty = data['sellingParty']
-            notionalValue = data['notionalValue']
-            notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingValue']
-            underlyingCurrency = data['underlyingCurrency']
-            strikePrice = data['strikePrice']
-            maturityDate = data['maturityDate']
-            DateOfTrade = datetime.now()
-            DateLastModified = datetime.now()
-            new_trade = models.DerivativeTradesModel(TradeID= id, 
-            DateOfTrade= DateOfTrade, 
-            AssetType= assetType,
-            BuyingParty= buyingParty, 
-            SellingParty= sellingParty,
-            NotionalValue = notionalValue,
-            Quantity= quantity,
-            NotionalCurrency = notionalCurrency,
-            MaturityDate= maturityDate,
-<<<<<<< HEAD
-            UnderlyingPrice= underlyingPrice,
-            UnderlyingCurrency = underlyingCurrency,
-            StrikePrice= strikePrice,
-            LastUserID= 0,
-            DateLastModified= DateLastModified)
-=======
-            UnderlyingValue= underlyingValue,
-            UnderlyingCurrency= underlyingCurrency,
-            StrikePrice= strikePrice
-            )
->>>>>>> cf2f4dab30a58b0b2f0af5c18379e4542c96ef2d
+        #try:
+        # data = request.form.to_dict()
+        json_data = request.data
+        data = json.loads(json_data)
+        id = str(uuid.uuid4())
+        # tradeObject = data['tradeObject']
+        product = data['product']
+        quantity = data['quantity']
+        buyingParty = data['buyingParty']
+        sellingParty = data['sellingParty']
+        notionalValue = data['notionalValue']
+        notionalCurrency = data['notionalCurrency']
+        underlyingValue = data['underlyingValue']
+        underlyingCurrency = data['underlyingCurrency']
+        strikePrice = data['strikePrice']
+        maturityDate = data['maturityDate']
+        DateOfTrade = datetime.now()
+        userIDcreatedBy = data['useridcreatedby']
+        new_trade = models.DerivativeTradesModel(TradeID= id, 
+        DateOfTrade= DateOfTrade, 
+        Product= product,
+        BuyingParty= buyingParty, 
+        SellingParty= sellingParty,
+        NotionalValue = notionalValue,
+        Quantity= quantity,
+        NotionalCurrency = notionalCurrency,
+        MaturityDate= maturityDate,
+        UnderlyingValue= underlyingValue,
+        UnderlyingCurrency = underlyingCurrency,
+        StrikePrice= strikePrice,
+        UserIDCreatedBy = userIDcreatedBy)
 
-            new_tradeID = new_trade.save_to_db()
+        #make a query to check if the product exists
+        result = models.ProductSellersModel.getProductID(productName = product, companyCode = sellingParty)
+        if result.count() == 0:
+            print("Product does not exist")
+            return {'message' : 'not found'}, 404
+        #If a the product or stock which the trade is linked to is found, then the trade 
+        new_tradeID = new_trade.save_to_db()
+        assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
+        new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetIDs[0])
+        new_product_trade.save_to_db()
 
-            #Adding the trade ID to either StockTrades or ProductTrades depending on the type of the asset
-<<<<<<< HEAD
-            if product == "Stock":
-                #make a query to check if the stock exists
-                result = models.StocksModel.getStockID(companyID = SellingParty)
-                if result.count() == 0:
-                    print("Stock does not exist")
-                    return {'message' : 'not found'}, 404
-                assetID = result.StockID
-                new_stock_trade = models.StockTradesModel(TradeID = new_tradeID, StockID = assetID)
-                new_stock_trade.save_to_db()
-            else:
-                #make a query to check if the product exists
-                result = models.ProductSellersModel.getProductID(productName = name, companyID = SellingParty)
-                if result.count() == 0:
-                    print("Product does not exist")
-                    return {'message' : 'not found'}, 404
-                assetID = result.ProductID
-                new_product_trade = models.StockTradesModel(TradeID = new_tradeID, ProductID = assetID)
-=======
-            if assetType == "Stock":
-                new_stock_trade = models.StockTradesModel(TradeID = new_tradeID, StockID = assetID)
-                new_stock_trade.save_to_db()
-            else:
-                new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetID)
->>>>>>> cf2f4dab30a58b0b2f0af5c18379e4542c96ef2d
-                new_product_trade.save_to_db()
+        #Logging the user action
+        userAction = "User has inserted a new record in the Trades table with the code: " + str(new_tradeID)
+        dateOfEvent = datetime.now()
+        employeeid = 1 #placeholder
+        new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+        new_event.save_to_db()
 
-            #Logging the user action
-            userAction = "User has inserted a new record in the Trades table with the code: " + str(new_tradeID)
-            dateOfEvent = datetime.now()
-            employeeid = 1 #placeholder
-            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
-            new_event.save_to_db()
-
-            #Check if the added 
-            return {'message': 'trade has been added'}, 201
-        except:
-            return {'message': 'error occured'}, 202
+        #Check if the added 
+        return {'message': 'trade has been added'}, 201
     def patch(self):
         return 1
     def delete(self):
@@ -216,7 +278,11 @@ class Trades(Resource):
 
 class Reports(Resource):
     def get(self):
-        return 1
+        try: 
+            date = request.args.get('date')
+            result = models.DerivativeTradesModel.get_trades_on_day(date = date)
+        except:
+            return {'message' : 'error occured'}, 202
 
 class Rules(Resource):
     def get(self):

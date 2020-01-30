@@ -1,6 +1,6 @@
 from run import db
 from datetime import datetime
-from sqlalchemy import ForeignKey, join 
+from sqlalchemy import ForeignKey, join, func, or_
 
 # expecting in YYYY-MM-DD HH:MM:SS
 def dateTruncate(dateString):
@@ -54,16 +54,18 @@ class CurrencyValuationsModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
     @classmethod
     def retrieve_currency(cls, date):
         print(get_date(date))
         return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(get_date(date)+"%")).all()
 
+
 class DerivativeTradesModel(db.Model):
     __tablename__ = 'DerivativeTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfTrade = db.Column(db.String(120), nullable = False)
-    AssetType = db.Column(db.String(120), nullable = False)
+    Product = db.Column(db.String(120), nullable = False)
     BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     NotionalValue = db.Column(db.Float, nullable = False)
@@ -73,6 +75,7 @@ class DerivativeTradesModel(db.Model):
     UnderlyingValue = db.Column(db.Float, nullable = False)
     UnderlyingCurrency = db.Column(db.String(120), ForeignKey("CurrencyTypes.CurrencyCode"), nullable = False)
     StrikePrice = db.Column(db.Float, nullable = False)
+    UserIDCreatedBy = db.Column(db.Integer, ForeignKey("Employees.EmployeeID"), nullable = False)
     # LastUserID = db.Column(db.Integer, nullable = False)
     # DateLastModified = db.Column(db.String(120), nullable = False)
 
@@ -80,6 +83,38 @@ class DerivativeTradesModel(db.Model):
         db.session.add(self)
         db.session.commit()
         return self.TradeID
+
+    @classmethod
+    def get_trades_between(cls, startDate, endDate):
+        return cls.query.filter(DerivativeTradesModel.DateOfTrade >= startDate, DerivativeTradesModel.DateOfTrade <= endDate)
+    
+    @classmethod
+    def get_trade_with_ID(cls, tradeID):
+        return cls.query.filter(DerivativeTradesModel.TradeID == tradeID)
+    
+    @classmethod
+    def get_trades_sold_by(cls, sellingParty):
+        return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty)
+
+    @classmethod
+    def get_trades_bought_by(cls, buyingParty):
+        return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty)
+
+    @classmethod
+    def get_trade_by_product(cls, productName):
+        return cls.query.filter(ProductModel.ProductName == productName, ProductModel.ProductID == ProductTradesModel.ProductID, ProductTradesModel.TradeID == cls.TradeID)
+
+    @classmethod
+    def get_trades_by_notional_currency(cls, notionalCurrency):
+        return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency)
+
+    @classmethod
+    def get_trade_by_underlying_currency(cls, underlyingCurrency):
+        return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency)
+
+    @classmethod
+    def get_trades_by_user(cls, userID):
+        return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
 
 class EventLogModel(db.Model):
     __tablename__ = 'EventLog'
@@ -91,6 +126,10 @@ class EventLogModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    @classmethod
+    def get_events(cls, date): #gets all the events/actions made by users on a specific date
+        return cls.query.filter(cls.DateOfEvent <= date).with_entities(EventLogModel.DateOfEvent, EventLogModel.UserAction)
 
 class EmployeesModel(db.Model):
     __tablename__ = 'Employees'
@@ -113,8 +152,10 @@ class ProductSellersModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def getProductID(cls, productName, companyID):
-        return cls.query.filter(ProductSellersModel.CompanyCode == companyID).filter(ProductSellersModel.ProductID == ProductModel.ProductID).filter(ProductModel.ProductName == productName)
+    @classmethod
+    def getProductID(cls, productName, companyCode):
+        print(cls.query.filter(ProductSellersModel.CompanyCode == companyCode).filter(ProductSellersModel.ProductID == ProductModel.ProductID).filter(ProductModel.ProductName == productName).with_entities(ProductSellersModel.ProductID))
+        return cls.query.filter(ProductSellersModel.CompanyCode == companyCode).filter(ProductSellersModel.ProductID == ProductModel.ProductID).filter(ProductModel.ProductName == productName).with_entities(ProductSellersModel.ProductID)
 
 class ProductTradesModel(db.Model):
     __tablename__ = 'ProductTrades'
@@ -135,43 +176,17 @@ class ProductModel(db.Model):
         db.session.add(self)
         db.session.commit()
         return self.ProductID
+    
+    @classmethod
+    def retrieve_products_before(cls, date):
+        return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, cls.DateEnteredInSystem == date).\
+            with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice)
 
 class ProductValuationsModel(db.Model):
     __tablename__ = 'ProductValuations'
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
     ProductPrice = db.Column(db.Float, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
-    
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-class StockValuationsModel(db.Model):
-    __tablename__ = 'StockValuations'
-    StockID = db.Column(db.Integer, primary_key = True, nullable = False)
-    DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
-    StockPrice = db.Column(db.Float, nullable = False)
-    
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-class StocksModel(db.Model):
-    __tablename__ = 'Stocks'
-    StockID = db.Column(db.Integer, primary_key = True, nullable = False)
-    CompanyID = db.Column(db.Integer, ForeignKey("Companies.CompanyCode"), nullable = False)
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def getStockID(cls, companyID):
-        return cls.query.filter(StocksModel.CompanyCode == companyID)
-
-class StockTradesModel(db.Model):
-    __tablename__ = 'StockTrades'
-    StockID = db.Column(db.Integer, primary_key = True, nullable = False)
-    TradeID = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     
     def save_to_db(self):
         db.session.add(self)

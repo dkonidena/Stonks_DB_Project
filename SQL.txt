@@ -18,9 +18,17 @@ GET
 
 •	/api/products?date=<date>
 
-  SELECT ProductName, MarketPrice, CompanyCode, ProductID, DateEnteredInSystem
+  SELECT ProductName, ProductPrice, CompanyCode, ProductID, DateEnteredInSystem
   FROM ProductValuations NATURAL JOIN Products NATURAL JOIN ProductSellers
   WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  SELECT 'Stocks', StockPrice, CompanyCode, StockID
+  FROM Stocks NATURAL JOIN StockValuations
+  WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  These will need to be combined in python as they have different attribute names
+
+  Stocks has no DateEnteredInSystem
 
 •	/api/trades?filter=<filter object>
 
@@ -32,8 +40,8 @@ GET
 
   - date range (startData, endDate) (date when created or last modified?)
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE datetime(DateOfTrade) BETWEEN datetime(<string date>) AND datetime(<string date>)
     ORDER BY datetime(DateOfTrade) DESC;
 
@@ -41,43 +49,41 @@ GET
 
   - exact tradeID
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE TradeID = ?
     ORDER BY datetime(DateOfTrade) DESC;
 
   - companies involved
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE BuyingParty = ? OR SellingParty = ?
     ORDER BY datetime(DateOfTrade) DESC;
 
     could be split into 2 more, just filtering on BuyingParty/SellingParty not both as well as this one
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE BuyingParty = ?
     ORDER BY datetime(DateOfTrade) DESC;
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE SellingParty = ?
     ORDER BY datetime(DateOfTrade) DESC;
 
   - product name
 
-    trades not linked to product table at all, just asset type field
-
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
-    WHERE AssetType = ?
+    SELECT ifnull(ProductName, 'Stocks') as pName, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE pName = 'Stocks'
     ORDER BY datetime(DateOfTrade) DESC;
 
   - currency
 
-    SELECT AssetType, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingPrice, UnderlyingCurrency, StrikePrice, MaturityDate, TradeID, DateOfTrade
-    FROM DerivativeTrades
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
     WHERE UnderlyingCurrency = ?
     ORDER BY datetime(DateOfTrade) DESC;
 
@@ -97,6 +103,18 @@ GET
 
   no rules table
 
+•	ordered list of companies for drop downs
+
+  SELECT BuyingParty
+  FROM DerivativeTrades
+  GROUP BY BuyingParty
+  ORDER BY count(BuyingParty) DESC
+
+  SELECT SellingParty
+  FROM DerivativeTrades
+  GROUP BY SellingParty
+  ORDER BY count(SellingParty) DESC
+
 
 
 POST
@@ -107,25 +125,18 @@ POST
 
 •	/api/trades
 
-  INSERT INTO DerivativeTrades(DateOfTrade, AssetType, BuyingParty, SellingParty, NotionalAmount, Quantity, NotionalCurrency, MaturityDate, UnderlyingPrice, UnderlyingCurrency, StrikePrice, LastUserID, DateLastModified)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
-
-  this assumes that the tradeID is autogenerated, and so a value can't be supplied
-  depends on how schema is defined
-  DateLastModified could be generated client side, or by python, or by database
-
-  if id generated by python then
-
   INSERT INTO DerivativeTrades
   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
 
   IF PRODUCT
+
     INSERT INTO ProductTrades
     VALUES(?, ?);
 
     parameter order is ProductID, TradeID
 
   IF STOCK
+
     INSERT INTO StockTrades
     VALUES(?, ?);
 
@@ -150,32 +161,34 @@ POST
 
 •	/api/products
 
-  INSERT INTO Products
-  VALUES(?, ?, ?)
+  IF PRODUCT
 
-  parameter order is ProductID, ProductName, DateEnteredInSystem
+    INSERT INTO Products
+    VALUES(?, ?, ?)
 
-  INSERT INTO ProductValuations
-  VALUES(?, ?, ?);
+    parameter order is ProductID, ProductName, DateEnteredInSystem
 
-  parameter order is DateOfValuation, ProductID, ProductPrice
+    INSERT INTO ProductValuations
+    VALUES(?, ?, ?);
 
-  INSERT INTO ProductSellers
-  VALUES(?, ?);
+    parameter order is DateOfValuation, ProductID, ProductPrice
 
-  parameter order is ProductID, CompanyCode
+    INSERT INTO ProductSellers
+    VALUES(?, ?);
 
-•	/api/stocks (should be added)
+    parameter order is ProductID, CompanyCode
 
-  INSERT INTO Stocks
-  VALUES(?, ?)
+IF STOCKS
 
-  parameter order is StockID, CompanyCode
+    INSERT INTO Stocks
+    VALUES(?, ?)
 
-  INSERT INTO StockValuations
-  VALUES(?, ?, ?);
+    parameter order is StockID, CompanyCode
 
-  parameter order is DateOfValuation, StockID, StockPrice
+    INSERT INTO StockValuations
+    VALUES(?, ?, ?);
+
+    parameter order is DateOfValuation, StockID, StockPrice
 
 PATCH
 
@@ -184,7 +197,7 @@ are these replacing every field? might be faster if it only updates the changed 
 •	/api/trades/<tradeID>
 
   UPDATE DerivativeTrades
-  SET DateOfTrade = ?, AssetType = ?, BuyingParty = ?, SellingParty = ?, NotionalValue = ?, NotionalCurrency = ?, Quantity = ?, MaturityDate = ?, UnderlyingValue = ?, UnderlyingCurrency = ?, StrikePrice = ?, LastUserID = ?
+  SET DateOfTrade = ?, AssetType = ?, BuyingParty = ?, SellingParty = ?, NotionalValue = ?, NotionalCurrency = ?, Quantity = ?, MaturityDate = ?, UnderlyingValue = ?, UnderlyingCurrency = ?, StrikePrice = ?
   WHERE TradeID = ?;
 
 •	/api/rules/<ruleID>
@@ -194,22 +207,34 @@ are these replacing every field? might be faster if it only updates the changed 
 •	/api/companies/<companyID>
 
   UPDATE Companies
-  SET CompanyName = ?, DateEnteredInSystem = ?, CompanyCode = ?
+  SET CompanyName = ?, DateEnteredInSystem = ?
   WHERE CompanyCode = ?;
 
 •	/api/products/<productID>
 
-  UPDATE ProductValuations
-  SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
-  WHERE ProductID = ? AND DateOfValuation = ?;
+  IF PRODUCT
 
-  UPDATE Products
-  SET ProductName = ?, DateEnteredInSystem = ?
-  WHERE ProductID = ?;
+    UPDATE ProductValuations
+    SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
+    WHERE ProductID = ? AND DateOfValuation = ?;
 
-  UPDATE ProductSellers
-  SET ProductID = ?, CompanyCode = ?
-  WHERE ProductID = ? AND CompanyCode = ?;
+    UPDATE Products
+    SET ProductName = ?, DateEnteredInSystem = ?
+    WHERE ProductID = ?;
+
+    UPDATE ProductSellers
+    SET ProductID = ?, CompanyCode = ?
+    WHERE ProductID = ? AND CompanyCode = ?;
+
+  IF STOCK
+
+    UPDATE StockValuations
+    SET DateOfValuation = ?, StockID = ?, StockPrice = ?
+    WHERE StockID = ? AND DateOfValuation = ?;
+
+    UPDATE Stocks
+    SET CompanyCode = ?
+    WHERE StockID = ?;
 
 
 DELETE
