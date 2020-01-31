@@ -26,7 +26,7 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= returnDatetime(date))
-    
+
     @classmethod
     def update_company(cls, companycode, name, datefounded):
         row = cls.query.filter_by(CompanyCode = companycode).first()
@@ -90,11 +90,11 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def get_trades_between(cls, startDate, endDate):
         return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= returnDatetime(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= returnDatetime(endDate))
-    
+
     @classmethod
     def get_trade_with_ID(cls, tradeID):
         return cls.query.filter(DerivativeTradesModel.TradeID == tradeID)
-    
+
     @classmethod
     def get_trades_sold_by(cls, sellingParty):
         return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty)
@@ -118,6 +118,21 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def get_trades_by_user(cls, userID):
         return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
+
+    @classmethod
+    def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
+        row = cls.query.filter_by(TradeID = tradeID).first()
+        row.Product = product
+        row.BuyingParty = buyingParty
+        row.SellingParty = sellingParty
+        row.NotionalValue = notionalValue
+        row.NotionalCurrency = notionalCurrency
+        row.Quantity = quantity
+        row.MaturityDate = maturityDate
+        row.UnderlyingValue = underlyingValue
+        row.UnderlyingCurrency = underlyingCurrency
+        row.StrikePrice = strikePrice
+        db.session.commit()
 
 class EventLogModel(db.Model):
     __tablename__ = 'EventLog'
@@ -150,7 +165,7 @@ class ProductSellersModel(db.Model):
     __tablename__ = 'ProductSellers'
     ProductID = db.Column(db.Integer, primary_key = True,  nullable = False)
     CompanyCode = db.Column(db.String(120), primary_key = True,  nullable = False)
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -164,7 +179,7 @@ class ProductTradesModel(db.Model):
     __tablename__ = 'ProductTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     ProductID = db.Column(db.Integer, primary_key = True,  nullable = False)
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -174,12 +189,12 @@ class ProductModel(db.Model):
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
     ProductName = db.Column(db.String(120), nullable = False)
     DateEnteredInSystem = db.Column(db.String(120))
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
         return self.ProductID
-    
+
     @classmethod
     def retrieve_products_on_date(cls, date):
         return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == returnDatetime(date)).\
@@ -190,7 +205,7 @@ class ProductValuationsModel(db.Model):
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
     ProductPrice = db.Column(db.Float, nullable = False)
     DateOfValuation = db.Column(db.String(120), primary_key = True, nullable = False)
-    
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

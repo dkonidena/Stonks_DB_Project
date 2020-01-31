@@ -96,8 +96,8 @@ class Companies(Resource):
             companyid = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
-            name = data['company'].name
-            datefounded = data['company'].dateFounded
+            name = data['name']
+            datefounded = data['dateFounded']
             models.CompanyModel.update_company(companycode=companyid, name=name, datefounded=datefounded)
             return "success", 200
         except:
@@ -304,7 +304,32 @@ class Trades(Resource):
         #Check if the added
         return {'message': 'trade has been added'}, 201
     def patch(self):
-        return 1
+
+        try:
+            tradeID = request.args.get('id')
+
+            json_data = request.data
+
+            data = json.loads(json_data)
+
+
+            product = data['product']
+            quantity = data['quantity']
+            buyingParty = data['buyingParty']
+            sellingParty = data['sellingParty']
+            notionalValue = data['notionalValue']
+            notionalCurrency = data['notionalCurrency']
+            underlyingValue = data['underlyingValue']
+            underlyingCurrency = data['underlyingCurrency']
+            maturityDate = data['maturityDate']
+            strikePrice = data['strikePrice']
+
+            models.DerivativeTradesModel.update_trade(tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
+            return "success", 200
+        except:
+            return "failure", 201
+
+
     def delete(self):
         return 1
 
