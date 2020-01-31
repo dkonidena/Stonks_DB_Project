@@ -191,17 +191,17 @@ class Trades(Resource):
         underlyingCurrency = request.args.get('underlyingcurrency')
         userIDcreatedBy = request.args.get('useridcreatedby')
         isDryRun = request.args.get('isDryRun')
-    
+
         results = list() #stores results for each query/filter that is applied by the user
         if len(dateCreated) > 0:
             results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
 
         if tradeID is not None:
-            results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
-        
+            results.append(models.DerivativeTradesModel.get_trade_with_ID(tradeID))
+
         if buyingParty is not None:
             results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
-        
+
         if sellingParty is not None:
             results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
 
@@ -210,13 +210,13 @@ class Trades(Resource):
 
         if notionalCurrency is not None:
             results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-        
+
         if underlyingCurrency is not None:
             results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-        
+
         if userIDcreatedBy is not None:
             results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-        
+
         #performs intersections on each result set from each query to find the filtered results
         final_results = None
         for each in results:
@@ -246,7 +246,7 @@ class Trades(Resource):
             dicto['useridcreatedby'] = row.UserIDCreatedBy
             res[i] = dicto
             i += 1
-        
+
         message['matches'] = res
         return message, 201
 
@@ -269,10 +269,10 @@ class Trades(Resource):
         maturityDate = data['maturityDate']
         DateOfTrade = datetime.now()
         userIDcreatedBy = data['useridcreatedby']
-        new_trade = models.DerivativeTradesModel(TradeID= id, 
-        DateOfTrade= DateOfTrade, 
+        new_trade = models.DerivativeTradesModel(TradeID= id,
+        DateOfTrade= DateOfTrade,
         Product= product,
-        BuyingParty= buyingParty, 
+        BuyingParty= buyingParty,
         SellingParty= sellingParty,
         NotionalValue = notionalValue,
         Quantity= quantity,
@@ -288,7 +288,7 @@ class Trades(Resource):
         if result.count() == 0:
             print("Product does not exist")
             return {'message' : 'not found'}, 404
-        #If a the product or stock which the trade is linked to is found, then the trade 
+        #If a the product or stock which the trade is linked to is found, then the trade
         new_tradeID = new_trade.save_to_db()
         assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
         new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetIDs[0])
@@ -301,7 +301,7 @@ class Trades(Resource):
         new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
         new_event.save_to_db()
 
-        #Check if the added 
+        #Check if the added
         return {'message': 'trade has been added'}, 201
     def patch(self):
         return 1
@@ -310,7 +310,7 @@ class Trades(Resource):
 
 class Reports(Resource):
     def get(self):
-        try: 
+        try:
             dateCreated = request.args.getlist('date')
             tradeID = request.args.get('tradeid')
             buyingParty = request.args.get('buyingparty')
@@ -327,10 +327,10 @@ class Reports(Resource):
 
             if tradeID is not None:
                 results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
-            
+
             if buyingParty is not None:
                 results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
-            
+
             if sellingParty is not None:
                 results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
 
@@ -339,13 +339,13 @@ class Reports(Resource):
 
             if notionalCurrency is not None:
                 results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-            
+
             if underlyingCurrency is not None:
                 results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-            
+
             if userIDcreatedBy is not None:
                 results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-            
+
             return {'message' : 'need to finish'}, 201
         except:
             return {'message' : 'error occured'}, 202
