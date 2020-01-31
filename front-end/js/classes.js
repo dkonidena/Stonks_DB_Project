@@ -214,7 +214,7 @@ class Company {
 
 class APICompany {
 	constructor() {
-		this.id = "";
+		this.name = "";
 		this.foundedDate = "";
 	}
 }
