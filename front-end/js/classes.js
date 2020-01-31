@@ -113,22 +113,38 @@ function getTradeList() {
 
 class Product {
     constructor() {
-        this.id = 0;
+        this.id = "";
         this.name = "";
-        this.companyId = 0;
+        this.companyId = "";
         this.value = 0;
-        this.creatioDate = new Date();
+        this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
+	
+	getAPIObject() {
+		let a = new APIProduct();
+		a.id = this.id;
+		a.value = this.value;
+		a.company = this.companyId;
+		return a;
+	}
 };
+
+class APIProduct {
+	constructor() {
+		this.id = "";
+		this.value = "";
+		this.company = "";
+	}
+}
 
 
 function * productGenerator() {
     while (true) {
         let p = new Product();
-        p.id = randInt(0, 999);
+        p.id = randInt(0, 999).toString();
         p.name = "Product " + p.id;
-        p.companyId = randInt(0, 999999);
+        p.companyId = randInt(0, 999999).toString();
         p.value = (randInt(0,9999) + Math.random()).toFixed(2);
         p.creatioDate = randDate();
         p.userIdCreatedBy = randInt(0, 999999);
@@ -179,19 +195,33 @@ const currencyData = [
 
 class Company {
     constructor() {
-        this.id = 0;
+        this.id = "";
         this.name = "";
         this.foundedDate = new Date();
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
+	
+	getAPIObject() {
+		let c = new APICompany();
+		c.id = this.id;
+		c.foundedDate = this.foundedDate;
+		return c;
+	}
 };
+
+class APICompany {
+	constructor() {
+		this.id = "";
+		this.foundedDate = "";
+	}
+}
 
 
 function * companyGenerator() {
     while (true) {
         let c = new Company();
-        c.id = randInt(0, 999);
+        c.id = randInt(0, 999).toString();
         c.name = "Company " + c.id;
         c.foundedDate = randDate();
         c.creationDate = randDate();
