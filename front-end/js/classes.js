@@ -32,6 +32,7 @@ class Trade {
 
     getAPIObject() {
         let a = new APITrade();
+        a.product = this.product;
         a.buyingParty = this.buyingParty;
         a.sellingParty = this.buyingParty;
         a.quantity = this.quantity;
@@ -66,6 +67,7 @@ class Trade {
 
 class APITrade {
     constructor() {
+        this.product = "";
         this.buyingParty = "";
         this.sellingParty = "";
         this.quantity = 0;
