@@ -8,47 +8,40 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/select2-bootstrap4.min.css">
-    <script src="../js/api.js"></script>
     <title>CS261 GROUP32</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark shadow">
-        <a class="navbar-brand" href="../page-home/page-home.html">Stonks</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="./home.html">Stonks</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="../page-home/page-home.html">Home</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="./page-trades.html">Trades</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-            </ul>
-            <!-- <form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form> -->
-        </div>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../page-home/page-home.html">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="../page-trades/page-trades.html">Trades<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-companies/page-companies.html">Companies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-products/page-products.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-reports/page-reports.html">Daily Reports</a>
+          </li>
+        </ul>
+      </div>
     </nav>
 
-    <div class="container-fluid" style="padding-top:54px;">
+    <div class="container-fluid">
         <div class="row">
 
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right border-dark mt-5">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right border-dark" style="margin-top:56px;">
                 <div class="sidebar-sticky">
                     <button id="addTradeButton" class="btn btn-light btn-lg btn-block" type="button" href="#">
                         <div class="text-left h4 mb-0">
@@ -235,6 +228,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.full.min.js"></script>
     <script src="../js/classes.js"></script>
     <script src="../js/util.js"></script>
+    <script src="../js/api.js"></script>
     <script src="./js/page-trades.js"></script>
     <script src="./js/init.js"></script>
 </body>
