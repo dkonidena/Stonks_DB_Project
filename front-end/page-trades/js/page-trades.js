@@ -71,7 +71,6 @@ function addTradeButton_OnPressed() {
 function saveTradeButton_OnPressed() {
     // TODO whole function needs error handling
     var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
-    trade.lastModifiedDate = new Date();
 
     // TODO probably a better way to do this...
     let products = getProductList(trade.tradeDate);
