@@ -69,12 +69,17 @@ function addTradeButton_OnPressed() {
 }
 
 function saveTradeButton_OnPressed() {
+    // TODO whole function needs error handling
     var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
     trade.lastModifiedDate = new Date();
 
-    trade.product = $("#productInput").val();
-    trade.buyingParty = $("#buyingPartyInput").val();
-    trade.sellingParty = $("#sellingPartyInput").val();
+    // TODO probably a better way to do this...
+    let products = getProductList(trade.tradeDate);
+    trade.product = products.filter(p => p.name === $("#productInput").val())[0];
+
+    let companies = getCompanyList(trade.tradeDate);
+    trade.buyingParty = companies.filter(c => c.name === $("#buyingPartyInput").val())[0];
+    trade.sellingParty = companies.filter(c => c.name === $("#sellingPartyInput").val())[0];
 
     trade.tradeDate.setDate($("#tradeDateDayInput").val());
     trade.tradeDate.setMonth($("#tradeDateMonthInput").val()-1);

@@ -9,10 +9,9 @@ class Trade {
         this.tradeDate = new Date();
         this.userIdCreatedBy = 0;
         this.lastModifiedDate = new Date();
-
-        this.product = "";
-        this.buyingParty = "";
-        this.sellingParty = "";
+        this.product = null; // a Product object
+        this.buyingParty = null; // a Company object
+        this.sellingParty = null; // a Company object
         this.quantity = 0;
         this.notionalPrice = "";
         this.notionalCurrency = "";
@@ -32,9 +31,9 @@ class Trade {
 
     getAPIObject() {
         let a = new APITrade();
-        a.product = this.product;
-        a.buyingParty = this.buyingParty;
-        a.sellingParty = this.buyingParty;
+        a.product = this.product.id;
+        a.buyingParty = this.buyingParty.id;
+        a.sellingParty = this.sellingParty.id;
         a.quantity = this.quantity;
         a.notionalPrice = this.notionalPrice;
         a.notionalCurrency = this.notionalCurrency;
@@ -46,14 +45,19 @@ class Trade {
     }
 
     populateFromServerJSON(o) {
+        // TODO whole function needs error handling
         this.tradeId = o.tradeId;
         this.tradeDate = new Date(o.tradeDate);
         this.userIdCreatedBy = o.userIdCreatedBy;
         this.lastModifiedDate = new Date(o.lastModifiedDate);
 
-        this.product = o.product;
-        this.buyingParty = o.buyingParty;
-        this.sellingParty = o.sellingParty;
+        //  TODO possibly better ways to do this...
+        let products = getProductList(this.tradeDate);
+        this.product = products.filter(p => p.id === o.product)[0];
+        let companies = getCompanyList(this.tradeDate);
+        this.buyingParty = companies.filter(c => c.id === o.buyingParty)[0];
+        this.sellingParty = companies.filter(c => c.id === o.sellingParty)[0];
+
         this.quantity = o.quantity;
         this.notionalPrice = o.notionalPrice;
         this.notionalCurrency = o.notionalCurrency;
@@ -122,7 +126,7 @@ class Product {
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
-	
+
 	getAPIObject() {
 		let a = new APIProduct();
 		a.id = this.id;
@@ -154,7 +158,7 @@ function * productGenerator() {
     }
 };
 
-function getProductList() {
+function getProductList(date) {
     if (products.length == 0) {
         for (let i = 0; i < 10; i++) {
             products.push(productGenerator().next().value);
@@ -203,7 +207,7 @@ class Company {
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
-	
+
 	getAPIObject() {
 		let c = new APICompany();
 		c.id = this.id;
@@ -232,7 +236,7 @@ function * companyGenerator() {
     }
 }
 
-function getCompanyList() {
+function getCompanyList(date) {
     if (companies.length == 0) {
         for (let i = 0; i < 10; i++) {
             companies.push(companyGenerator().next().value);
