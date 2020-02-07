@@ -107,10 +107,10 @@ function request(method, url, onSuccess, onFail, data) {
         }
         return response.json();
     })
+    .then(onSuccess)
     .catch((err) => {
         onFail(err, debugData);
-    })
-    .then(onSuccess);
+    });
 }
 
 // calls func1 with the object returned by the server
