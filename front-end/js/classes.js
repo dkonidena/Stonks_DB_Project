@@ -116,6 +116,15 @@ class Product {
 		a.company = this.companyId;
 		return a;
 	}
+
+    populateFromServerJSON(o) {
+        this.id = o.id;
+        this.name = o.name;
+        this.companyId = o.companyId;
+        this.value = o.value;
+        this.creationDate = new Date(o.value);
+        this.userIdCreatedBy = o.userIdCreatedBy;
+    }
 };
 
 class APIProduct {
@@ -149,6 +158,15 @@ class Currency {
         this.symbol = sym;
         this.allowDecimal = decimal;
         this.value = val;
+    }
+
+    populateFromServerJSON(o) {
+        // TODO whole function needs error handling
+        this.code = o.code;
+        this.symbol = o.sym;
+        this.allowDecimal = o.decimal;
+        this.value = o.val;
+        return this;
     }
 };
 
@@ -184,6 +202,16 @@ class Company {
 		c.foundedDate = this.foundedDate;
 		return c;
 	}
+
+    populateFromServerJSON(o) {
+        // TODO whole function needs error handling
+        this.id = o.id;
+        this.name = o.name;
+        this.foundedDate = new Date(o.foundedDate);
+        this.creationDate = new Date(o.creationDate);
+        this.userIdCreatedBy = o.userIdCreatedBy;
+        return this;
+    }
 };
 
 class APICompany {
