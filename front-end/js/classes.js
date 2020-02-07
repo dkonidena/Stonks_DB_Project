@@ -221,8 +221,8 @@ class APICompany {
 	}
 }
 
-function getCompanyList(date, res) {
-    api.get.companies(date, false, (response) => {
+function getCompanyList(date, order, res) {
+    api.get.companies(date, order, false, (response) => {
         if (response.matches === undefined) {
             showError("Malformed server reponse", "matches field not present");
             return;
