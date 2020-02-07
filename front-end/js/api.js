@@ -7,8 +7,8 @@ const api = {
         currencies: (date, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
         },
-        companies: (date, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/companies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
+        companies: (date, order, dryRun, res, err) => {
+            request("GET", `${API_ENDPOINT}/companies?date=${date.toISOString()}&isDryRun=${dryRun}&order=${order}`, res, err);
         },
         products: (date, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/products?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
