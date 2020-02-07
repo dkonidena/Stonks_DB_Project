@@ -193,10 +193,7 @@ class APICompany {
 	}
 }
 
-function getCompanyList(filter, res) {
-    // default to between 2000 and now
-    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
-
+function getCompanyList(date, res) {
     api.get.companies(date, false, (response) => {
         if (response.matches === undefined) {
             showError("Malformed server reponse", "matches field not present");

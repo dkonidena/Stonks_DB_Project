@@ -50,7 +50,7 @@ function init() {
         currencies.forEach(addCurrencyToUI);
     });
 
-    getCompanyList(new Filter(), 'mostBoughtFrom', (companies) => {
+    getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
         companies.forEach(addCompanyToUI);
     });
 
