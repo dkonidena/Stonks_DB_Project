@@ -9,9 +9,9 @@ class Trade {
         this.tradeDate = new Date();
         this.userIdCreatedBy = 0;
         this.lastModifiedDate = new Date();
-        this.product = null; // a Product object
-        this.buyingParty = null; // a Company object
-        this.sellingParty = null; // a Company object
+        this.product = ""; // a Product ID
+        this.buyingParty = ""; // a Company ID
+        this.sellingParty = ""; // a Company ID
         this.quantity = 0;
         this.notionalPrice = "";
         this.notionalCurrency = "";
@@ -31,9 +31,9 @@ class Trade {
 
     getAPIObject() {
         let a = new APITrade();
-        a.product = this.product.id;
-        a.buyingParty = this.buyingParty.id;
-        a.sellingParty = this.sellingParty.id;
+        a.product = this.product;
+        a.buyingParty = this.buyingParty;
+        a.sellingParty = this.sellingParty;
         a.quantity = this.quantity;
         a.notionalPrice = this.notionalPrice;
         a.notionalCurrency = this.notionalCurrency;
@@ -50,14 +50,9 @@ class Trade {
         this.tradeDate = new Date(o.tradeDate);
         this.userIdCreatedBy = o.userIdCreatedBy;
         this.lastModifiedDate = new Date(o.lastModifiedDate);
-
-        //  TODO possibly better ways to do this...
-        let products = getProductList(this.tradeDate);
-        this.product = products.filter(p => p.id === o.product)[0];
-        let companies = getCompanyList(this.tradeDate);
-        this.buyingParty = companies.filter(c => c.id === o.buyingParty)[0];
-        this.sellingParty = companies.filter(c => c.id === o.sellingParty)[0];
-
+        this.product = o.product;
+        this.buyingParty = o.buyingParty;
+        this.sellingParty = o.sellingParty;
         this.quantity = o.quantity;
         this.notionalPrice = o.notionalPrice;
         this.notionalCurrency = o.notionalCurrency;
@@ -84,38 +79,25 @@ class APITrade {
     }
 }
 
-function * tradeGenerator(e) {
-    let x = 0;
-    while(true) {
-        let t = new Trade();
-        t.tradeId = e ? "NEW " + x++ : randInt(0, 999999999).toString().padStart(9, "0");
-        t.tradeDate = new Date();
-        t.userIdCreatedBy = randInt(0,9999999);
-        t.lastModifiedDate = randDate();
-        t.product = randProductString();
-        t.buyingParty = randCompanyString();
-        t.sellingParty = randCompanyString();
-        t.quantity = randInt(0, 100);
-        let c1 = randCurrency();
-        let c2 = randCurrency();
-        t.notionalCurrency = c1.code;
-        t.notionalPrice = randCurrencyString(c1);
-        t.underlyingCurrency = c2.code;
-        t.underlyingPrice = randCurrencyString(c2);
-        t.maturityDate = randDate();
-        t.strikePrice = randCurrencyString(c2);
-        yield t;
-    }
-};
+function getTradeList(filter, res) {
+    // default to between 2000 and now
+    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
 
-function getTradeList() {
-    if (trades.length == 0) {
-        for (let i = 0; i < 10; i++) {
-            trades.push(tradeGenerator(false).next().value);
+    api.get.trades(filter.getAPIObject(), false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse", "matches field not present");
+            return;
         }
-    }
-    return trades;
-};
+
+        for (let json of response.matches) {
+            let trade = new Trade();
+            trade.populateFromServerJSON(json);  // TODO error handling
+            trades.push(trade);
+        }
+
+        if (res !== undefined) { res(trades); }
+    }, showRequestError);
+}
 
 class Product {
     constructor() {
@@ -144,27 +126,21 @@ class APIProduct {
 	}
 }
 
-
-function * productGenerator() {
-    while (true) {
-        let p = new Product();
-        p.id = randInt(0, 999).toString();
-        p.name = "Product " + p.id;
-        p.companyId = randInt(0, 999999).toString();
-        p.value = (randInt(0,9999) + Math.random()).toFixed(2);
-        p.creatioDate = randDate();
-        p.userIdCreatedBy = randInt(0, 999999);
-        yield p;
-    }
-};
-
-function getProductList(date) {
-    if (products.length == 0) {
-        for (let i = 0; i < 10; i++) {
-            products.push(productGenerator().next().value);
+function getProductList(date, res) {
+    api.get.products(date, false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse", "matches field not present");
+            return;
         }
-    }
-    return products;
+
+        for (let json of response.matches) {
+            let product = new Product();
+            product.populateFromServerJSON(json);  // TODO error handling
+            products.push(product);
+        }
+
+        if (res !== undefined) { res(products); }
+    }, showRequestError);
 }
 
 class Currency {
@@ -176,28 +152,22 @@ class Currency {
     }
 };
 
-function getCurrencyList() {
-    if (currencies.length == 0) {
-        currencyData.forEach((c) => {
-            currencies.push(new Currency(c[0], c[1], c[2], c[3]));
-        });
-    }
-    return currencies;
-}
+function getCurrencyList(date, res) {
+    api.get.currencies(date, false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse", "matches field not present");
+            return;
+        }
 
-//the ten global most traded currencies
-const currencyData = [
-    ["USD", "$", true, 1],
-    ["EUR", "€", true, 1],
-    ["JPY", "¥", false, 1],
-    ["GPB", "£", true, 1],
-    ["AUD", "$", true, 1],
-    ["CAD", "$", true, 1],
-    ["CHF", "CHF", true, 1],
-    ["CNY", "元", true, 1],
-    ["HKD", "$", true, 1],
-    ["NZD", "$", true, 1]
-];
+        for (let json of response.matches) {
+            let currency = new Currency();
+            currency.populateFromServerJSON(json);  // TODO error handling
+            currencies.push(currency);
+        }
+
+        if (res !== undefined) { res(currencies); }
+    }, showRequestError);
+}
 
 class Company {
     constructor() {
@@ -223,24 +193,57 @@ class APICompany {
 	}
 }
 
+function getCompanyList(filter, res) {
+    // default to between 2000 and now
+    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
 
-function * companyGenerator() {
-    while (true) {
-        let c = new Company();
-        c.id = randInt(0, 999).toString();
-        c.name = "Company " + c.id;
-        c.foundedDate = randDate();
-        c.creationDate = randDate();
-        c.userIdCreatedBy = randInt(0, 999999);
-        yield c;
+    api.get.companies(date, false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse", "matches field not present");
+            return;
+        }
+
+        for (let json of response.matches) {
+            let company = new Company();
+            company.populateFromServerJSON(json);  // TODO error handling
+            companies.push(company);
+        }
+
+        if (res !== undefined) { res(companies); }
+    }, showRequestError);
+}
+
+class Filter {
+    constructor() {
+        this.dateCreated = null;
+    }
+
+    getAPIObject() {
+        // the API spec says that we should only send members that we actually
+        // want to filter by. eg. if we only want to filter by date we only send
+        // the dateCreated key
+
+        let object = {};
+        for (let key of Object.keys(this)) {
+            if (this[key] !== null) {
+                object[key] = this[key];
+            }
+        }
+
+        return object;
     }
 }
 
-function getCompanyList(date) {
-    if (companies.length == 0) {
-        for (let i = 0; i < 10; i++) {
-            companies.push(companyGenerator().next().value);
-        }
+class TradeFilter extends Filter {
+    constructor() {
+        super();
+        this.dateModified = null;
+        this.tradeID = null;
+        this.buyingParty = null;
+        this.sellingParty = null;
+        this.product = null;
+        this.notionalCurrency = null;
+        this.underlyingCurrency = null;
+        this.userIDCreatedBy = null;
     }
-    return companies;
 }

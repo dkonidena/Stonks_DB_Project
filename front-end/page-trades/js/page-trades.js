@@ -29,9 +29,13 @@ function addCompanyToUI(c) {
     $("#buyingPartyInput, #sellingPartyInput").append(d);
 }
 
+function showRequestError(error, detail) {
+    showError(error.message, "Request:\n" + JSON.stringify(detail, null, 2));
+}
+
 function showError(error, detail) {
-    $('#errorShort').text(error.message);
-    $('#errorDetailContent').text(JSON.stringify(detail, null, 2));
+    $('#errorShort').text(error);
+    $('#errorDetailContent').text(detail);
     $('#apiErrorModal').modal('show');
 }
 
@@ -61,11 +65,8 @@ function loadTradeToForm(trade) {
 }
 
 
-var tg = tradeGenerator(true);
 function addTradeButton_OnPressed() {
-    var t = tg.next().value;
-    addTradeToUI(t);
-    trades.push(t);
+    // TODO
 }
 
 function saveTradeButton_OnPressed() {
@@ -96,8 +97,7 @@ function saveTradeButton_OnPressed() {
     trade.quantity = $("#quantityInput").val();
     trade.strikePrice = $("#strikePriceInput").val();
 
-    api.post.trades(trade.getAPIObject(), console.log, showError)
-
+    api.post.trades(trade.getAPIObject(), console.log, showRequestError)
     //TODO add visual feedback of the save to user
 }
 

@@ -45,17 +45,21 @@ function init() {
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
-    getCurrencyList().forEach((c) => {
-        addCurrencyToUI(c);
+
+    getCurrencyList(new Date(), (currencies) => {
+        currencies.forEach(addCurrencyToUI);
     });
-    getCompanyList().forEach((c) => {
-        addCompanyToUI(c);
+
+    getCompanyList(new Filter(), 'mostBoughtFrom', (companies) => {
+        companies.forEach(addCompanyToUI);
     });
-    getProductList().forEach((p) => {
-        addProductToUI(p);
+
+    getProductList(new Date(), (products) => {
+        products.forEach(addProductToUI);
     });
-    getTradeList().forEach((t) => {
-        addTradeToUI(t);
+
+    getTradeList(new TradeFilter(), (trades) => {
+        trades.forEach(addTradeToUI);
     });
 
     $('.select2-cur').select2({
