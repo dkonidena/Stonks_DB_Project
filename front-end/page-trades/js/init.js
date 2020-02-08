@@ -46,12 +46,12 @@ function init() {
     $("#saveTradeButton").on("click",saveTradeButton_OnPressed);
     $("#checkTradeButton").on("click",checkTradeButton_OnPressed);
     $("#discardChangesButton").on("click", cancelTradeButton_OnPressed);
+    $("#doAdvancedSearch").on("click", advancedSearchButton_OnPressed);
 
     filters.forEach((x) => {
         var t = x[0];
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
-
 
     getCurrencyList(new Date(), (currencies) => {
         currencies.forEach(addCurrencyToUI);

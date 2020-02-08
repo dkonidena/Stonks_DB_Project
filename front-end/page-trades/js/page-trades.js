@@ -168,3 +168,10 @@ function cancelTradeButton_OnPressed() {
     var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
     loadTradeToForm(trade);
 }
+
+function advancedSearchButton_OnPressed() {
+    let filter = filterObjectFromForm();
+    getTradeList(filter, (trades) => {
+        trades.forEach(addTradeToUI);
+    });
+}
