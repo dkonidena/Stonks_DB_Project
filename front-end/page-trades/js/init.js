@@ -44,6 +44,7 @@ function init() {
 
     $("#addTradeButton").on("click", addTradeButton_OnPressed);
     $("#saveTradeButton").on("click",saveTradeButton_OnPressed);
+    $("#checkTradeButton").on("click",checkTradeButton_OnPressed);
     $("#discardChangesButton").on("click", cancelTradeButton_OnPressed);
 
     filters.forEach((x) => {

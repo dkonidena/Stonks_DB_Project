@@ -29,11 +29,11 @@ function addCompanyToUI(c) {
     $("#buyingPartyInput, #sellingPartyInput").append(d);
 }
 
-function showRequestError(error, detail) {
-    showError(error.message, "Request:\n" + JSON.stringify(detail, null, 2));
+function showRequestError(error, debugData) {
+    showError(error.message, "Request:\n" + JSON.stringify(debugData, null, 2));
 }
 
-function showError(error, detail) {
+function showError(error = '', detail = '') {
     $('#errorShort').text(error);
     $('#errorDetailContent').text(detail);
     $('#apiErrorModal').modal('show');
@@ -64,22 +64,14 @@ function loadTradeToForm(trade) {
     $("#strikePriceInput").val(trade.strikePrice);
 }
 
-
-function addTradeButton_OnPressed() {
-    // TODO
-}
-
-function saveTradeButton_OnPressed() {
+function tradeObjectFromForm() {
     // TODO whole function needs error handling
-    var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+    let trade = new Trade();
 
-    // TODO probably a better way to do this...
-    let products = getProductList(trade.tradeDate);
-    trade.product = products.filter(p => p.name === $("#productInput").val())[0];
-
-    let companies = getCompanyList(trade.tradeDate);
-    trade.buyingParty = companies.filter(c => c.name === $("#buyingPartyInput").val())[0];
-    trade.sellingParty = companies.filter(c => c.name === $("#sellingPartyInput").val())[0];
+    // TODO these 3 members need to be populated with IDs not names
+    trade.product = $("#productInput").val();
+    trade.buyingParty = $("#buyingPartyInput").val();
+    trade.sellingParty = $("#sellingPartyInput").val();
 
     trade.tradeDate.setDate($("#tradeDateDayInput").val());
     trade.tradeDate.setMonth($("#tradeDateMonthInput").val()-1);
@@ -97,7 +89,21 @@ function saveTradeButton_OnPressed() {
     trade.quantity = $("#quantityInput").val();
     trade.strikePrice = $("#strikePriceInput").val();
 
-    api.post.trades(trade.getAPIObject(), console.log, showRequestError)
+    return trade;
+}
+
+function checkTradeButton_OnPressed() {
+    api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
+    //TODO add visual feedback of the checks
+}
+
+function addTradeButton_OnPressed() {
+    showError('not implemented');
+    // TODO
+}
+
+function saveTradeButton_OnPressed() {
+    api.post.trades(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
     //TODO add visual feedback of the save to user
 }
 
