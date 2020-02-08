@@ -92,6 +92,63 @@ function tradeObjectFromForm() {
     return trade;
 }
 
+function filterObjectFromForm() {
+    // TODO whole function needs error handling
+    let filter = new TradeFilter();
+
+    if ($("#advancedSearch #creationDateLowerDayInput").val() !== "") {
+        filter.dateCreated = [new Date(), new Date()];
+        filter.dateCreated[0].setHours(0,0,0,0);
+        filter.dateCreated[0].setDate($("#advancedSearch #creationDateLowerDayInput").val());
+        filter.dateCreated[0].setMonth($("#advancedSearch #creationDateLowerMonthInput").val()-1);
+        filter.dateCreated[0].setFullYear($("#advancedSearch #creationDateLowerYearInput").val());
+        filter.dateCreated[1].setHours(0,0,0,0);
+        filter.dateCreated[1].setDate($("#advancedSearch #creationDateUpperDayInput").val());
+        filter.dateCreated[1].setMonth($("#advancedSearch #creationDateUpperMonthInput").val()-1);
+        filter.dateCreated[1].setFullYear($("#advancedSearch #creationDateUpperYearInput").val());
+        filter.dateCreated[0] = filter.dateCreated[0].toISOString();
+        filter.dateCreated[1] = filter.dateCreated[1].toISOString();
+    }
+
+    if ($("#advancedSearch #modificationDateLowerDayInput").val() !== "") {
+        filter.dateModified = [new Date(), new Date()];
+        filter.dateModified[0].setHours(0,0,0,0);
+        filter.dateModified[0].setDate($("#advancedSearch #modificationLowerDayInput").val());
+        filter.dateModified[0].setMonth($("#advancedSearch #modificationDateLowerMonthInput").val()-1);
+        filter.dateModified[0].setFullYear($("#advancedSearch #modificationDateLowerYearInput").val());
+        filter.dateModified[1].setHours(0,0,0,0);
+        filter.dateModified[1].setDate($("#advancedSearch #modificationDateUpperDayInput").val());
+        filter.dateModified[1].setMonth($("#advancedSearch #modificationDateUpperMonthInput").val()-1);
+        filter.dateModified[1].setFullYear($("#advancedSearch #modificationDateUpperYearInput").val());
+        filter.dateModified[0] = filter.dateModified[0].toISOString();
+        filter.dateModified[1] = filter.dateModified[1].toISOString();
+    }
+
+    // TODO these 4 members need to be populated with IDs not names
+    let tradeID = $("#advancedSearch #tradeIDInput").val();
+    if (tradeID !== "") { filter.tradeID = tradeID; }
+
+    let buyingParty = $("#advancedSearch #buyerInput").val();
+    if (buyingParty !== "") { filter.buyingParty = buyingParty; }
+
+    let sellingParty = $("#advancedSearch #sellerInput").val();
+    if (sellingParty !== "") { filter.sellingParty = sellingParty; }
+
+    let product = $("#advancedSearch #productInput").val();
+    if (product !== "") { filter.product = product; }
+
+    let notionalCurrency = $("#advancedSearch #notionalCurrencyInput").val();
+    if (notionalCurrency !== "") { filter.notionalCurrency = notionalCurrency; }
+
+    let underlyingCurrencyInput = $("#advancedSearch #underlyingCurrencyInput").val();
+    if (underlyingCurrencyInput !== "") { filter.underlyingCurrencyInput = underlyingCurrencyInput; }
+
+    let userIDCreatedBy = $("#advancedSearch #userIDInput").val();
+    if (userIDCreatedBy !== "") { filter.userIDCreatedBy = userIDCreatedBy; }
+
+    return filter;
+}
+
 function checkTradeButton_OnPressed() {
     api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
     //TODO add visual feedback of the checks
