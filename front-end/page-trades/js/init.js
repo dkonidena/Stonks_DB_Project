@@ -10,6 +10,12 @@ const filters = [
     ["#maturityDateDayInput", /^\d{0,2}$/],
     ["#maturityDateMonthInput", /^\d{0,2}$/],
     ["#maturityDateYearInput", /^\d{0,4}$/],
+    ["#creationDateUpperDayInput", /^\d{0,2}$/],
+    ["#creationDateUpperMonthInput", /^\d{0,2}$/],
+    ["#creationDateUpperYearInput", /^\d{0,4}$/],
+    ["#modificationDateLowerDayInput", /^\d{0,2}$/],
+    ["#modificationDateLowerMonthInput", /^\d{0,2}$/],
+    ["#modificationDateLowerYearInput", /^\d{0,4}$/]
 ];
 
 function init() {
