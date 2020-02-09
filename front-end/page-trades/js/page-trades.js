@@ -6,6 +6,10 @@ function addTradeToUI(trade) {
     })
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#trades").append(li);
+
+    let o = "<option></option>";
+    let t = $(o).text(trade.tradeId);
+    $("#filter-tradeIdInput").append(t);
 };
 
 function addCurrencyToUI(cur) {
@@ -14,19 +18,19 @@ function addCurrencyToUI(cur) {
         "data-symbol": cur.symbol,
         "data-placeholder": cur.allowDecimal ? "0.00" : "0"
     });
-    $("#notionalCurrencyInput, #underlyingCurrencyInput").append(c);
+    $("#notionalCurrencyInput, #underlyingCurrencyInput, #filter-notionalCurrencyInput, #filter-underlyingCurrencyInput").append(c);
 };
 
 function addProductToUI(p) {
     let o = "<option></option>";
     let c = $(o).text(p.name);
-    $("#productInput").append(c);
+    $("#productInput, #filter-productInput").append(c);
 }
 
 function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
-    $("#buyingPartyInput, #sellingPartyInput").append(d);
+    $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
 }
 
 function showRequestError(error, debugData) {

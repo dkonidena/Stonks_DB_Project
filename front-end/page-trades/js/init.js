@@ -80,6 +80,11 @@ function init() {
         theme: "bootstrap4"
     });
 
+    $('.select2-filter').select2({
+        theme: "bootstrap4",
+        multiple: true,
+    });
+
     $("span[aria-labelledby='select2-notionalCurrencyInput-container']").css("background-color", "#e9ecef");
     $("span[aria-labelledby='select2-underlyingCurrencyInput-container']").css("background-color", "#e9ecef");
 }
