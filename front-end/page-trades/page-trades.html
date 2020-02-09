@@ -330,24 +330,29 @@
                     </div>
                 </div>
 
-                <div class="modal" id="apiErrorModal" tabindex="-1" role="dialog">
+                <div class="modal modal-fade" id="apiErrorModal" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" style="color: red;">An error has occured</h5>
+                                <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
+                                <h5 class="modal-title text-danger">Error</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <p id="errorShort"></p>
+
+                                <div class="h5 pb-2">
+                                    An error has occured.
+                                </div>
+                                <div class="pb-3" id="errorShort"></div>
+                                <button class="btn btn-sm btn-block btn-light" type="button" data-toggle="collapse" data-target="#errorDetail">
+                                    View Full Error
+                                </button>
                                 <div class="collapse" id="errorDetail">
                                     <pre class="card card-body" id="errorDetailContent"></pre>
                                 </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#errorDetail">
-                                    Show Details
-                                </button>
+                            <div class="modal-footer mt-3">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>
                         </div>
