@@ -194,26 +194,36 @@ class Trades(Resource):
         if 'dateCreated' in filter:
             results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
+        # TODO add dateModified filter
+        # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
+
         if 'tradeID' in filter:
-            results.append(models.DerivativeTradesModel.get_trade_with_ID(filter['tradeID']))
+            for id in filter['tradeID']:
+                results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
 
         if 'buyingParty' in filter:
-            results.append(models.DerivativeTradesModel.get_trades_bought_by(filter['buyingParty']))
+            for id in filter['buyingParty']:
+                results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
 
         if 'sellingParty' in filter:
-            results.append(models.DerivativeTradesModel.get_trades_sold_by(filter['sellingParty']))
+            for id in filter['sellingParty']:
+                results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
 
         if 'product' in filter:
-            results.append(models.DerivativeTradesModel.get_trade_by_product(filter['product']))
+            for id in filter['product']:
+                results.append(models.DerivativeTradesModel.get_trade_by_product(id))
 
         if 'notionalCurrency' in filter:
-            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(filter['notionalCurrency']))
+            for id in filter['notionalCurrency']:
+                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
 
         if 'underlyingCurrency' in filter:
-            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(filter['underlyingCurrency']))
+            for id in filter['underlyingCurrency']:
+                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
 
         if 'userIDcreatedBy' in filter:
-            results.append(models.DerivativeTradesModel.get_trades_by_user(filter['userIDcreatedBy']))
+            for id in filter['userIDcreatedBy']:
+                results.append(models.DerivativeTradesModel.get_trades_by_user(id))
 
         #performs intersections on each result set from each query to find the filtered results
         final_results = None
