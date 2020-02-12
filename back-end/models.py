@@ -40,7 +40,7 @@ class CompanyModel(db.Model):
             raise exc.InterfaceError("","", 1)
         except:
             print("Unknown Error occurred")
-            traceback.print_exc(file=sys.stdout)
+            
         
 
     @classmethod
