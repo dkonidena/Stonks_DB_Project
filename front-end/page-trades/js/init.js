@@ -10,12 +10,18 @@ const filters = [
     ["#maturityDateDayInput", /^\d{0,2}$/],
     ["#maturityDateMonthInput", /^\d{0,2}$/],
     ["#maturityDateYearInput", /^\d{0,4}$/],
-    ["#creationDateUpperDayInput", /^\d{0,2}$/],
-    ["#creationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#creationDateUpperYearInput", /^\d{0,4}$/],
-    ["#modificationDateLowerDayInput", /^\d{0,2}$/],
-    ["#modificationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#modificationDateLowerYearInput", /^\d{0,4}$/]
+    ["#filter-creationDateLowerDayInput", /^\d{0,2}$/],
+    ["#filter-creationDateLowerMonthInput", /^\d{0,2}$/],
+    ["#filter-creationDateLowerYearInput", /^\d{0,4}$/],
+    ["#filter-creationDateUpperDayInput", /^\d{0,2}$/],
+    ["#filter-creationDateUpperMonthInput", /^\d{0,2}$/],
+    ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
+    ["#filter-modificationDateLowerDayInput", /^\d{0,2}$/],
+    ["#filter-modificationDateLowerMonthInput", /^\d{0,2}$/],
+    ["#filter-modificationDateLowerYearInput", /^\d{0,4}$/],
+    ["#filter-modificationDateUpperDayInput", /^\d{0,2}$/],
+    ["#filter-modificationDateUpperMonthInput", /^\d{0,2}$/],
+    ["#filter-modificationDateUpperYearInput", /^\d{0,4}$/],
 ];
 
 function init() {
