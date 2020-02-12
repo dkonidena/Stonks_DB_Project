@@ -7,6 +7,7 @@ import random
 from datetime import datetime
 import traceback
 from sqlalchemy import exc
+import sys
 
 def dateTruncate(dateString):
     return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S.%f")
