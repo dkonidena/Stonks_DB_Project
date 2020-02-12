@@ -182,40 +182,38 @@ class Products(Resource):
 
 class Trades(Resource):
     def get(self):
-        dateCreated = request.args.getlist('date')
-        tradeID = request.args.get('tradeid')
-        buyingParty = request.args.get('buyingparty')
-        sellingParty = request.args.get('sellingparty')
-        product = request.args.get('product')
-        notionalCurrency = request.args.get('notionalcurrency')
-        underlyingCurrency = request.args.get('underlyingcurrency')
-        userIDcreatedBy = request.args.get('useridcreatedby')
+        try:
+            filter = json.loads(request.args.get('filter'))
+        except json.JSONDecodeError:
+            return {'message': 'malformed filter'}, 400
+
+        # this needs error checking
         isDryRun = request.args.get('isDryRun')
 
-        results = list() #stores results for each query/filter that is applied by the user
-        if len(dateCreated) > 0:
-            results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+        results = list() # stores results for each query/filter that is applied by the user
+        if 'dateCreated' in filter:
+            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
-        if tradeID is not None:
-            results.append(models.DerivativeTradesModel.get_trade_with_ID(tradeID))
+        if 'tradeID' in filter:
+            results.append(models.DerivativeTradesModel.get_trade_with_ID(filter['tradeID']))
 
-        if buyingParty is not None:
-            results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+        if 'buyingParty' in filter:
+            results.append(models.DerivativeTradesModel.get_trades_bought_by(filter['buyingParty']))
 
-        if sellingParty is not None:
-            results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
+        if 'sellingParty' in filter:
+            results.append(models.DerivativeTradesModel.get_trades_sold_by(filter['sellingParty']))
 
-        if product is not None:
-            results.append(models.DerivativeTradesModel.get_trade_by_product(product))
+        if 'product' in filter:
+            results.append(models.DerivativeTradesModel.get_trade_by_product(filter['product']))
 
-        if notionalCurrency is not None:
-            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
+        if 'notionalCurrency' in filter:
+            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(filter['notionalCurrency']))
 
-        if underlyingCurrency is not None:
-            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
+        if 'underlyingCurrency' in filter:
+            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(filter['underlyingCurrency']))
 
-        if userIDcreatedBy is not None:
-            results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
+        if 'userIDcreatedBy' in filter:
+            results.append(models.DerivativeTradesModel.get_trades_by_user(filter['userIDcreatedBy']))
 
         #performs intersections on each result set from each query to find the filtered results
         final_results = None
