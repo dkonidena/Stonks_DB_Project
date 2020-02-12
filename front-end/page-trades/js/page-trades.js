@@ -100,30 +100,30 @@ function filterObjectFromForm() {
     // TODO whole function needs error handling
     let filter = new TradeFilter();
 
-    if ($("#advancedSearch #creationDateLowerDayInput").val() !== "") {
+    if ($("#filter-creationDateLowerDayInput").val() !== "") {
         filter.dateCreated = [new Date(), new Date()];
         filter.dateCreated[0].setHours(0,0,0,0);
-        filter.dateCreated[0].setDate($("#advancedSearch #creationDateLowerDayInput").val());
-        filter.dateCreated[0].setMonth($("#advancedSearch #creationDateLowerMonthInput").val()-1);
-        filter.dateCreated[0].setFullYear($("#advancedSearch #creationDateLowerYearInput").val());
+        filter.dateCreated[0].setDate($("#filter-creationDateLowerDayInput").val());
+        filter.dateCreated[0].setMonth($("#filter-creationDateLowerMonthInput").val()-1);
+        filter.dateCreated[0].setFullYear($("#filter-creationDateLowerYearInput").val());
         filter.dateCreated[1].setHours(0,0,0,0);
-        filter.dateCreated[1].setDate($("#advancedSearch #creationDateUpperDayInput").val());
-        filter.dateCreated[1].setMonth($("#advancedSearch #creationDateUpperMonthInput").val()-1);
-        filter.dateCreated[1].setFullYear($("#advancedSearch #creationDateUpperYearInput").val());
+        filter.dateCreated[1].setDate($("#filter-creationDateUpperDayInput").val());
+        filter.dateCreated[1].setMonth($("#filter-creationDateUpperMonthInput").val()-1);
+        filter.dateCreated[1].setFullYear($("#filter-creationDateUpperYearInput").val());
         filter.dateCreated[0] = filter.dateCreated[0].toISOString();
         filter.dateCreated[1] = filter.dateCreated[1].toISOString();
     }
 
-    if ($("#advancedSearch #modificationDateLowerDayInput").val() !== "") {
+    if ($("#filter-modificationDateLowerDayInput").val() !== "") {
         filter.dateModified = [new Date(), new Date()];
         filter.dateModified[0].setHours(0,0,0,0);
-        filter.dateModified[0].setDate($("#advancedSearch #modificationLowerDayInput").val());
-        filter.dateModified[0].setMonth($("#advancedSearch #modificationDateLowerMonthInput").val()-1);
-        filter.dateModified[0].setFullYear($("#advancedSearch #modificationDateLowerYearInput").val());
+        filter.dateModified[0].setDate($("#filter-modificationLowerDayInput").val());
+        filter.dateModified[0].setMonth($("#filter-modificationDateLowerMonthInput").val()-1);
+        filter.dateModified[0].setFullYear($("#filter-modificationDateLowerYearInput").val());
         filter.dateModified[1].setHours(0,0,0,0);
-        filter.dateModified[1].setDate($("#advancedSearch #modificationDateUpperDayInput").val());
-        filter.dateModified[1].setMonth($("#advancedSearch #modificationDateUpperMonthInput").val()-1);
-        filter.dateModified[1].setFullYear($("#advancedSearch #modificationDateUpperYearInput").val());
+        filter.dateModified[1].setDate($("#filter-modificationDateUpperDayInput").val());
+        filter.dateModified[1].setMonth($("#filter-modificationDateUpperMonthInput").val()-1);
+        filter.dateModified[1].setFullYear($("#filter-modificationDateUpperYearInput").val());
         filter.dateModified[0] = filter.dateModified[0].toISOString();
         filter.dateModified[1] = filter.dateModified[1].toISOString();
     }
