@@ -6,6 +6,7 @@ import zipfile
 from flask import Flask, request, abort, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import datetime
 import models, resources
 
@@ -13,6 +14,7 @@ import models, resources
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
 api.add_resource(resources.Currencies, '/api/currencies')
 api.add_resource(resources.Companies, '/api/companies')
@@ -31,4 +33,3 @@ def index():
 
 if __name__=="__main__":
     app.run(debug=True,port=8002,host = '0.0.0.0')
-
