@@ -129,26 +129,31 @@ function filterObjectFromForm() {
     }
 
     // TODO these 4 members need to be populated with IDs not names
-    let tradeID = $("#advancedSearch #tradeIDInput").val();
+    let tradeID = $("#filter-tradeIDInput").val();
     if (tradeID !== "") { filter.tradeID = tradeID; }
 
-    let buyingParty = $("#advancedSearch #buyerInput").val();
-    if (buyingParty !== "") { filter.buyingParty = buyingParty; }
+    // this gets the labels from a select2 input box's return object
+    const labelExtractor = x => x.text
 
-    let sellingParty = $("#advancedSearch #sellerInput").val();
-    if (sellingParty !== "") { filter.sellingParty = sellingParty; }
+    let buyingParty = $("#filter-buyerInput").select2('data');
+    if (buyingParty.length > 0) { filter.buyingParty = buyingParty.map(labelExtractor); }
 
-    let product = $("#advancedSearch #productInput").val();
-    if (product !== "") { filter.product = product; }
+    let sellingParty = $("#filter-sellerInput").select2('data');
+    if (sellingParty.length > 0) { filter.sellingParty = sellingParty.map(labelExtractor); }
 
-    let notionalCurrency = $("#advancedSearch #notionalCurrencyInput").val();
-    if (notionalCurrency !== "") { filter.notionalCurrency = notionalCurrency; }
+    let product = $("#filter-productInput").select2('data');
+    if (product.length > 0) { filter.product = product.map(labelExtractor); }
 
-    let underlyingCurrencyInput = $("#advancedSearch #underlyingCurrencyInput").val();
-    if (underlyingCurrencyInput !== "") { filter.underlyingCurrencyInput = underlyingCurrencyInput; }
+    // these inputs should already contain currency codes so this bit should work
+    let notionalCurrency = $("#filter-notionalCurrencyInput").select2('data');
+    if (notionalCurrency.length > 0) { filter.notionalCurrency = notionalCurrency.map(labelExtractor); }
 
-    let userIDCreatedBy = $("#advancedSearch #userIDInput").val();
-    if (userIDCreatedBy !== "") { filter.userIDCreatedBy = userIDCreatedBy; }
+    let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
+    if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
+
+    // TODO do we need to get a list of userIDs? currently is is impossible to enter anything into this input
+    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
+    if (userIDCreatedBy.length > 0) { filter.userIDCreatedBy = userIDCreatedBy; }
 
     return filter;
 }
