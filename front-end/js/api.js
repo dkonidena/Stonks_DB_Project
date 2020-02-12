@@ -1,5 +1,5 @@
 const TIMEOUT = 10000;
-const API_ENDPOINT = "/api";
+const API_ENDPOINT = "http://localhost:8002/api";
 
 const api = {
     userID: "",
