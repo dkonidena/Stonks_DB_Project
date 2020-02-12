@@ -238,7 +238,7 @@ class Trades(Resource):
             message['noOfMatches'] = final_results.count()
 
         i = 1
-        res = {}
+        res = []
         for row in final_results:
             dicto = {}
             dicto['product'] = row.Product
@@ -252,7 +252,7 @@ class Trades(Resource):
             dicto['maturitydate'] = row.MaturityDate
             dicto['strikeprice'] = row.StrikePrice
             dicto['useridcreatedby'] = row.UserIDCreatedBy
-            res[i] = dicto
+            res.append(dicto)
             i += 1
 
         message['matches'] = res
