@@ -79,7 +79,7 @@ class Companies(Resource):
         code = str(uuid.uuid4())
         name = data['companyname']
         date = data['date']
-        dateO = dateTruncate(date)
+        dateO = returnDatetime(date)
         new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = dateO)
         new_company.save_to_db()
         #Logging the user action

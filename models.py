@@ -4,9 +4,12 @@ from sqlalchemy import ForeignKey, join, func, or_, Date, cast
 
 # expecting in YYYY-MM-DD HH:MM:SS
 def dateTruncate(dateString):
+    #Takes a string
     return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S")
 
 def returnDatetime(dateString):
+    #takes a string containing the ISO8601 and removes the time from the string
+    #The string is then converted into a DateTime object and returned
     return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10])).strftime("%Y-%m-%d")
 
 def get_date(dateString):
