@@ -45,22 +45,26 @@ class Trade {
     }
 
     populateFromServerJSON(o) {
-        // TODO whole function needs error handling
-        this.tradeId = o.tradeId;
-        this.tradeDate = new Date(o.tradeDate);
-        this.userIdCreatedBy = o.userIdCreatedBy;
-        this.lastModifiedDate = new Date(o.lastModifiedDate);
-        this.product = o.product;
-        this.buyingParty = o.buyingParty;
-        this.sellingParty = o.sellingParty;
-        this.quantity = o.quantity;
-        this.notionalPrice = o.notionalPrice;
-        this.notionalCurrency = o.notionalCurrency;
-        this.underlyingPrice = o.underlyingPrice;
-        this.underlyingCurrency = o.underlyingCurrency;
-        this.maturityDate = new Date(o.maturityDate);
-        this.strikePrice = o.strikePrice;
-        return this;
+        try {
+            this.tradeId = o.tradeId;
+            this.tradeDate = new Date(o.tradeDate);
+            this.userIdCreatedBy = o.userIdCreatedBy;
+            this.lastModifiedDate = new Date(o.lastModifiedDate);
+            this.product = o.product;
+            this.buyingParty = o.buyingParty;
+            this.sellingParty = o.sellingParty;
+            this.quantity = o.quantity;
+            this.notionalPrice = o.notionalPrice;
+            this.notionalCurrency = o.notionalCurrency;
+            this.underlyingPrice = o.underlyingPrice;
+            this.underlyingCurrency = o.underlyingCurrency;
+            this.maturityDate = new Date(o.maturityDate);
+            this.strikePrice = o.strikePrice;
+            return this;
+        }
+        catch {
+            return null;
+        }
     }
 };
 
@@ -92,7 +96,8 @@ function getTradeList(filter, res) {
         for (let json of response.matches) {
             let trade = new Trade();
             trade.populateFromServerJSON(json);  // TODO error handling
-            trades.push(trade);
+            if (trade != null)
+                trades.push(trade);
         }
 
         if (res !== undefined) { res(trades); }
@@ -118,12 +123,18 @@ class Product {
 	}
 
     populateFromServerJSON(o) {
-        this.id = o.id;
-        this.name = o.name;
-        this.companyId = o.companyId;
-        this.value = o.value;
-        this.creationDate = new Date(o.value);
-        this.userIdCreatedBy = o.userIdCreatedBy;
+        try {
+            this.id = o.id;
+            this.name = o.name;
+            this.companyId = o.companyId;
+            this.value = o.value;
+            this.creationDate = new Date(o.value);
+            this.userIdCreatedBy = o.userIdCreatedBy;
+            return this;
+        }
+        catch {
+            return null;
+        }
     }
 };
 
@@ -144,8 +155,9 @@ function getProductList(date, res) {
 
         for (let json of response.matches) {
             let product = new Product();
-            product.populateFromServerJSON(json);  // TODO error handling
-            products.push(product);
+            product.populateFromServerJSON(json);
+            if (product != null)
+                products.push(product);
         }
 
         if (res !== undefined) { res(products); }
@@ -161,12 +173,17 @@ class Currency {
     }
 
     populateFromServerJSON(o) {
-        // TODO whole function needs error handling
-        this.code = o.code;
-        this.symbol = o.sym;
-        this.allowDecimal = o.decimal;
-        this.value = o.val;
-        return this;
+        try {
+            this.code = o.code;
+            this.symbol = o.sym;
+            this.allowDecimal = o.decimal;
+            this.value = o.val;
+            return this;
+        }
+        catch {
+            return null;
+        }
+
     }
 };
 
@@ -179,8 +196,9 @@ function getCurrencyList(date, res) {
 
         for (let json of response.matches) {
             let currency = new Currency();
-            currency.populateFromServerJSON(json);  // TODO error handling
-            currencies.push(currency);
+            currency.populateFromServerJSON(json);
+            if (currency != null)
+                currencies.push(currency);
         }
 
         if (res !== undefined) { res(currencies); }
@@ -204,13 +222,17 @@ class Company {
 	}
 
     populateFromServerJSON(o) {
-        // TODO whole function needs error handling
-        this.id = o.id;
-        this.name = o.name;
-        this.foundedDate = new Date(o.foundedDate);
-        this.creationDate = new Date(o.creationDate);
-        this.userIdCreatedBy = o.userIdCreatedBy;
-        return this;
+        try {
+            this.id = o.id;
+            this.name = o.name;
+            this.foundedDate = new Date(o.foundedDate);
+            this.creationDate = new Date(o.creationDate);
+            this.userIdCreatedBy = o.userIdCreatedBy;
+            return this;
+        }
+        catch {
+            return null;
+        }
     }
 };
 
@@ -230,8 +252,9 @@ function getCompanyList(date, order, res) {
 
         for (let json of response.matches) {
             let company = new Company();
-            company.populateFromServerJSON(json);  // TODO error handling
-            companies.push(company);
+            company.populateFromServerJSON(json);
+            if (company != null)
+                companies.push(company);
         }
 
         if (res !== undefined) { res(companies); }
