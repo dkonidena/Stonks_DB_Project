@@ -1,0 +1,257 @@
+GET
+
+•	/api/currencies?date=<date>
+
+  SELECT CurrencyCode, ValueInUSD
+  FROM CurrencyValuations
+  WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  datetime expects a string of YYYY-MM-DD, dummy data is in form DD-MM-YYYY
+  as long as we don't touch the time part it will default to 00:00:00
+  can look into string reversal functions to allow DateOfValuation to be stored in DD-MM-YYYY
+
+•	/api/companies?date=<date>
+
+  SELECT CompanyName, CompanyID, DateEnteredInSystem
+  FROM Companies
+  WHERE datetime(DateEnteredInSystem) <= datetime(<string date>);
+
+•	/api/products?date=<date>
+
+  SELECT ProductName, ProductPrice, CompanyCode, ProductID, DateEnteredInSystem
+  FROM ProductValuations NATURAL JOIN Products NATURAL JOIN ProductSellers
+  WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  SELECT 'Stocks', StockPrice, CompanyCode, StockID
+  FROM Stocks NATURAL JOIN StockValuations
+  WHERE datetime(DateOfValuation) = datetime(<string date>);
+
+  These will need to be combined in python as they have different attribute names
+
+  Stocks has no DateEnteredInSystem
+
+•	/api/trades?filter=<filter object>
+
+  - isDryRun (return the number of matches and not the matches themselves)
+
+    replace the first line of any query below with
+
+      SELECT COUNT(*)
+
+  - date range (startData, endDate) (date when created or last modified?)
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE datetime(DateOfTrade) BETWEEN datetime(<string date>) AND datetime(<string date>)
+    ORDER BY datetime(DateOfTrade) DESC;
+
+    datetime() might not be needed in orderby, don't know how sqlite deals with string ordering
+
+  - exact tradeID
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE TradeID = ?
+    ORDER BY datetime(DateOfTrade) DESC;
+
+  - companies involved
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE BuyingParty = ? OR SellingParty = ?
+    ORDER BY datetime(DateOfTrade) DESC;
+
+    could be split into 2 more, just filtering on BuyingParty/SellingParty not both as well as this one
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE BuyingParty = ?
+    ORDER BY datetime(DateOfTrade) DESC;
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE SellingParty = ?
+    ORDER BY datetime(DateOfTrade) DESC;
+
+  - product name
+
+    SELECT ifnull(ProductName, 'Stocks') as pName, Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE pName = 'Stocks'
+    ORDER BY datetime(DateOfTrade) DESC;
+
+  - currency
+
+    SELECT ifnull(ProductName, 'Stocks'), Quantity, BuyingParty, SellingParty, NotionalValue, NotionalCurrency, UnderlyingValue, UnderlyingCurrency, StrikePrice, MaturityDate, dt.TradeID, DateOfTrade
+    FROM (DerivativeTrades dt LEFT JOIN ProductTrades pt ON dt.TradeID = pt.TradeID) a LEFT JOIN Products p ON a.ProductID = p.ProductID
+    WHERE UnderlyingCurrency = ?
+    ORDER BY datetime(DateOfTrade) DESC;
+
+  - commodity value (which exact value are we filtering by though)
+
+    unsure what this means
+
+  - userID created by
+
+    log table not linked to trades
+
+•	/api/reports?filter=<filter object>
+
+  no report table
+
+•	/api/rules?filter=<filter object>
+
+  no rules table
+
+•	ordered list of companies for drop downs
+
+  SELECT BuyingParty
+  FROM DerivativeTrades
+  GROUP BY BuyingParty
+  ORDER BY count(BuyingParty) DESC
+
+  SELECT SellingParty
+  FROM DerivativeTrades
+  GROUP BY SellingParty
+  ORDER BY count(SellingParty) DESC
+
+
+
+POST
+
+•	/api/check_trade
+
+  haven't got database support for this yet
+
+•	/api/trades
+
+  INSERT INTO DerivativeTrades
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
+
+  IF PRODUCT
+
+    INSERT INTO ProductTrades
+    VALUES(?, ?);
+
+    parameter order is ProductID, TradeID
+
+  IF STOCK
+
+    INSERT INTO StockTrades
+    VALUES(?, ?);
+
+    parameter order is StockID, TradeID
+
+  INSERT INTO EventLog
+  VALUES(?, 'Added', datetime('now'), ?);
+
+  parameter order is EventID, UserAction, DateOfEvent, EmployeeID
+
+
+•	/api/rules
+
+  no rules table
+
+•	/api/companies
+
+  INSERT INTO Companies
+  VALUES(?, ?, ?);
+
+  parameter order is CompanyCode, CompanyName, DateEnteredInSystem
+
+•	/api/products
+
+  IF PRODUCT
+
+    INSERT INTO Products
+    VALUES(?, ?, ?)
+
+    parameter order is ProductID, ProductName, DateEnteredInSystem
+
+    INSERT INTO ProductValuations
+    VALUES(?, ?, ?);
+
+    parameter order is DateOfValuation, ProductID, ProductPrice
+
+    INSERT INTO ProductSellers
+    VALUES(?, ?);
+
+    parameter order is ProductID, CompanyCode
+
+IF STOCKS
+
+    INSERT INTO Stocks
+    VALUES(?, ?)
+
+    parameter order is StockID, CompanyCode
+
+    INSERT INTO StockValuations
+    VALUES(?, ?, ?);
+
+    parameter order is DateOfValuation, StockID, StockPrice
+
+PATCH
+
+are these replacing every field? might be faster if it only updates the changed fields?
+
+•	/api/trades/<tradeID>
+
+  UPDATE DerivativeTrades
+  SET DateOfTrade = ?, AssetType = ?, BuyingParty = ?, SellingParty = ?, NotionalValue = ?, NotionalCurrency = ?, Quantity = ?, MaturityDate = ?, UnderlyingValue = ?, UnderlyingCurrency = ?, StrikePrice = ?
+  WHERE TradeID = ?;
+
+•	/api/rules/<ruleID>
+
+  no rule table
+
+•	/api/companies/<companyID>
+
+  UPDATE Companies
+  SET CompanyName = ?, DateEnteredInSystem = ?
+  WHERE CompanyCode = ?;
+
+•	/api/products/<productID>
+
+  IF PRODUCT
+
+    UPDATE ProductValuations
+    SET DateOfValuation = ?, ProductPrice = ?, DateOfValuation = ?
+    WHERE ProductID = ? AND DateOfValuation = ?;
+
+    UPDATE Products
+    SET ProductName = ?, DateEnteredInSystem = ?
+    WHERE ProductID = ?;
+
+    UPDATE ProductSellers
+    SET ProductID = ?, CompanyCode = ?
+    WHERE ProductID = ? AND CompanyCode = ?;
+
+  IF STOCK
+
+    UPDATE StockValuations
+    SET DateOfValuation = ?, StockID = ?, StockPrice = ?
+    WHERE StockID = ? AND DateOfValuation = ?;
+
+    UPDATE Stocks
+    SET CompanyCode = ?
+    WHERE StockID = ?;
+
+
+DELETE
+
+•	/api/trades?id =<tradeID>
+
+  DELETE FROM DerivativeTrades
+  WHERE TradeID = ?;
+
+•	/api/rules?id=<ruleID>
+  no rule table
+
+•	/api/companies?id=<companyID>
+  DELETE FROM Companies
+  WHERE CompanyCode = ?;
+
+•	/api/products?id=<productID>
+
+  DELETE FROM Products
+  WHERE ProductID = ?;
