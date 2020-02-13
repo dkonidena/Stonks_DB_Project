@@ -9,55 +9,48 @@ class Trade {
         this.tradeDate = new Date();
         this.userIdCreatedBy = 0;
         this.lastModifiedDate = new Date();
-        this.product = ""; // a Product ID
-        this.buyingParty = ""; // a Company ID
-        this.sellingParty = ""; // a Company ID
+        this.product = new Product();
+        this.buyingParty == new Company();
+        this.sellingParty = new Company();
         this.quantity = 0;
         this.notionalPrice = "";
-        this.notionalCurrency = "";
-        this.underlyingPrice = "";
+        this.notionalCurrency = new Currency();
+        this.underlyingPrice = new Currency();
         this.underlyingCurrency = "";
         this.maturityDate = new Date();
         this.strikePrice = "";
     }
 
-    getNotionalCurrencyObject() {
-        return getCurrencyList().filter((x) => { x.code == this.notionalCurrency })[0];
-    }
-
-    getUnderlyingCurrencyObject() {
-        return getCurrencyList().filter((x) => { x.code == this.underlyingCurrency })[0];
-    }
-
     getAPIObject() {
         let a = new APITrade();
-        a.product = this.product;
-        a.buyingParty = this.buyingParty;
-        a.sellingParty = this.sellingParty;
+        a.product = this.product.id;
+        a.buyingParty = this.buyingParty.id;
+        a.sellingParty = this.sellingParty.id;
         a.quantity = this.quantity;
         a.notionalPrice = this.notionalPrice;
-        a.notionalCurrency = this.notionalCurrency;
+        a.notionalCurrency = this.notionalCurrency.code;
         a.underlyingPrice = this.underlyingPrice;
-        a.underlyingCurrency = this.underlyingCurrency;
+        a.underlyingCurrency = this.underlyingCurrency.code;
         a.maturityDate = this.maturityDate.toISOString();
         a.strikePrice = this.strikePrice;
         return a;
     }
 
     populateFromServerJSON(o) {
+        //TODO: make less ugly
         try {
             this.tradeId = o.tradeId;
             this.tradeDate = new Date(o.tradeDate);
             this.userIdCreatedBy = o.userIdCreatedBy;
             this.lastModifiedDate = new Date(o.lastModifiedDate);
-            this.product = o.product;
-            this.buyingParty = o.buyingParty;
-            this.sellingParty = o.sellingParty;
+            this.product = products.filter((x) => { x.id === o.product });
+            this.buyingParty = companies.filter((x) => { x.id === o.buyingParty });
+            this.sellingParty = companies.filter((x) => { x.id === o.sellingParty });
             this.quantity = o.quantity;
             this.notionalPrice = o.notionalPrice;
-            this.notionalCurrency = o.notionalCurrency;
+            this.notionalCurrency = currenciess.filter((x) => { x.code === o.notionalCurrency });
             this.underlyingPrice = o.underlyingPrice;
-            this.underlyingCurrency = o.underlyingCurrency;
+            this.underlyingCurrency = currencies.filter((x) => { x.code === o.underlyingCurrency });
             this.maturityDate = new Date(o.maturityDate);
             this.strikePrice = o.strikePrice;
             return this;
@@ -108,7 +101,7 @@ class Product {
     constructor() {
         this.id = "";
         this.name = "";
-        this.companyId = "";
+        this.company = new Company();
         this.value = 0;
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
@@ -118,15 +111,16 @@ class Product {
 		let a = new APIProduct();
 		a.id = this.id;
 		a.value = this.value;
-		a.company = this.companyId;
+		a.company = this.company.id;
 		return a;
 	}
 
     populateFromServerJSON(o) {
         try {
+            //TODO make less ugly
             this.id = o.id;
             this.name = o.name;
-            this.companyId = o.companyId;
+            this.company = companies.filter((x) => { x.id === o.company });;
             this.value = o.value;
             this.creationDate = new Date(o.value);
             this.userIdCreatedBy = o.userIdCreatedBy;
