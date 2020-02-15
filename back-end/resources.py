@@ -9,24 +9,22 @@ import traceback
 from sqlalchemy import exc
 import sys
 
-def dateTruncate(dateString):
-    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S.%f")
+# use models.date... instead of redefining date methods in here
 
 def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF"}
     return currencyDict[currencyCode]
 
-def returnDatetime(dateString):
-    return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10])).strftime("%Y-%m-%d")
 
 class Currencies(Resource):
+
     def get(self):
         try:
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 #fetch the no. of values in the currencies table with the date argument
-                results = models.CurrencyValuationsModel.retrieve_currency(date = date)
+                results = models.CurrencyValuationsModel.retrieve_currency(date)
                 message = {'noOfMatches' : len(results)}
                 i = 1
                 res = {}
@@ -44,7 +42,7 @@ class Currencies(Resource):
                 message['matches'] = res
                 return message, 201
             else:
-                result = models.CurrencyValuationsModel.retrieve_currency(date = date)
+                result = models.CurrencyValuationsModel.retrieve_currency(date)
                 # print(result)
                 i = 1
                 res = {}
@@ -62,11 +60,13 @@ class Currencies(Resource):
         except exc.IntegrityError:
             return {'message': "An error has occured pertaining to Integrity issues. Please re-enter the parameters"}, 500
 
+
 class Companies(Resource):
+
     def get(self):
         try:
             currentDate = request.args.get('date')
-            result = models.CompanyModel.retrieve_companies_before(date = currentDate)
+            result = models.CompanyModel.retrieve_companies_before(currentDate)
             i = 1
             res = {}
             for row in result:
@@ -79,6 +79,7 @@ class Companies(Resource):
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message':'error occurred'}, 202
+
     def post(self):
         try:
             # data = request.form.to_dict()
@@ -87,14 +88,14 @@ class Companies(Resource):
             code = str(uuid.uuid4())
             name = data['companyname']
             date = data['date']
-            dateO = dateTruncate(date)
-            new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = dateO)
+            dateO = models.formatDate(date)
+            new_company = models.CompanyModel(code, name, dateO)
             new_company.save_to_db()
             #Logging the user action
             userAction = "User has inserted a new record in the Companies table with the code: " + code
             dateOfEvent = datetime.now()
             employeeid = 1 #placeholder for now
-            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
             new_event.save_to_db()
             return {'message': 'Company has been added'}, 201
         except exc.IntegrityError:
@@ -111,7 +112,7 @@ class Companies(Resource):
             data = json.loads(json_data)
             name = data['name']
             datefounded = data['dateFounded']
-            models.CompanyModel.update_company(companycode=companyid, name=name, datefounded=datefounded)
+            models.CompanyModel.update_company(companyid, name, datefounded)
             return "success", 200
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
@@ -120,19 +121,21 @@ class Companies(Resource):
     def delete(self):
         companyid = request.args.get('id')
         try:
-            models.CompanyModel.delete_company(companycode=companyid)
+            models.CompanyModel.delete_company(companyid)
             return "success", 200
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
+
 class Products(Resource):
+
     def get(self):
         try:
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
-                result = models.ProductModel.retrieve_products_on_date(date = date)
+                result = models.ProductModel.retrieve_products_on_date(date)
                 message = {"noOfMatches" : result.count()}
                 i = 1
                 res = {}
@@ -147,7 +150,7 @@ class Products(Resource):
                 message['matches'] = res
                 return message, 201
             else:
-                result = models.ProductModel.retrieve_products_on_date(date = date)
+                result = models.ProductModel.retrieve_products_on_date(date)
                 i = 1
                 res = {}
                 for row in result:
@@ -162,6 +165,7 @@ class Products(Resource):
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occurred'}, 202
+
     def post(self):
         # data = request.form.to_dict()
         try:
@@ -172,20 +176,20 @@ class Products(Resource):
             companyCode = data['companycode']
             dateEnteredInSystem = datetime.now()
             #Adds the new product
-            new_product = models.ProductModel(ProductName = name, DateEnteredInSystem = dateEnteredInSystem)
+            new_product = models.ProductModel(name, dateEnteredInSystem)
             new_productID = new_product.save_to_db()
             #Adds the new product seller
-            new_product_seller = models.ProductSellersModel(ProductID = new_productID, CompanyCode = companyCode)
+            new_product_seller = models.ProductSellersModel(new_productID, companyCode)
             new_product_seller.save_to_db()
             #Adds the new product valuation
             date = datetime.now()
-            new_product_valuation = models.ProductValuationsModel(ProductID = new_productID, ProductPrice = value, DateOfValuation = date)
+            new_product_valuation = models.ProductValuationsModel(new_productID, value, date)
             new_product_valuation.save_to_db()
             #Logging the user action
             userAction = "User has inserted a new record in the Products table with the code: " + str(new_productID)
             dateOfEvent = datetime.now()
             employeeid = 1 #placeholder for testing
-            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
             new_event.save_to_db()
             return {'message': 'product has been added'}, 201
         except exc.IntegrityError:
@@ -201,6 +205,7 @@ class Products(Resource):
         return 1
 
 class Trades(Resource):
+
     def get(self):
         try:
             try:
@@ -301,36 +306,24 @@ class Trades(Resource):
             maturityDate = data['maturityDate']
             DateOfTrade = datetime.now()
             userIDcreatedBy = data['useridcreatedby']
-            new_trade = models.DerivativeTradesModel(TradeID= id,
-            DateOfTrade= DateOfTrade,
-            Product= product,
-            BuyingParty= buyingParty,
-            SellingParty= sellingParty,
-            NotionalValue = notionalValue,
-            Quantity= quantity,
-            NotionalCurrency = notionalCurrency,
-            MaturityDate= maturityDate,
-            UnderlyingValue= underlyingValue,
-            UnderlyingCurrency = underlyingCurrency,
-            StrikePrice= strikePrice,
-            UserIDCreatedBy = userIDcreatedBy)
+            new_trade = models.DerivativeTradesModel(id, DateOfTrade, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, userIDcreatedBy)
 
             #make a query to check if the product exists
-            result = models.ProductSellersModel.getProductID(productName = product, companyCode = sellingParty)
+            result = models.ProductSellersModel.getProductID(product, sellingParty)
             if result.count() == 0:
                 print("Product does not exist")
                 return {'message' : 'not found'}, 404
             #If a the product or stock which the trade is linked to is found, then the trade
             new_tradeID = new_trade.save_to_db()
             assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
-            new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetIDs[0])
+            new_product_trade = models.ProductTradesModel(new_tradeID, assetIDs[0])
             new_product_trade.save_to_db()
 
             #Logging the user action
             userAction = "User has inserted a new record in the Trades table with the code: " + str(new_tradeID)
             dateOfEvent = datetime.now()
             employeeid = 1 #placeholder
-            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = dateOfEvent, EmployeeID = employeeid)
+            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
             new_event.save_to_db()
 
             #Check if the added
@@ -341,6 +334,7 @@ class Trades(Resource):
         except exc.InterfaceError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
+
     def patch(self):
 
         try:
@@ -367,9 +361,9 @@ class Trades(Resource):
         except exc.IntegrityError:
             return {'message': "error occurred"}, 201
 
-
     def delete(self):
         return 1
+
 
 class Reports(Resource):
     def get(self):
@@ -413,6 +407,7 @@ class Reports(Resource):
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occured'}, 202
+
 
 class Rules(Resource):
     def get(self):
