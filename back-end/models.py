@@ -88,7 +88,7 @@ class CompanyModel(db.Model):
         try:
             row = cls.query.filter_by(CompanyCode = companycode).first()
             row.CompanyName = name
-            row.DateEnteredInSystem = datefounded
+            # row.DateFounded = datefounded
             db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)

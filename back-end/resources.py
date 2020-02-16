@@ -23,34 +23,16 @@ class Currencies(Resource):
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
-                #fetch the no. of values in the currencies table with the date argument
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message = {'noOfMatches' : len(results)}
-                i = 1
-                res = {}
-                for row in results:
-                    dicto = {}
-                    dicto['currencycode'] = row.CurrencyCode
-                    # dictionary need to be written
-                    # need to be transformed into a object
-                    symbol = returnCurrencySymbol(row.CurrencyCode)
-                    dicto['symbol'] = symbol
-                    dicto['allowDecimal'] = True
-                    dicto['valueInUSD'] = str(row.ValueInUSD)
-                    res[i] = dicto
-                    i+=1
-                message['matches'] = res
+                message = {'noOfMatches' : results.count()}
                 return message, 201
             else:
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
-                # print(result)
                 i = 1
                 res = {}
                 for row in result:
                     dicto = {}
-                    dicto['currencycode'] = row.CurrencyCode
-                    # dictionary need to be written
-                    # need to be transformed into a object
+                    dicto['code'] = row.CurrencyCode
                     dicto['symbol'] = returnCurrencySymbol(row.currencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
@@ -65,37 +47,42 @@ class Companies(Resource):
 
     def get(self):
         try:
-            currentDate = request.args.get('date')
-            result = models.CompanyModel.retrieve_companies_before(currentDate)
-            i = 1
-            res = {}
-            for row in result:
-                dicto = {}
-                dicto['companycode'] = row.CompanyCode
-                dicto['companyname'] = row.CompanyName
-                res[i] = dicto
-                i+=1
-            return res, 201
+            if isDryRun == "true":
+                result = models.CompanyModel.retrieve_companies_before(currentDate)
+                message = {'noOfMatches' : results.count()}
+                return message, 201
+            else:
+                currentDate = request.args.get('date')
+                result = models.CompanyModel.retrieve_companies_before(currentDate)
+                i = 1
+                res = {}
+                for row in result:
+                    dicto = {}
+                    dicto['id'] = row.CompanyCode
+                    dicto['name'] = row.CompanyName
+                    dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
+                    # dicto['dateFounded'] = row.DateFounded
+                    # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
+                    res[i] = dicto
+                    i+=1
+                return res, 201
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message':'error occurred'}, 202
 
     def post(self):
         try:
-            # data = request.form.to_dict()
             json_data = request.data
             data = json.loads(json_data)
             code = str(uuid.uuid4())
             name = data['companyname']
-            date = data['date']
-            dateO = models.formatDate(date)
-            new_company = models.CompanyModel(code, name, dateO)
+            user_ID = data['userID']
+            # dateFounded = data['dateFounded']
+            date_entered = models.formatDate(datetime.now())
+            new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID and date_entered
             new_company.save_to_db()
-            #Logging the user action
-            userAction = "User has inserted a new record in the Companies table with the code: " + code
-            dateOfEvent = datetime.now()
-            employeeid = 1 #placeholder for now
-            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
+            userAction = "User has inserted a new record in the Companies table with the ID: " + code
+            new_event = models.EventLogModel(userAction, date_entered, user_ID)
             new_event.save_to_db()
             return {'message': 'Company has been added'}, 201
         except exc.IntegrityError:
@@ -107,21 +94,32 @@ class Companies(Resource):
 
     def patch(self):
         try:
-            companyid = request.args.get('id')
+            company_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
-            datefounded = data['dateFounded']
-            models.CompanyModel.update_company(companyid, name, datefounded)
+            date_founded = data['dateFounded']
+            user_ID = data['userID']
+            models.CompanyModel.update_company(company_ID, name, date_founded)
+            userAction = "User has updated a record in the Companies table with the ID: " + company_ID
+            date_now = models.formatDate(datetime.now())
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
     def delete(self):
-        companyid = request.args.get('id')
+        company_ID = request.args.get('id')
         try:
-            models.CompanyModel.delete_company(companyid)
+            models.CompanyModel.delete_company(company_ID)
+            data = json.loads(json_data)
+            user_ID = data['userID']
+            userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
+            date_now = models.formatDate(datetime.now())
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
@@ -137,17 +135,6 @@ class Products(Resource):
             if isDryRun == "true":
                 result = models.ProductModel.retrieve_products_on_date(date)
                 message = {"noOfMatches" : result.count()}
-                i = 1
-                res = {}
-                for row in result:
-                    dicto = {}
-                    dicto['productid'] = row.ProductID
-                    dicto['productName'] = row.ProductName
-                    dicto['companycode'] = row.CompanyCode
-                    dicto['value'] = str(row.ProductPrice)
-                    res[i] = dicto
-                    i += 1
-                message['matches'] = res
                 return message, 201
             else:
                 result = models.ProductModel.retrieve_products_on_date(date)
@@ -155,10 +142,12 @@ class Products(Resource):
                 res = {}
                 for row in result:
                     dicto = {}
-                    dicto['productid'] = row.ProductID
-                    dicto['productName'] = row.ProductName
-                    dicto['companycode'] = row.CompanyCode
-                    dicto['value'] = str(row.ProductPrice)
+                    dicto['id'] = row.ProductID
+                    dicto['name'] = row.ProductName
+                    dicto['companyID'] = row.CompanyCode
+                    dicto['valueInUSD'] = str(row.ProductPrice)
+                    # dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
+                    # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res[i] = dicto
                     i += 1
                 return res, 201
@@ -167,28 +156,22 @@ class Products(Resource):
             return {'message': 'error occurred'}, 202
 
     def post(self):
-        # data = request.form.to_dict()
         try:
             json_data = request.data
             data = json.loads(json_data)
-            name = data['productname']
-            value = data['value']
-            companyCode = data['companycode']
-            dateEnteredInSystem = datetime.now()
-            #Adds the new product
+            name = data['name']
+            value = data['valueInUSD']
+            companyCode = data['companyID']
+            dateEnteredInSystem = models.datetime.now()
             new_product = models.ProductModel(name, dateEnteredInSystem)
             new_productID = new_product.save_to_db()
-            #Adds the new product seller
             new_product_seller = models.ProductSellersModel(new_productID, companyCode)
             new_product_seller.save_to_db()
-            #Adds the new product valuation
             date = datetime.now()
             new_product_valuation = models.ProductValuationsModel(new_productID, value, date)
             new_product_valuation.save_to_db()
-            #Logging the user action
             userAction = "User has inserted a new record in the Products table with the code: " + str(new_productID)
             dateOfEvent = datetime.now()
-            employeeid = 1 #placeholder for testing
             new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
             new_event.save_to_db()
             return {'message': 'product has been added'}, 201
