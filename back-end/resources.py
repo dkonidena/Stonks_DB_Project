@@ -76,7 +76,7 @@ class Companies(Resource):
             data = json.loads(json_data)
             code = str(uuid.uuid4())
             name = data['companyname']
-            user_ID = data['userID']
+            user_ID = 1 # placeholder
             # dateFounded = data['dateFounded']
             date_entered = models.formatDate(datetime.now())
             new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID and date_entered
@@ -99,7 +99,7 @@ class Companies(Resource):
             data = json.loads(json_data)
             name = data['name']
             date_founded = data['dateFounded']
-            user_ID = data['userID']
+            user_ID = 1 # placeholder
             models.CompanyModel.update_company(company_ID, name, date_founded)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = models.formatDate(datetime.now())
@@ -114,8 +114,7 @@ class Companies(Resource):
         company_ID = request.args.get('id')
         try:
             models.CompanyModel.delete_company(company_ID)
-            data = json.loads(json_data)
-            user_ID = data['userID']
+            user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
             date_now = models.formatDate(datetime.now())
             new_event = models.EventLogModel(userAction, date_now, user_ID)
@@ -157,22 +156,27 @@ class Products(Resource):
 
     def post(self):
         try:
+            # get the name, value, and company ID from request
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
             value = data['valueInUSD']
             companyCode = data['companyID']
-            dateEnteredInSystem = models.datetime.now()
-            new_product = models.ProductModel(name, dateEnteredInSystem)
+            # then create the date now
+            date_now = models.formatDate(datetime.now())
+            # add to product table, date_now used as dateEnteredIntoSystem
+            new_product = models.ProductModel(name, date_now)
             new_productID = new_product.save_to_db()
+            # add to the product seller table
             new_product_seller = models.ProductSellersModel(new_productID, companyCode)
             new_product_seller.save_to_db()
-            date = datetime.now()
-            new_product_valuation = models.ProductValuationsModel(new_productID, value, date)
+            # add to the product valuation table, date_used as DateOfValuation
+            new_product_valuation = models.ProductValuationsModel(new_productID, value, date_now)
             new_product_valuation.save_to_db()
-            userAction = "User has inserted a new record in the Products table with the code: " + str(new_productID)
-            dateOfEvent = datetime.now()
-            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
+            # log the action
+            userAction = "User has inserted a new record in the Products table with the ID: " + str(new_productID)
+            user_ID = 1 # placeholder
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return {'message': 'product has been added'}, 201
         except exc.IntegrityError:
@@ -182,8 +186,10 @@ class Products(Resource):
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occured'}, 202
         return 1
+
     def patch(self):
         return 1
+
     def delete(self):
         return 1
 
@@ -203,7 +209,7 @@ class Trades(Resource):
             if 'dateCreated' in filter:
                 results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
-            # TODO add dateModified filter
+            # TODO add dateModified filter, dateCreated filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             if 'tradeID' in filter:
@@ -242,41 +248,43 @@ class Trades(Resource):
                 else:
                     final_results = final_results.intersect(each)
 
-            message = {}
             if isDryRun == "true":
-                message['noOfMatches'] = final_results.count()
+                message = {"noOfMatches" : final_results.count()}
+                return message, 201
+            else:
+                i = 1
+                res = {}
+                for row in final_results:
+                    dicto = {}
+                    dicto['product'] = row.Product
+                    dicto['quantity'] = row.Quantity
+                    dicto['buyingParty'] = row.BuyingParty
+                    dicto['sellingParty'] = row.SellingParty
+                    dicto['notionalValue'] = row.NotionalValue
+                    dicto['notionalCurrency'] = row.NotionalCurrency
+                    dicto['underlyingValue'] = row.UnderlyingValue
+                    dicto['underlyingCurrency'] = row.UnderlyingCurrency
+                    dicto['strikePrice'] = row.StrikePrice
+                    dicto['maturityDate'] = row.MaturityDate
+                    # dicto['tradeID'] = row.TradeID
+                    # dicto['tradeDate'] = row.TradeDate
+                    dicto['userIDcreatedBy'] = row.UserIDCreatedBy
+                    # dicto['lastModifiedDate'] = row.LastModifiedDate
+                    dicto[''] = row.Product
+                    res[i] = dicto
+                    i += 1
 
-            i = 1
-            res = {}
-            for row in final_results:
-                dicto = {}
-                dicto['product'] = row.Product
-                dicto['quantity'] = row.Quantity
-                dicto['buyingparty'] = row.BuyingParty
-                dicto['sellingparty'] = row.SellingParty
-                dicto['notionalvalue'] = row.NotionalValue
-                dicto['notionalcurrency'] = row.NotionalCurrency
-                dicto['underlyingvalue'] = row.UnderlyingValue
-                dicto['underlyingcurrency'] = row.UnderlyingCurrency
-                dicto['maturitydate'] = row.MaturityDate
-                dicto['strikeprice'] = row.StrikePrice
-                dicto['useridcreatedby'] = row.UserIDCreatedBy
-                res[i] = dicto
-                i += 1
-
-            message['matches'] = res
-            return message, 201
+                message['matches'] = res
+                return message, 201
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
 
     def post(self):
         try:
-            # data = request.form.to_dict()
             json_data = request.data
             data = json.loads(json_data)
             id = str(uuid.uuid4())
-            # tradeObject = data['tradeObject']
             product = data['product']
             quantity = data['quantity']
             buyingParty = data['buyingParty']
@@ -287,15 +295,18 @@ class Trades(Resource):
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = data['maturityDate']
-            DateOfTrade = datetime.now()
-            userIDcreatedBy = data['useridcreatedby']
-            new_trade = models.DerivativeTradesModel(id, DateOfTrade, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, userIDcreatedBy)
+            DateOfTrade = models.dateFormat(datetime.now())
+            user_ID = 1 # placeholder
+            new_trade = models.DerivativeTradesModel(id, DateOfTrade, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, user_ID)
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
             if result.count() == 0:
                 print("Product does not exist")
-                return {'message' : 'not found'}, 404
+                return {'message' : 'product not found'}, 404
+
+            # need to implement checking if the currencies exist
+
             #If a the product or stock which the trade is linked to is found, then the trade
             new_tradeID = new_trade.save_to_db()
             assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
@@ -303,13 +314,10 @@ class Trades(Resource):
             new_product_trade.save_to_db()
 
             #Logging the user action
-            userAction = "User has inserted a new record in the Trades table with the code: " + str(new_tradeID)
-            dateOfEvent = datetime.now()
-            employeeid = 1 #placeholder
-            new_event = models.EventLogModel(userAction, dateOfEvent, employeeid)
+            userAction = "User has inserted a new record in the Trades table with the ID: " + str(new_tradeID)
+            dateOfEvent = models.dateFormat(datetime.now())
+            new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
             new_event.save_to_db()
-
-            #Check if the added
             return {'message': 'trade has been added'}, 201
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
@@ -321,7 +329,7 @@ class Trades(Resource):
     def patch(self):
 
         try:
-            tradeID = request.args.get('id')
+            trade_ID = request.args.get('id')
 
             json_data = request.data
 
@@ -340,6 +348,13 @@ class Trades(Resource):
             strikePrice = data['strikePrice']
 
             models.DerivativeTradesModel.update_trade(tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
+
+            #Logging the user action
+            userAction = "User has updated a record in the Trades table with the ID: " + trade_ID
+            dateOfEvent = models.dateFormat(datetime.now())
+            user_ID = 1 # placeholder
+            new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
+            new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
             return {'message': "error occurred"}, 201
@@ -349,6 +364,7 @@ class Trades(Resource):
 
 
 class Reports(Resource):
+
     def get(self):
         try:
             dateCreated = request.args.getlist('date')
