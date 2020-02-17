@@ -294,7 +294,7 @@ class Trades(Resource):
                 return message, 201
             else:
                 i = 1
-                res = {}
+                res = []
                 for row in final_results:
                     dicto = {}
                     dicto['tradeID'] = row.TradeID
@@ -311,7 +311,7 @@ class Trades(Resource):
                     # dicto['tradeDate'] = row.TradeDate
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     # dicto['lastModifiedDate'] = row.LastModifiedDate
-                    res[i] = dicto
+                    res.append(dicto)
                     i += 1
 
                 message['matches'] = res
