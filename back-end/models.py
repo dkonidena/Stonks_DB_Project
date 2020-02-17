@@ -143,7 +143,7 @@ class CurrencyValuationsModel(db.Model):
     @classmethod
     def retrieve_currency(cls, date):
         try:
-            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(getDate(date)+"%")).all()
+            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(truncateDate(date)+"%")).all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
