@@ -26,7 +26,7 @@ class Currencies(Resource):
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
                 message = {'noOfMatches' : len(results)}
                 return message, 201
-            else:
+            elif isDryRun == "false":
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
                 res = {}
@@ -40,6 +40,11 @@ class Currencies(Resource):
                     res[i] = dicto
                     i+=1
                 return res, 200
+            else:
+                return {'message': 'Request malformed'}, 400
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'Date invalid'}, 202
         except exc.IntegrityError:
             return {'message': "An error has occured pertaining to Integrity issues. Please re-enter the parameters"}, 500
 
@@ -54,7 +59,7 @@ class Companies(Resource):
                 results = models.CompanyModel.retrieve_companies_before(date)
                 message = {'noOfMatches' : results.count()}
                 return message, 201
-            else:
+            elif isDryRun == "false":
                 date = request.args.get('date')
                 result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
@@ -69,6 +74,11 @@ class Companies(Resource):
                     res[i] = dicto
                     i+=1
                 return res, 201
+            else:
+                return {'message': 'Request malformed'}, 400
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'date invalid'}, 202
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message':'error occurred'}, 202
@@ -78,7 +88,7 @@ class Companies(Resource):
             json_data = request.data
             data = json.loads(json_data)
             code = str(uuid.uuid4())
-            name = data['companyname']
+            name = data['name']
             user_ID = 1 # placeholder
             # dateFounded = data['dateFounded']
             date_entered = models.formatDate(datetime.now())
@@ -135,10 +145,11 @@ class Products(Resource):
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
+                # need error handling to deal with ValueError raised
                 result = models.ProductModel.retrieve_products_on_date(date)
-                message = {"noOfMatches" : len(result)}
+                message = {"noOfMatches" : result.count()}
                 return message, 201
-            else:
+            elif isDryRun == "false":
                 result = models.ProductModel.retrieve_products_on_date(date)
                 i = 1
                 res = {}
@@ -153,6 +164,11 @@ class Products(Resource):
                     res[i] = dicto
                     i += 1
                 return res, 201
+            else:
+                return {'message': 'Request malformed'}, 400
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'date invalid'}, 202
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occurred'}, 202
@@ -290,9 +306,9 @@ class Trades(Resource):
             message = {}
 
             if isDryRun == "true":
-                message = {"noOfMatches" : len(final_results)}
+                message = {"noOfMatches" : final_results.count()}
                 return message, 201
-            else:
+            elif isDryRun == "false":
                 i = 1
                 res = {}
                 for row in final_results:
@@ -316,6 +332,11 @@ class Trades(Resource):
 
                 message['matches'] = res
                 return message, 201
+            else:
+                return {'message': 'Request malformed'}, 400
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'Date invalid'}, 202
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
