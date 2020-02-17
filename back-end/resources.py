@@ -63,7 +63,13 @@ class Companies(Resource):
                 return message, 201
             elif isDryRun == "false":
                 date = request.args.get('date')
-                result = models.CompanyModel.retrieve_companies_before(date)
+                # check if the date attribute is passed
+                if date is None:
+                    # if not passed, return all companies
+                    result = models.CompanyModel.retrieve_all_companies()
+                else:
+                    # if passed, return companies that exist before the date given
+                    result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
                 res = []
                 for row in result:

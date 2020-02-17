@@ -78,6 +78,14 @@ class CompanyModel(db.Model):
             return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= truncateDate(date))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
+    
+    # gets all companies that exist in the schema regardless of date
+    @classmethod
+    def retrieve_all_companies(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
 
     # serves the company patch request
     @classmethod
