@@ -19,6 +19,16 @@ function setInputFilter(t, filter) {
     });
 }
 
+function showRequestError(error, debugData) {
+    showError(error.message, "Request:\n" + JSON.stringify(debugData, null, 2));
+}
+
+function showError(error = '', detail = '') {
+    $('#errorShort').text(error);
+    $('#errorDetailContent').text(detail);
+    $('#apiErrorModal').modal('show');
+}
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
