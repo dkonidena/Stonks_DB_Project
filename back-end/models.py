@@ -79,6 +79,15 @@ class CompanyModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
+    # gets all companies that existed before a date (serves get?)
+    # should this be existed ON that date? something could've existed and closed
+    @classmethod
+    def retrieve_all_companies(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
     # serves the company patch request
     @classmethod
     def update_company(cls, companycode, name, datefounded):

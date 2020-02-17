@@ -62,8 +62,13 @@ class Companies(Resource):
                 message['noOfMatches'] = results.count()
                 return message, 201
             elif isDryRun == "false":
-                date = request.args.get('date')
-                result = models.CompanyModel.retrieve_companies_before(date)
+                # check if the date parameter is passed
+                if date is None: 
+                    # if not, return all companies
+                    result = models.CompanyModel.retrieve_all_companies()
+                else: 
+                    # if so, return all companies that existed on or before the date
+                    result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
                 res = []
                 for row in result:
