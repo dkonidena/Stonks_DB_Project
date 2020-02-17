@@ -262,6 +262,13 @@ class DerivativeTradesModel(db.Model):
         except exc.IntegrityError:
            raise exc.IntegrityError("", "", 1)
 
+    # serves the trades delete request
+    @classmethod
+    def delete_trade(cls, trade_id):
+        try:
+            cls.query.filter_by(TradeID = trade_id).delete()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("","",1)
 
 class EventLogModel(db.Model):
     __tablename__ = 'EventLog'
@@ -319,6 +326,16 @@ class ProductSellersModel(db.Model):
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
 
+    # serves the product patch request
+    @classmethod
+    def update_product_sellers(cls, product_id, company_ID):
+        try:
+            row = cls.query.filter_by(ProductID = product_id).first()
+            row.CompanyCode = company_ID
+            db.session.commit()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("","",1)
+
     # unsure what this does
     # maybe checks if a comapny sells that product
     @classmethod
@@ -360,6 +377,24 @@ class ProductModel(db.Model):
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
 
+    # serves the product patch request
+    @classmethod
+    def update_product(cls, product_id, name):
+        try:
+            row = cls.query.filter_by(ProductID = product_id).first()
+            row.ProductName = name
+            db.session.commit()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("","",1)
+
+    # serves the product delete request
+    @classmethod
+    def delete_product(cls, product_id):
+        try:
+            cls.query.filter_by(ProductID = product_id).delete()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("","",1)
+
     # serves the product get request for a certain date
     @classmethod
     def retrieve_products_on_date(cls, date):
@@ -384,3 +419,14 @@ class ProductValuationsModel(db.Model):
             raise exc.IntegrityError("","",1)
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
+
+    # serves the product patch request
+    @classmethod
+    def update_product_valuations(cls, product_id, price, date_entered):
+        try:
+            row = cls.query.filter_by(ProductID = product_id).first()
+            row.ProductPrice = price
+            row.DateOfValuation = date_entered
+            db.session.commit()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("","",1)

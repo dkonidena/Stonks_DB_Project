@@ -111,8 +111,8 @@ class Companies(Resource):
             return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
     def delete(self):
-        company_ID = request.args.get('id')
         try:
+            company_ID = request.args.get('id')
             models.CompanyModel.delete_company(company_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
@@ -185,13 +185,47 @@ class Products(Resource):
         except exc.InterfaceError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occured'}, 202
-        return 1
 
     def patch(self):
-        return 1
+        try:
+            product_ID = request.args.get('id')
+            json_data = request.data
+            data = json.loads(json_data)
+            name = data['name']
+            value_in_USD = data['valueInUSD']
+            company_ID = data['companyID']
+            user_ID = 1 # placeholder
+            date_now = models.formatDate(datetime.now())
+            models.ProductModel.update_product(product_ID, name)
+            models.ProductModel.update_product_sellers(product_ID, company_ID)
+            models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
+            userAction = "User has updated a record in the Products table with the ID: " + product_ID
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
+            userAction = "User has updated a record in the ProductSellers table with the ID: " + product_ID
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
+            userAction = "User has updated a record in the ProductValuations table with the ID: " + product_ID
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
+            return "success", 200
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
     def delete(self):
-        return 1
+        try:
+            product_ID = request.args.get('id')
+            models.ProductModel.delete_product(product_ID)
+            user_ID = 1 # placeholder
+            userAction = "User has deleted a record in the Products table with the ID: " + product_ID
+            date_now = models.formatDate(datetime.now())
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
+            return "success", 200
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
 class Trades(Resource):
 
@@ -206,11 +240,12 @@ class Trades(Resource):
             isDryRun = request.args.get('isDryRun')
 
             results = list() # stores results for each query/filter that is applied by the user
+
+            # TODO add dateModified filter
+            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
+
             if 'dateCreated' in filter:
                 results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
-
-            # TODO add dateModified filter, dateCreated filter
-            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             if 'tradeID' in filter:
                 for id in filter['tradeID']:
@@ -256,6 +291,7 @@ class Trades(Resource):
                 res = {}
                 for row in final_results:
                     dicto = {}
+                    dicto['tradeID'] = row.TradeID
                     dicto['product'] = row.Product
                     dicto['quantity'] = row.Quantity
                     dicto['buyingParty'] = row.BuyingParty
@@ -266,7 +302,6 @@ class Trades(Resource):
                     dicto['underlyingCurrency'] = row.UnderlyingCurrency
                     dicto['strikePrice'] = row.StrikePrice
                     dicto['maturityDate'] = row.MaturityDate
-                    # dicto['tradeID'] = row.TradeID
                     # dicto['tradeDate'] = row.TradeDate
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     # dicto['lastModifiedDate'] = row.LastModifiedDate
@@ -330,12 +365,8 @@ class Trades(Resource):
 
         try:
             trade_ID = request.args.get('id')
-
             json_data = request.data
-
             data = json.loads(json_data)
-
-
             product = data['product']
             quantity = data['quantity']
             buyingParty = data['buyingParty']
@@ -355,57 +386,72 @@ class Trades(Resource):
             user_ID = 1 # placeholder
             new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
             new_event.save_to_db()
+
             return "success", 200
+
         except exc.IntegrityError:
             return {'message': "error occurred"}, 201
 
     def delete(self):
-        return 1
+        try:
+            trade_ID = request.args.get('id')
+            models.DerivativeTradesModel.delete_product(trade_ID)
+            user_ID = 1 # placeholder
+            userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
+            date_now = models.formatDate(datetime.now())
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event.save_to_db()
+            return "success", 200
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'Integrity Error occurred, please re-try entering the parameters'}, 500
 
 
 class Reports(Resource):
 
     def get(self):
-        try:
-            dateCreated = request.args.getlist('date')
-            tradeID = request.args.get('tradeid')
-            buyingParty = request.args.get('buyingparty')
-            sellingParty = request.args.get('sellingparty')
-            product = request.args.get('product')
-            notionalCurrency = request.args.get('notionalcurrency')
-            underlyingCurrency = request.args.get('underlyingcurrency')
-            userIDcreatedBy = request.args.get('useridcreatedby')
-            isDryRun = request.args.get('isDryRun')
+        # delete below?
 
-            results = list() #stores results for each query/filter that is applied by the user
-            if len(dateCreated) > 0:
-                results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
-
-            if tradeID is not None:
-                results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
-
-            if buyingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
-
-            if sellingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
-
-            if product is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_product(product))
-
-            if notionalCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-
-            if underlyingCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-
-            if userIDcreatedBy is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-
-            return {'message' : 'need to finish'}, 201
-        except exc.ProgrammingError:
-            traceback.print_exc(file=sys.stdout)
-            return {'message' : 'error occured'}, 202
+        # try:
+        #     dateCreated = request.args.getlist('date')
+        #     tradeID = request.args.get('tradeid')
+        #     buyingParty = request.args.get('buyingparty')
+        #     sellingParty = request.args.get('sellingparty')
+        #     product = request.args.get('product')
+        #     notionalCurrency = request.args.get('notionalcurrency')
+        #     underlyingCurrency = request.args.get('underlyingcurrency')
+        #     userIDcreatedBy = request.args.get('useridcreatedby')
+        #     isDryRun = request.args.get('isDryRun')
+        #
+        #     results = list() #stores results for each query/filter that is applied by the user
+        #     if len(dateCreated) > 0:
+        #         results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+        #
+        #     if tradeID is not None:
+        #         results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
+        #
+        #     if buyingParty is not None:
+        #         results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+        #
+        #     if sellingParty is not None:
+        #         results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
+        #
+        #     if product is not None:
+        #         results.append(models.DerivativeTradesModel.get_trade_by_product(product))
+        #
+        #     if notionalCurrency is not None:
+        #         results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
+        #
+        #     if underlyingCurrency is not None:
+        #         results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
+        #
+        #     if userIDcreatedBy is not None:
+        #         results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
+        #
+        #     return {'message' : 'need to finish'}, 201
+        # except exc.ProgrammingError:
+        #     traceback.print_exc(file=sys.stdout)
+        #     return {'message' : 'error occured'}, 202
 
 
 class Rules(Resource):
