@@ -145,7 +145,7 @@ class Products(Resource):
     def get(self):
         message = {}
         try:
-            date =  request.args.get('date')
+            date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 # need error handling to deal with ValueError raised
