@@ -1,0 +1,357 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/select2-bootstrap4.min.css">
+    <title>CS261 GROUP32</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="./home.html">Stonks</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../page-home/page-home.html">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="../page-trades/page-trades.html">Trades<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-companies/page-companies.html">Companies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-products/page-products.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../page-reports/page-reports.html">Daily Reports</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right border-dark" style="margin-top:56px;">
+                <div class="sidebar-sticky">
+                    <button id="addTradeButton" class="btn btn-light btn-lg btn-block" type="button" href="#">
+                        <div class="text-left h4 mb-0">
+                            <i class="material-icons align-bottom" style="font-size:28px;">add</i>
+                            New Trade
+                        </div>
+                    </button>
+                    <button id="searchTradesButton" class="btn btn-light btn-lg btn-block" type="button" data-toggle="modal" data-target="#advancedSearch">
+                        <div class="text-left h4 mb-0">
+                            <i class="material-icons align-bottom" style="font-size:28px;">search</i>
+                            Filter Trades...
+                        </div>
+                    </button>
+                    <button class="btn btn-light btn-lg btn-block" type="button" data-toggle="collapse" data-target="#tradeList">
+                        <div class="text-left h4 mb-0">
+                            <i class="material-icons align-bottom" style="font-size:28px;">assessment</i>
+                            Trades
+                            <i class="material-icons align-bottom float-right" id="tradeListCollapseSymbol" style="font-size:28px;">expand_more</i>
+                        </div>
+                    </button>
+                    <div class="collapse trade-list" id="tradeList">
+                        <ul class="nav flex-column card card-body bg-light border-0 py-0" id="trades">
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="col-md-10 ml-auto">
+
+                <div class="row justify-content-center border-bottom">
+                    <div class="col-auto display-4 py-3">Trade Editor</div>
+                </div>
+
+                <form>
+
+                    <div class="row pb-4">
+                        <label class="col-1 col-form-label-lg" for="tradeIdInput">Trade ID</label>
+                        <div class="col-auto">
+                            <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
+                        </div>
+                        <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
+                        <div class="col-3">
+                            <div class="form-inline" id="tradeDateInput">
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateMonthInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="tradeDateYearInput"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="productInput">Product</label>
+                            <select class="form-control select2-prod" id="productInput">
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <label for="quantityInput">Quantity</label>
+                            <input type="text" class="form-control" id="quantityInput" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="buyingPartyInput">Buyer</label>
+                            <select class="form-control select2-comp" id="buyingPartyInput">
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label for="sellingPartyInput">Seller</label>
+                            <select class="form-control select2-comp" id="sellingPartyInput">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="notionalPriceInput">Notional Value and Currency</label>
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
+                                <input type="text" class="form-control" id="notionalPriceInput" placeholder="0.00">
+                                <div class="input-group-append">
+                                    <select class="custom-select select2-cur" id="notionalCurrencyInput"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label for="underlyingPriceInput">Underlying Value and Currency</label>
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
+                                <input type="text" class="form-control " id="underlyingPriceInput" placeholder="0.00">
+                                <div class="input-group-append">
+                                    <select class="custom-select select2-cur" id="underlyingCurrencyInput"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="strikePriceInput">Strike Price</label>
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-prepend input-group-text" id="strikePriceCurrencyCymbol">$</div>
+                                <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label for="maturityDateInput">Maturity Date</label>
+                            <div class="form-inline" id="maturityDateInput">
+                                <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="DD" />
+                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                <input type="text" class="form-control col-md-2" id="maturityDateMonthInput" placeholder="MM" />
+                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                <input type="text" class="form-control col-md-3" id="maturityDateYearInput" placeholder="YYYY" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row mt-5">
+                    <div class="col-auto offset-md-1">
+                        <button class="btn btn-lg btn-block btn-secondary" id="checkTradeButton">Check Trade</button>
+                    </div>
+                    <div class="col-auto ">
+                        <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton">Save Trade</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="confirmCancelTradeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelTradeModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirm Discard</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to discard your changes made to this trade?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" id="discardChangesButton" data-dismiss="modal">Discard Changes</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Return to Editor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="advancedSearch" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Filter Trades</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Filter trades by any properties
+                                <form>
+                                    <div class="row mt-3">
+                                        <div class="col-3 align-self-center">Date Created</div>
+                                        <div class="col-auto align-self-center mr-n3">From</div>
+                                        <div class="col-4" style="max-width:30%;">
+                                            <div class="form-inline" id="filter-creationDateLowerInput">
+                                                <input type="text" class="form-control col-md-3" id="filter-creationDateLowerDayInput" placeholder="DD" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-3" id="filter-creationDateLowerMonthInput" placeholder="MM" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-4" id="filter-creationDateLowerYearInput" placeholder="YYYY" />
+                                            </div>
+                                        </div>
+                                        <div class="col-auto align-self-center mx-n3">to</div>
+                                        <div class="col-4" style="max-width:30%">
+                                            <div class="form-inline" id="filter-creationDateUpperInput">
+                                                <input type="text" class="form-control col-md-3" id="filter-creationDateUpperDayInput" placeholder="DD" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-3" id="filter-creationDateUpperMonthInput" placeholder="MM" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-4" id="filter-creationDateUpperYearInput" placeholder="YYYY" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-3">Date Last Modified</div>
+                                        <div class="col-auto align-self-center mr-n3">From</div>
+                                        <div class="col-4" style="max-width:30%;">
+                                            <div class="form-inline" id="filter-modificationLowerInput">
+                                                <input type="text" class="form-control col-md-3" id="filter-modificationDateLowerDayInput" placeholder="DD" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-3" id="filter-modificationDateLowerMonthInput" placeholder="MM" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-4" id="filter-modificationDateLowerYearInput" placeholder="YYYY" />
+                                            </div>
+                                        </div>
+                                        <div class="col-auto align-self-center mx-n3">to</div>
+                                        <div class="col-4" style="max-width:30%;">
+                                            <div class="form-inline" id="filter-modificationDateUpperInput">
+                                                <input type="text" class="form-control col-md-3" id="filter-modificationDateUpperDayInput" placeholder="DD" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-3" id="filter-modificationDateUpperMonthInput" placeholder="MM" />
+                                                <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                                <input type="text" class="form-control col-md-4" id="filter-modificationDateUpperYearInput" placeholder="YYYY" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-tradeIDInput">Trade ID</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" id="filter-tradeIDInput" placeholder="<trade ID>">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-userIDInput">Created by User</label>
+                                        <div class="col-8">
+                                            <select class="form-control select2-filter" id="filter-userIDInput"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-buyerInput">Buying Party</label>
+                                        <div class="col-8">
+                                            <select class="form-control select2-filter" id="filter-buyerInput"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-sellerInput">Selling Party</label>
+                                        <div class="col-8">
+                                            <select class="form-control select2-filter" id="filter-sellerInput"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-productInput">Product</label>
+                                        <div class="col-8">
+                                            <select class="form-control select2-filter" id="filter-productInput"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-notionalCurrencyInput">Notional Currency</label>
+                                        <div class="col-8">
+                                            <select class="custom-select select2-filter" id="filter-notionalCurrencyInput"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <label class="col-3 col-form-label" for="filter-underlyingCurrencyInput">Underlying Currency</label>
+                                        <div class="col-8">
+                                            <select class="custom-select select2-filter" id="filter-underlyingCurrencyInput"></select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="doAdvancedSearch">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal modal-fade" id="apiErrorModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
+                                <h5 class="modal-title text-danger">Error</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <div class="h5 pb-2">
+                                    An error has occured.
+                                </div>
+                                <div class="pb-3" id="errorShort"></div>
+                                <button class="btn btn-sm btn-block btn-light" type="button" data-toggle="collapse" data-target="#errorDetail">
+                                    View Full Error
+                                </button>
+                                <div class="collapse" id="errorDetail">
+                                    <pre class="card card-body" id="errorDetailContent" style="font-size:75%;padding:0.5rem;"></pre>
+                                </div>
+                            <div class="modal-footer mt-3">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3"></div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.full.min.js"></script>
+    <script src="../js/classes.js"></script>
+    <script src="../js/util.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="./js/page-trades.js"></script>
+    <script src="./js/init.js"></script>
+</body>
+</html>
