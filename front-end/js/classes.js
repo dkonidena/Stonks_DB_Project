@@ -209,7 +209,6 @@ class Company {
     constructor() {
         this.id = "";
         this.name = "";
-        this.foundedDate = new Date();
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
@@ -217,7 +216,6 @@ class Company {
 	getAPIObject() {
 		let c = new APICompany();
 		c.id = this.id;
-		c.foundedDate = this.foundedDate;
 		return c;
 	}
 
@@ -225,7 +223,6 @@ class Company {
         try {
             this.id = o.id;
             this.name = o.name;
-            this.foundedDate = new Date(o.foundedDate);
             this.creationDate = new Date(o.creationDate);
             this.userIdCreatedBy = o.userIdCreatedBy;
             return this;
@@ -239,7 +236,6 @@ class Company {
 class APICompany {
 	constructor() {
 		this.name = "";
-		this.foundedDate = "";
 	}
 }
 

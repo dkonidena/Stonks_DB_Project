@@ -19,17 +19,18 @@ def returnCurrencySymbol(currencyCode):
 class Currencies(Resource):
 
     def get(self):
+        message = {}
         try:
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message = {'noOfMatches' : len(results)}
+                message['noOfMatches'] = len(results)
                 return message, 201
             elif isDryRun == "false":
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
@@ -37,9 +38,9 @@ class Currencies(Resource):
                     # dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
-                    res[i] = dicto
-                    i+=1
-                return res, 200
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 200
             else:
                 return {'message': 'Request malformed'}, 400
         except ValueError:
@@ -52,18 +53,19 @@ class Currencies(Resource):
 class Companies(Resource):
 
     def get(self):
+        message = {}
         try:
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CompanyModel.retrieve_companies_before(date)
-                message = {'noOfMatches' : results.count()}
+                message['noOfMatches'] = results.count()
                 return message, 201
             elif isDryRun == "false":
                 date = request.args.get('date')
                 result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['id'] = row.CompanyCode
@@ -71,9 +73,9 @@ class Companies(Resource):
                     dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                     # dicto['dateFounded'] = row.DateFounded
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    res[i] = dicto
-                    i+=1
-                return res, 201
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 201
             else:
                 return {'message': 'Request malformed'}, 400
         except ValueError:
@@ -141,6 +143,7 @@ class Companies(Resource):
 class Products(Resource):
 
     def get(self):
+        message = {}
         try:
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
@@ -152,7 +155,7 @@ class Products(Resource):
             elif isDryRun == "false":
                 result = models.ProductModel.retrieve_products_on_date(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['id'] = row.ProductID
@@ -161,9 +164,9 @@ class Products(Resource):
                     dicto['valueInUSD'] = str(row.ProductPrice)
                     # dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    res[i] = dicto
-                    i += 1
-                return res, 201
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 201
             else:
                 return {'message': 'Request malformed'}, 400
         except ValueError:
@@ -310,7 +313,7 @@ class Trades(Resource):
                 return message, 201
             elif isDryRun == "false":
                 i = 1
-                res = {}
+                res = []
                 for row in final_results:
                     dicto = {}
                     dicto['tradeID'] = row.TradeID
@@ -327,7 +330,7 @@ class Trades(Resource):
                     # dicto['tradeDate'] = row.TradeDate
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     # dicto['lastModifiedDate'] = row.LastModifiedDate
-                    res[i] = dicto
+                    res.append(dicto)
                     i += 1
 
                 message['matches'] = res
