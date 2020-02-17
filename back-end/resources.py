@@ -37,9 +37,9 @@ class Currencies(Resource):
                     # dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
-                    res[i] = dicto
-                    i+=1
-                return res, 200
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 200
         except exc.IntegrityError:
             return {'message': "An error has occured pertaining to Integrity issues. Please re-enter the parameters"}, 500
 
