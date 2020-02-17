@@ -412,46 +412,46 @@ class Reports(Resource):
     def get(self):
         # delete below?
 
-        # try:
-        #     dateCreated = request.args.getlist('date')
-        #     tradeID = request.args.get('tradeid')
-        #     buyingParty = request.args.get('buyingparty')
-        #     sellingParty = request.args.get('sellingparty')
-        #     product = request.args.get('product')
-        #     notionalCurrency = request.args.get('notionalcurrency')
-        #     underlyingCurrency = request.args.get('underlyingcurrency')
-        #     userIDcreatedBy = request.args.get('useridcreatedby')
-        #     isDryRun = request.args.get('isDryRun')
-        #
-        #     results = list() #stores results for each query/filter that is applied by the user
-        #     if len(dateCreated) > 0:
-        #         results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
-        #
-        #     if tradeID is not None:
-        #         results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
-        #
-        #     if buyingParty is not None:
-        #         results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
-        #
-        #     if sellingParty is not None:
-        #         results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
-        #
-        #     if product is not None:
-        #         results.append(models.DerivativeTradesModel.get_trade_by_product(product))
-        #
-        #     if notionalCurrency is not None:
-        #         results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-        #
-        #     if underlyingCurrency is not None:
-        #         results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-        #
-        #     if userIDcreatedBy is not None:
-        #         results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-        #
-        #     return {'message' : 'need to finish'}, 201
-        # except exc.ProgrammingError:
-        #     traceback.print_exc(file=sys.stdout)
-        #     return {'message' : 'error occured'}, 202
+        try:
+            dateCreated = request.args.getlist('date')
+            tradeID = request.args.get('tradeid')
+            buyingParty = request.args.get('buyingparty')
+            sellingParty = request.args.get('sellingparty')
+            product = request.args.get('product')
+            notionalCurrency = request.args.get('notionalcurrency')
+            underlyingCurrency = request.args.get('underlyingcurrency')
+            userIDcreatedBy = request.args.get('useridcreatedby')
+            isDryRun = request.args.get('isDryRun')
+
+            results = list() #stores results for each query/filter that is applied by the user
+            if len(dateCreated) > 0:
+                results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+
+            if tradeID is not None:
+                results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
+
+            if buyingParty is not None:
+                results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+
+            if sellingParty is not None:
+                results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
+
+            if product is not None:
+                results.append(models.DerivativeTradesModel.get_trade_by_product(product))
+
+            if notionalCurrency is not None:
+                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
+
+            if underlyingCurrency is not None:
+                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
+
+            if userIDcreatedBy is not None:
+                results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
+
+            return {'message' : 'need to finish'}, 201
+        except exc.ProgrammingError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occured'}, 202
 
 
 class Rules(Resource):
