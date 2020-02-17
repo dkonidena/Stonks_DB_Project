@@ -29,7 +29,7 @@ class Currencies(Resource):
             else:
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
@@ -58,7 +58,7 @@ class Companies(Resource):
                 date = request.args.get('date')
                 result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['id'] = row.CompanyCode
@@ -141,7 +141,7 @@ class Products(Resource):
             else:
                 result = models.ProductModel.retrieve_products_on_date(date)
                 i = 1
-                res = {}
+                res = []
                 for row in result:
                     dicto = {}
                     dicto['id'] = row.ProductID
