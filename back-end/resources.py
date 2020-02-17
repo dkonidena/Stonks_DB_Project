@@ -66,9 +66,9 @@ class Companies(Resource):
                     dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                     # dicto['dateFounded'] = row.DateFounded
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    res[i] = dicto
-                    i+=1
-                return res, 201
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 201
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message':'error occurred'}, 202
@@ -150,9 +150,9 @@ class Products(Resource):
                     dicto['valueInUSD'] = str(row.ProductPrice)
                     # dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    res[i] = dicto
-                    i += 1
-                return res, 201
+                    res.append(dicto)
+                message['matches'] = res
+                return message, 201
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occurred'}, 202
