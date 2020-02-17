@@ -62,9 +62,7 @@ class CompanyModel(db.Model):
             db.session.add(self)
             db.session.commit()
         except exc.IntegrityError:
-            raise exc.IntegrityError("","",1) # unsure of the syntax here, should the "","" be more meaningful?
-            # is print the right thing here? will the message be passed to the front end?
-            print("The company couldn't be saved to the database")
+            raise exc.IntegrityError("","",1)
             traceback.print_exc(file=sys.stdout)
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
@@ -80,7 +78,6 @@ class CompanyModel(db.Model):
             return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= truncateDate(date))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
-            print("The number of parameters passed might not have been correct, please retry")
 
     # serves the company patch request
     @classmethod
@@ -146,7 +143,6 @@ class CurrencyValuationsModel(db.Model):
     @classmethod
     def retrieve_currency(cls, date):
         try:
-            print(getDate(date))
             return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(getDate(date)+"%")).all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)

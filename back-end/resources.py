@@ -24,7 +24,7 @@ class Currencies(Resource):
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message = {'noOfMatches' : results.count()}
+                message = {'noOfMatches' : len(results)}
                 return message, 201
             else:
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
@@ -33,7 +33,8 @@ class Currencies(Resource):
                 for row in result:
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
-                    dicto['symbol'] = returnCurrencySymbol(row.currencyCode)
+                    # brokem until all currencies added
+                    # dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
                     res[i] = dicto
@@ -47,13 +48,15 @@ class Companies(Resource):
 
     def get(self):
         try:
+            date = request.args.get('date')
+            isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
-                result = models.CompanyModel.retrieve_companies_before(currentDate)
+                results = models.CompanyModel.retrieve_companies_before(date)
                 message = {'noOfMatches' : results.count()}
                 return message, 201
             else:
-                currentDate = request.args.get('date')
-                result = models.CompanyModel.retrieve_companies_before(currentDate)
+                date = request.args.get('date')
+                result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
                 res = {}
                 for row in result:
@@ -133,7 +136,7 @@ class Products(Resource):
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 result = models.ProductModel.retrieve_products_on_date(date)
-                message = {"noOfMatches" : result.count()}
+                message = {"noOfMatches" : len(result)}
                 return message, 201
             else:
                 result = models.ProductModel.retrieve_products_on_date(date)
@@ -248,7 +251,8 @@ class Trades(Resource):
                 results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
             if 'tradeID' in filter:
-                for id in filter['tradeID']:
+
+                    id = filter['tradeID']
                     results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
 
             if 'buyingParty' in filter:
@@ -283,8 +287,10 @@ class Trades(Resource):
                 else:
                     final_results = final_results.intersect(each)
 
+            message = {}
+
             if isDryRun == "true":
-                message = {"noOfMatches" : final_results.count()}
+                message = {"noOfMatches" : len(final_results)}
                 return message, 201
             else:
                 i = 1
@@ -305,7 +311,6 @@ class Trades(Resource):
                     # dicto['tradeDate'] = row.TradeDate
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     # dicto['lastModifiedDate'] = row.LastModifiedDate
-                    dicto[''] = row.Product
                     res[i] = dicto
                     i += 1
 
@@ -336,7 +341,7 @@ class Trades(Resource):
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
-            if result.count() == 0:
+            if len(result) == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
 
