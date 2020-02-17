@@ -19,12 +19,13 @@ def returnCurrencySymbol(currencyCode):
 class Currencies(Resource):
 
     def get(self):
+        message = {}
         try:
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message = {'noOfMatches' : len(results)}
+                message['noOfMatches'] = len(results)
                 return message, 201
             else:
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
@@ -47,12 +48,13 @@ class Currencies(Resource):
 class Companies(Resource):
 
     def get(self):
+        message = {}
         try:
             date = request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CompanyModel.retrieve_companies_before(date)
-                message = {'noOfMatches' : results.count()}
+                message['noOfMatches'] = results.count()
                 return message, 201
             else:
                 date = request.args.get('date')
@@ -131,12 +133,13 @@ class Companies(Resource):
 class Products(Resource):
 
     def get(self):
+        message = {}
         try:
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 result = models.ProductModel.retrieve_products_on_date(date)
-                message = {"noOfMatches" : len(result)}
+                message["noOfMatches"] = len(result)
                 return message, 201
             else:
                 result = models.ProductModel.retrieve_products_on_date(date)
