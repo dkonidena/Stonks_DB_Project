@@ -300,7 +300,7 @@ class Report {
 
     populateFromServerJSON(o) {
         try {
-            this.date = o.date;
+            this.date = new Date(o.date);
             this.content = o.content;
             return this;
         }
@@ -323,6 +323,6 @@ function getReportList(filter, res, err) {
             reports.push(report.populateFromServerJSON(json));
         }
 
-        if (res !== undefined) { res(companies); }
+        if (res !== undefined) { res(reports); }
     }, showRequestError);
 }
