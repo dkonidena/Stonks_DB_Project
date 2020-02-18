@@ -307,7 +307,9 @@ class Trades(Resource):
             if 'userIDcreatedBy' in filter:
                 for id in filter['userIDcreatedBy']:
                     results.append(models.DerivativeTradesModel.get_trades_by_user(id))
-
+            # if the filter is empty then return all the trades
+            if filter == {}:
+                results.append(models.DerivativeTradesModel.get_trades_all())
             #performs intersections on each result set from each query to find the filtered results
             final_results = None
             for each in results:

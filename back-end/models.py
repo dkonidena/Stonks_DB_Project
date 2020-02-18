@@ -247,6 +247,12 @@ class DerivativeTradesModel(db.Model):
             return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_all(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
 
     # serves the trade patch request
     @classmethod
