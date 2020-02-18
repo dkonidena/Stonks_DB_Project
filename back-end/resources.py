@@ -321,7 +321,11 @@ class Trades(Resource):
             message = {}
 
             if isDryRun == "true":
-                message = {"noOfMatches" : final_results.count()}
+                if filter == {}:
+                    noOfMatches = len(final_results)
+                else:
+                    noOfMatches = final_results.count()
+                message = {"noOfMatches" : noOfMatches}
                 return message, 201
             elif isDryRun == "false":
                 i = 1
