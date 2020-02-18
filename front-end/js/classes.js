@@ -311,7 +311,7 @@ class Report {
 }
 
 function getReportList(filter, res, err) {
-    api.get.reports(filter, false, (response) => {
+    api.get.reports(filter.getAPIObject(), false, (response) => {
         if (response.matches === undefined) {
             showError("Malformed server reponse for reports", "matches field not present");
             return;
