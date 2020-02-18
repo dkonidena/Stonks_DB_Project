@@ -444,49 +444,32 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-        # delete below?
-
-        try:
-            dateCreated = request.args.getlist('date')
-            tradeID = request.args.get('tradeid')
-            buyingParty = request.args.get('buyingparty')
-            sellingParty = request.args.get('sellingparty')
-            product = request.args.get('product')
-            notionalCurrency = request.args.get('notionalcurrency')
-            underlyingCurrency = request.args.get('underlyingcurrency')
-            userIDcreatedBy = request.args.get('useridcreatedby')
-            isDryRun = request.args.get('isDryRun')
-
-            results = list() #stores results for each query/filter that is applied by the user
-            if len(dateCreated) > 0:
-                results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
-
-            if tradeID is not None:
-                results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
-
-            if buyingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
-
-            if sellingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
-
-            if product is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_product(product))
-
-            if notionalCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-
-            if underlyingCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-
-            if userIDcreatedBy is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-
-            return {'message' : 'need to finish'}, 201
-        except exc.ProgrammingError:
-            traceback.print_exc(file=sys.stdout)
-            return {'message' : 'error occured'}, 202
-
+        test_data = {
+            "matches" : [{
+                    "date": "2020-02-18T00:28:38.365Z",
+                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
+01/04/2010 00:00,ACCKXNIA50698568,Scope Lens,AWYB85,UACN81,18120.0,USD,800,07/04/2011,22.65,USD,20.89
+01/04/2010 00:00,TFVNUIEV14019758,Stocks,IJPI82,BBAX06,3733800.0,USD,70000,10/07/2013,53.34,USD,57.62
+01/04/2010 00:38,SFKFEMNI33385795,Stocks,AMRO66,TGZI54,203496.08,KWD,100,31/01/2012,279.47,USD,2173.46
+01/04/2010 00:39,NFPPXKJO32502934,Premium Nanotech,EDYH00,DREA89,920080.0,USD,4000,31/10/2011,230.02,USD,197.94
+01/04/2010 00:39,WLLMPGMU67753060,Stocks,NQJL85,BDBU00,563545.77,KZT,900,28/07/2012,158.88,USD,632.4
+01/04/2010 00:40,VQYITYKX67468667,Black Materia Orbs,EWUY52,VCSF07,492600.0,USD,60000,02/04/2013,8.21,USD,8.72
+01/04/2010 00:40,MVWWGUEO36009262,Stocks,TBVE46,QLMY86,13120100.0,USD,70000,14/04/2011,187.43,USD,205.65"""
+                },
+                {
+                    "date": "2020-02-17T00:28:38.365Z",
+                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
+01/04/2010 00:12,XNTJSSWX82102942,Stocks,KKGY69,SFZS08,14978600.0,USD,70000,19/06/2013,213.98,USD,236.56
+01/04/2010 00:12,SRAKJKES56980699,Stocks,BBJG05,KKZA87,74360.0,USD,2000,05/04/2014,37.18,USD,42.13
+01/04/2010 00:16,SHUUQNAF89208519,Stocks,KUWI70,IIZF28,47470.0,USD,500,19/09/2011,94.94,USD,82.87
+01/04/2010 00:16,OXXDOFBX41047829,Stocks,SUOX82,FAWI50,19980111.75,HRK,700,27/05/2011,260.54,USD,25251.2
+01/04/2010 00:16,LWAKBSFC76100584,Stocks,CMZC67,LBKT00,5691.0,USD,700,05/03/2011,8.13,USD,8.58
+01/04/2010 00:17,NAFWJEQM83465255,Muscle Bands,GZED20,EDYH00,2813580.0,USD,9000,26/07/2012,312.62,USD,341.29
+01/04/2010 00:17,MNPRZYBF65527748,Stocks,HFLM11,YLGZ72,5832000.0,USD,80000,11/11/2011,72.9,USD,64.03"""
+                }
+            ]
+        }
+        return test_data, 200
 
 class Rules(Resource):
     def get(self):
