@@ -162,7 +162,11 @@ class Products(Resource):
     def get(self):
         message = {}
         try:
-            date =  request.args.get('date')
+            date = request.args.get('date')
+            if date is None:
+                # TODO return all products when the date is not specifed, as per API spec
+                raise NotImplementedError("getting all products is not yet supported!")
+
             isDryRun = request.args.get('isDryRun')
             if 'isDryRun' not in request.args:
                 return {'message': 'Request malformed'}, 400
