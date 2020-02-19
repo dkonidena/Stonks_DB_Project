@@ -276,49 +276,49 @@ class Trades(Resource):
             # TODO add dateModified filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
-            if 'dateCreated' in filter:
-                results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
-
-            if 'tradeID' in filter:
-                # this will break if more than 1 id supplied
-                    id = filter['tradeID']
-                    results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
-
-            if 'buyingParty' in filter:
-                for id in filter['buyingParty']:
-                    results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
-
-            if 'sellingParty' in filter:
-                for id in filter['sellingParty']:
-                    results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
-
-            if 'product' in filter:
-                for id in filter['product']:
-                    results.append(models.DerivativeTradesModel.get_trade_by_product(id))
-
-            if 'notionalCurrency' in filter:
-                for id in filter['notionalCurrency']:
-                    results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
-
-            if 'underlyingCurrency' in filter:
-                for id in filter['underlyingCurrency']:
-                    results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
-
-            if 'userIDcreatedBy' in filter:
-                for id in filter['userIDcreatedBy']:
-                    results.append(models.DerivativeTradesModel.get_trades_by_user(id))
             # if the filter is empty then return all the trades
             if filter == {}:
                 results.append(models.DerivativeTradesModel.get_trades_all())
+            else:
+                if 'dateCreated' in filter:
+                    results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
+
+                if 'tradeID' in filter:
+                    for id in filter['tradeID']:
+                        results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
+
+                if 'buyingParty' in filter:
+                    for id in filter['buyingParty']:
+                        results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
+
+                if 'sellingParty' in filter:
+                    for id in filter['sellingParty']:
+                        results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
+
+                if 'product' in filter:
+                    for id in filter['product']:
+                        results.append(models.DerivativeTradesModel.get_trade_by_product(id))
+
+                if 'notionalCurrency' in filter:
+                    for id in filter['notionalCurrency']:
+                        results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
+
+                if 'underlyingCurrency' in filter:
+                    for id in filter['underlyingCurrency']:
+                        results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
+
+                if 'userIDcreatedBy' in filter:
+                    for id in filter['userIDcreatedBy']:
+                        results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+
             #performs intersections on each result set from each query to find the filtered results
             final_results = None
+
             for each in results:
                 if final_results is None:
                     final_results = each
                 else:
                     final_results = final_results.intersect(each)
-
-            message = {}
 
             if isDryRun == "true":
                 if filter == {}:
@@ -347,8 +347,7 @@ class Trades(Resource):
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                     i += 1
-
-                message['matches'] = res
+                message = {'matches' : res}
                 return message, 201
             else:
                 return {'message': 'Request malformed'}, 400
