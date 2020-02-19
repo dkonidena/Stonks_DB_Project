@@ -61,18 +61,18 @@ function init() {
 
     getCurrencyList(new Date(), (currencies) => {
         currencies.forEach(addCurrencyToUI);
-    });
 
-    getCompanyList(null, 'mostBoughtFrom', (companies) => {
-        companies.forEach(addCompanyToUI);
-    });
+        getCompanyList(null, 'mostBoughtFrom', (companies) => {
+            companies.forEach(addCompanyToUI);
 
-    getProductList(null, (products) => {
-        products.forEach(addProductToUI);
-    });
+            getProductList(null, (products) => {
+                products.forEach(addProductToUI);
 
-    getTradeList(new TradeFilter(), (trades) => {
-        trades.forEach(addTradeToUI);
+                getTradeList(new TradeFilter(), (trades) => {
+                    trades.forEach(addTradeToUI);
+                });
+            });
+        });
     });
 
     $('.select2-cur').select2({
