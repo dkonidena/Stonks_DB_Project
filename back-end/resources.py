@@ -182,7 +182,7 @@ class Products(Resource):
                 res = []
                 for row in result:
                     dicto = {}
-                    dicto['id'] = row.ProductID
+                    dicto['id'] = str(row.ProductID)
                     dicto['name'] = row.ProductName
                     dicto['companyID'] = row.CompanyCode
                     dicto['valueInUSD'] = str(row.ProductPrice)
