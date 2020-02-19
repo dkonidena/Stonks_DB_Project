@@ -14,7 +14,7 @@ from string import ascii_uppercase
 # use models.date... instead of redefining date methods in here
 
 def returnCurrencySymbol(currencyCode):
-    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF"}
+    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
 
 
@@ -39,7 +39,7 @@ class Currencies(Resource):
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
                     # brokem until all currencies added
-                    # dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
+                    dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
                     res.append(dicto)
@@ -325,36 +325,44 @@ class Trades(Resource):
             if filter == {}:
                 results.append(models.DerivativeTradesModel.get_trades_all())
             else:
-                if 'dateCreated' in filter:
-                    results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
+                try:
+                    if 'dateCreated' in filter:
+                        # if str(filter['dateCreated'][1]) == "0000-12-31T00:01:15.000Z":
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0]))
+                        # elif if str(filter['dateCreated'][1]) == null end date:
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][1]))
+                        # else:
+                        results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
-                if 'tradeID' in filter:
-                    for id in filter['tradeID']:
-                        results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
+                    if 'tradeID' in filter:
+                        for id in filter['tradeID']:
+                            results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
 
-                if 'buyingParty' in filter:
-                    for id in filter['buyingParty']:
-                        results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
+                    if 'buyingParty' in filter:
+                        for id in filter['buyingParty']:
+                            results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
 
-                if 'sellingParty' in filter:
-                    for id in filter['sellingParty']:
-                        results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
+                    if 'sellingParty' in filter:
+                        for id in filter['sellingParty']:
+                            results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
 
-                if 'product' in filter:
-                    for id in filter['product']:
-                        results.append(models.DerivativeTradesModel.get_trade_by_product(id))
+                    if 'product' in filter:
+                        for id in filter['product']:
+                            results.append(models.DerivativeTradesModel.get_trade_by_product(id))
 
-                if 'notionalCurrency' in filter:
-                    for id in filter['notionalCurrency']:
-                        results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
+                    if 'notionalCurrency' in filter:
+                        for id in filter['notionalCurrency']:
+                            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
 
-                if 'underlyingCurrency' in filter:
-                    for id in filter['underlyingCurrency']:
-                        results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
+                    if 'underlyingCurrency' in filter:
+                        for id in filter['underlyingCurrency']:
+                            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
 
-                if 'userIDcreatedBy' in filter:
-                    for id in filter['userIDcreatedBy']:
-                        results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+                    if 'userIDcreatedBy' in filter:
+                        for id in filter['userIDcreatedBy']:
+                            results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+                except:
+                    return {'message': 'malformed filter'}, 400
 
             #performs intersections on each result set from each query to find the filtered results
             final_results = None
@@ -413,9 +421,9 @@ class Trades(Resource):
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
-            notionalValue = data['notionalValue']
+            notionalValue = data['notionalPrice']
             notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingValue']
+            underlyingValue = data['underlyingPrice']
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
@@ -461,9 +469,9 @@ class Trades(Resource):
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
-            notionalValue = data['notionalValue']
+            notionalValue = data['notionalPrice']
             notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingValue']
+            underlyingValue = data['underlyingPrice']
             underlyingCurrency = data['underlyingCurrency']
             maturityDate = data['maturityDate']
             strikePrice = data['strikePrice']
@@ -502,7 +510,6 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-        # delete below?
 
         try:
             dateCreated = request.args.getlist('date')

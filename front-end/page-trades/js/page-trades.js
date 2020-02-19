@@ -52,9 +52,9 @@ function loadTradeToForm(trade) {
     $("#maturityDateMonthInput").val(trade.maturityDate.getMonth()+1);
     $("#maturityDateYearInput").val(trade.maturityDate.getFullYear());
 
-    $("#notionalCurrencyInput").val(trade.notionalCurrency).trigger("change");
+    $("#notionalCurrencyInput").val(trade.notionalCurrency.code).trigger("change");
     $("#notionalPriceInput").val(trade.notionalPrice);
-    $("#underlyingCurrencyInput").val(trade.underlyingCurrency).trigger("change");
+    $("#underlyingCurrencyInput").val(trade.underlyingCurrency.code).trigger("change");
     $("#underlyingPriceInput").val(trade.underlyingPrice);
 
 
@@ -152,7 +152,7 @@ function filterObjectFromForm() {
 }
 
 function checkTradeButton_OnPressed() {
-    api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
+    api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showError);
     //TODO add visual feedback of the checks
 }
 
@@ -162,7 +162,7 @@ function addTradeButton_OnPressed() {
 }
 
 function saveTradeButton_OnPressed() {
-    api.post.trades(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
+    api.post.trades(tradeObjectFromForm().getAPIObject(), console.log, showError);
     //TODO add visual feedback of the save to user
 }
 

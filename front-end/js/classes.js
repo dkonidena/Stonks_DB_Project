@@ -154,19 +154,19 @@ function getProductList(date, res) {
 }
 
 class Currency {
-    constructor(code, sym, decimal, val) {
-        this.code = code;
-        this.symbol = sym;
-        this.allowDecimal = decimal;
-        this.value = val;
+    constructor() {
+        this.code = "";
+        this.symbol = "";
+        this.allowDecimal = true;
+        this.valueInUSD = "";
     }
 
     populateFromServerJSON(o) {
         try {
             this.code = o.code;
-            this.symbol = o.sym;
-            this.allowDecimal = o.decimal;
-            this.value = o.val;
+            this.symbol = o.symbol;
+            this.allowDecimal = o.allowDecimal;
+            this.valueInUSD = o.valueInUSD;
             return this;
         }
         catch {
@@ -186,7 +186,7 @@ function getCurrencyList(date, res) {
         for (let json of response.matches) {
             let currency = new Currency();
             currency.populateFromServerJSON(json);
-            currencies[currency.code];
+            currencies[currency.code] = currency;
         }
 
         res(Object.values(currencies));
