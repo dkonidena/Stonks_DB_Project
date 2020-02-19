@@ -510,48 +510,54 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-
         try:
-            dateCreated = request.args.getlist('date')
-            tradeID = request.args.get('tradeid')
-            buyingParty = request.args.get('buyingparty')
-            sellingParty = request.args.get('sellingparty')
-            product = request.args.get('product')
-            notionalCurrency = request.args.get('notionalcurrency')
-            underlyingCurrency = request.args.get('underlyingcurrency')
-            userIDcreatedBy = request.args.get('useridcreatedby')
+            try:
+                filter = json.loads(request.args.get('filter'))
+            except json.JSONDecodeError:
+                return {'message': 'malformed filter'}, 400
+
+            # this needs error checking
             isDryRun = request.args.get('isDryRun')
 
-            results = list() #stores results for each query/filter that is applied by the user
-            if len(dateCreated) > 0:
-                results.append(models.DerivativeTradesModel.get_trades_between(dateCreated[0], dateCreated[1]))
+            # TODO add dateModified filter
+            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
-            if tradeID is not None:
-                results.append(models.DerivativeTradesModel.get_trade_with_id(tradeID))
+            # either dateCreated will be passed or nothing will be passed
+            if 'dateCreated' in filter:
+                results = models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1])
+                noOfMatches = results.count()
+                tradeDates = results.distinct(models.DerivativeTradesModel.DateOfTrade).group_by(models.DerivativeTradesModel.DateOfTrade)
+            else:
+                results = models.DerivativeTradesModel.get_trades_all()
+                noOfMatches = len(results)
+                tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
 
-            if buyingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_bought_by(buyingParty))
+            if isDryRun == 'true':
+                return {'noOfMatches' : noOfMatches}
+            elif isDryRun == 'false':
+                message = {'matches' : []}
+                for each in tradeDates:
+                    report = {'date': None, 'content': None}
+                    date = str(each.DateOfTrade)
+                    formattedDate = datetime.strptime(date, '%Y-%m-%d')
+                    isoDate = formattedDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+                    content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
+                    for row in results:
+                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.Product) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
+                        #print(content)
+                    report['date'] = isoDate
+                    report['content'] = content
+                    message['matches'].append(report)
+                return message, 200
+            else:
+                return {'message' : 'Request Malformed'}, 400
 
-            if sellingParty is not None:
-                results.append(models.DerivativeTradesModel.get_trades_sold_by(sellingParty))
-
-            if product is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_product(product))
-
-            if notionalCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(notionalCurrency))
-
-            if underlyingCurrency is not None:
-                results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(underlyingCurrency))
-
-            if userIDcreatedBy is not None:
-                results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
-
-            return {'message' : 'need to finish'}, 200
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
-            return {'message' : 'error occured'}, 500
-
+            return {'message' : 'error occurred'}, 500
 
 class Rules(Resource):
     def get(self):
