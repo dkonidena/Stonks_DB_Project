@@ -52,9 +52,9 @@ function loadTradeToForm(trade) {
     $("#maturityDateMonthInput").val(trade.maturityDate.getMonth()+1);
     $("#maturityDateYearInput").val(trade.maturityDate.getFullYear());
 
-    $("#notionalCurrencyInput").val(trade.notionalCurrency).trigger("change");
+    $("#notionalCurrencyInput").val(trade.notionalCurrency.code).trigger("change");
     $("#notionalPriceInput").val(trade.notionalPrice);
-    $("#underlyingCurrencyInput").val(trade.underlyingCurrency).trigger("change");
+    $("#underlyingCurrencyInput").val(trade.underlyingCurrency.code).trigger("change");
     $("#underlyingPriceInput").val(trade.underlyingPrice);
 
 
