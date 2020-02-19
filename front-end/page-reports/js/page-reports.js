@@ -13,7 +13,7 @@ function loadReportToForm(report) {
     $("#reportDateMonthInput").val(report.date.getMonth()+1);
     $("#reportDateYearInput").val(report.date.getFullYear());
 
-    renderTable(report.content);
+    renderTable(report.content, `report-${report.date.toLocaleDateString()}.csv`);
 }
 
 function filterObjectFromForm() {
@@ -37,7 +37,7 @@ function filterObjectFromForm() {
     return filter;
 }
 
-function renderTable(csv) {
+function renderTable(csv, name) {
     status.innerText = "loading report...";
     let blob = new Blob([csv], { type: "text/plain" });
 
@@ -47,6 +47,7 @@ function renderTable(csv) {
         allow_download: true,
         csv_options: {separator: ",", delimiter: "\""},
         datatables_options: {"paging": true},
-        onComplete: () => { status.innerText = ""; }
+        onComplete: () => { status.innerText = ""; },
+        downloadName: name
     });
 }
