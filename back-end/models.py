@@ -217,20 +217,10 @@ class DerivativeTradesModel(db.Model):
             return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-
-    # returns all trades that have existed
     @classmethod
     def get_trades_all(cls):
         try:
             return cls.query.all()
-        except exc.ProgrammingError:
-            raise exc.ProgrammingError("", "", 1)
-
-    # returns all dates the trades were made on
-    @classmethod
-    def get_all_trade_dates(cls):
-        try:
-            return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 

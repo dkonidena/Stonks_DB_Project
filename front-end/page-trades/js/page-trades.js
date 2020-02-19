@@ -62,21 +62,13 @@ function loadTradeToForm(trade) {
     $("#strikePriceInput").val(trade.strikePrice);
 }
 
-function companyNameToObject(name) {
-    return Object.values(companies).filter(x => x.name === name)[0];
-}
-
-function productNameToObject(name) {
-    return Object.values(products).filter(x => x.name === name)[0];
-}
-
 function tradeObjectFromForm() {
     // TODO whole function needs error handling
     let trade = new Trade();
 
-    trade.product = productNameToObject($("#productInput").val());
-    trade.buyingParty = companyNameToObject($("#buyingPartyInput").val());
-    trade.sellingParty = companyNameToObject($("#sellingPartyInput").val());
+    trade.product = Object.values(products).filter(x => x.name === $("#productInput").val())[0];
+    trade.buyingParty = Object.values(companies).filter(x => x.name === $("#buyingPartyInput").val())[0];;
+    trade.sellingParty = Object.values(companies).filter(x => x.name === $("#sellingPartyInput").val())[0];;
 
     trade.tradeDate.setDate($("#tradeDateDayInput").val());
     trade.tradeDate.setMonth($("#tradeDateMonthInput").val()-1);
@@ -141,26 +133,21 @@ function filterObjectFromForm() {
         filter.dateModified.before = filter.dateModified.before.toISOString();
     }
 
+    // TODO these 4 members need to be populated with IDs not names
+    let tradeID = $("#filter-tradeIDInput").val();
+    if (tradeID !== "") { filter.tradeID = tradeID; }
+
     // this gets the labels from a select2 input box's return object
     const labelExtractor = x => x.text
 
-    let tradeID = $("#filter-tradeIDInput").val();
-    if (tradeID !== "") { filter.tradeID = [tradeID]; }
-
     let buyingParty = $("#filter-buyerInput").select2('data');
-    if (buyingParty.length > 0) {
-        filter.buyingParty = buyingParty.map((entry) => { return companyNameToObject(entry.text).id });
-    }
+    if (buyingParty.length > 0) { filter.buyingParty = buyingParty.map(labelExtractor); }
 
     let sellingParty = $("#filter-sellerInput").select2('data');
-    if (sellingParty.length > 0) {
-        filter.sellingParty = sellingParty.map((entry) => { return companyNameToObject(entry.text).id });
-    }
+    if (sellingParty.length > 0) { filter.sellingParty = sellingParty.map(labelExtractor); }
 
     let product = $("#filter-productInput").select2('data');
-    if (product.length > 0) {
-        filter.product = product.map((entry) => { return productNameToObject(entry.text).id });
-    }
+    if (product.length > 0) { filter.product = product.map(labelExtractor); }
 
     // these inputs should already contain currency codes so this bit should work
     let notionalCurrency = $("#filter-notionalCurrencyInput").select2('data');
@@ -169,8 +156,9 @@ function filterObjectFromForm() {
     let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
     if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
 
-    let userIDCreatedBy = $("#filter-userIDInput").val();
-    if (userIDCreatedBy !== "") { filter.userIDCreatedBy = [userIDCreatedBy]; }
+    // TODO do we need to get a list of userIDs? currently is is impossible to enter anything into this input
+    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
+    if (userIDCreatedBy.length > 0) { filter.userIDCreatedBy = userIDCreatedBy; }
 
     return filter;
 }
