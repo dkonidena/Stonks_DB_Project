@@ -333,7 +333,7 @@ class Trades(Resource):
                 for row in final_results:
                     dicto = {}
                     dicto['tradeID'] = row.TradeID
-                    dicto['product'] = row.Product
+                    dicto['product'] = row.ProductID
                     dicto['quantity'] = row.Quantity
                     dicto['buyingParty'] = row.BuyingParty
                     dicto['sellingParty'] = row.SellingParty

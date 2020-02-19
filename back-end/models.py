@@ -161,7 +161,7 @@ class DerivativeTradesModel(db.Model):
     __tablename__ = 'DerivativeTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfTrade = db.Column(db.String(120), nullable = False)
-    Product = db.Column(db.Integer, nullable = False)
+    ProductID = db.Column(db.Integer, nullable = False)
     BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     NotionalValue = db.Column(db.Float, nullable = False)
@@ -218,9 +218,9 @@ class DerivativeTradesModel(db.Model):
 
     # serves the get request for a filtered product name
     @classmethod
-    def get_trade_by_product(cls, productName):
+    def get_trade_by_product(cls, productID):
         try:
-            return cls.query.filter(ProductModel.ProductName == productName, ProductModel.ProductID == ProductTradesModel.ProductID, ProductTradesModel.TradeID == cls.TradeID)
+            return cls.query.filter(cls.ProductID == productID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
