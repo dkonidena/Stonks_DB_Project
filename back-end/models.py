@@ -1,15 +1,13 @@
 from run import db
-from datetime import date
+from datetime import datetime
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
 import traceback
 import sys
 
-def to_iso(date_string):
-    try:
-        iso_object = date.fromisoformat(date_string)
-        return str(iso_object)
-    except:
-        raise ValueError
+def parse_iso_date(date_string):
+    # this function takes an iso8601 string and converts it into a YYYY-MM-DD string
+    date = datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+    return str(date)
 
 class CompanyModel(db.Model):
     __tablename__ = 'Companies'
@@ -34,7 +32,7 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
-            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= to_iso(date))
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -111,7 +109,7 @@ class CurrencyValuationsModel(db.Model):
     @classmethod
     def retrieve_currency(cls, date):
         try:
-            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(to_iso(date)+"%")).all()
+            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(parse_iso_date(date)+"%")).all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -146,7 +144,7 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def get_trades_between(cls, startDate, endDate):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= to_iso(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= to_iso(endDate))
+            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
@@ -371,7 +369,7 @@ class ProductModel(db.Model):
     @classmethod
     def retrieve_products_on_date(cls, date):
         try:
-            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == to_iso(date)).\
+            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == parse_iso_date(date)).\
             with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)

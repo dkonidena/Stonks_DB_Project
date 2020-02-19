@@ -4,7 +4,6 @@ from flask import request
 import json
 import uuid
 import random
-from datetime import date
 import traceback
 from sqlalchemy import exc
 import sys
