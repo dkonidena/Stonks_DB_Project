@@ -46,7 +46,7 @@ class Trade {
 
     populateFromServerJSON(o) {
         try {
-            this.tradeId = o.tradeId;
+            this.tradeId = o.tradeID;
             this.tradeDate = new Date(o.tradeDate);
             this.userIdCreatedBy = o.userIdCreatedBy;
             this.lastModifiedDate = new Date(o.lastModifiedDate);
