@@ -182,7 +182,7 @@ class Products(Resource):
                 res = []
                 for row in result:
                     dicto = {}
-                    dicto['id'] = row.ProductID
+                    dicto['id'] = str(row.ProductID)
                     dicto['name'] = row.ProductName
                     dicto['companyID'] = row.CompanyCode
                     dicto['valueInUSD'] = str(row.ProductPrice)
@@ -354,7 +354,7 @@ class Trades(Resource):
                 for row in final_results:
                     dicto = {}
                     dicto['tradeID'] = row.TradeID
-                    dicto['product'] = row.ProductID
+                    dicto['product'] = str(row.ProductID)
                     dicto['quantity'] = row.Quantity
                     dicto['buyingParty'] = row.BuyingParty
                     dicto['sellingParty'] = row.SellingParty
@@ -362,10 +362,10 @@ class Trades(Resource):
                     dicto['notionalCurrency'] = row.NotionalCurrency
                     dicto['underlyingValue'] = row.UnderlyingValue
                     dicto['underlyingCurrency'] = row.UnderlyingCurrency
-                    dicto['strikePrice'] = row.StrikePrice
+                    dicto['strikePrice'] = str(row.StrikePrice)
                     dicto['maturityDate'] = row.MaturityDate
                     dicto['tradeDate'] = row.DateOfTrade
-                    dicto['userIDcreatedBy'] = row.UserIDCreatedBy
+                    dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
                     res.append(dicto)
                     i += 1
                 message = {'matches' : res}
