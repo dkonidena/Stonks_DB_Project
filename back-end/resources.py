@@ -236,18 +236,18 @@ class Products(Resource):
             # then create the date now
             date_now = str(date_func.today())
             # add to product table, date_now used as dateEnteredIntoSystem
-            new_product = models.ProductModel(name, date_now)
+            new_product = models.ProductModel(ProductName = name, DateEnteredInSystem = date_now)
             new_productID = new_product.save_to_db()
             # add to the product seller table
-            new_product_seller = models.ProductSellersModel(new_productID, companyCode)
+            new_product_seller = models.ProductSellersModel(ProductID = new_productID, CompanyCode = companyCode)
             new_product_seller.save_to_db()
             # add to the product valuation table, date_used as DateOfValuation
-            new_product_valuation = models.ProductValuationsModel(new_productID, value, date_now)
+            new_product_valuation = models.ProductValuationsModel(ProductID = new_productID, ProductPrice = value, DateOfValuation = date_now)
             new_product_valuation.save_to_db()
             # log the action
             userAction = "User has inserted a new record in the Products table with the ID: " + str(new_productID)
             user_ID = 1 # placeholder
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(UserAction = userAction, DateOfEvent = date_now, EmployeeID = user_ID)
             new_event.save_to_db()
             return {'message': 'product has been added'}, 201
         except exc.IntegrityError:
