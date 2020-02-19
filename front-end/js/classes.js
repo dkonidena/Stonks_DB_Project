@@ -249,7 +249,7 @@ function getCompanyList(date, order, res) {
 
 class Filter {
     constructor() {
-        this.dateCreated = new Date();
+        this.dateCreated = null;
     }
 
     getAPIObject() {
@@ -271,7 +271,7 @@ class Filter {
 class TradeFilter extends Filter {
     constructor() {
         super();
-        this.dateModified = new Date();
+        this.dateModified = null;
         this.tradeID = null;
         this.buyingParty = null;
         this.sellingParty = null;
