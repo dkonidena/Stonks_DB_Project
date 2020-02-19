@@ -395,9 +395,9 @@ class Trades(Resource):
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = data['maturityDate']
-            DateOfTrade = models.dateFormat(datetime.now())
+            date_now = str(date_func.today())
             user_ID = 1 # placeholder
-            new_trade = models.DerivativeTradesModel(id, DateOfTrade, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, user_ID)
+            new_trade = models.DerivativeTradesModel(id, date_now, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, user_ID)
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
@@ -415,8 +415,7 @@ class Trades(Resource):
 
             #Logging the user action
             userAction = "User has inserted a new record in the Trades table with the ID: " + str(new_tradeID)
-            dateOfEvent = models.dateFormat(datetime.now())
-            new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
+            new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return {'message': 'trade has been added'}, 201
         except exc.IntegrityError:
@@ -447,7 +446,7 @@ class Trades(Resource):
 
             #Logging the user action
             userAction = "User has updated a record in the Trades table with the ID: " + trade_ID
-            dateOfEvent = models.dateFormat(datetime.now())
+            dateOfEvent = str(date_func.today())
             user_ID = 1 # placeholder
             new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
             new_event.save_to_db()
