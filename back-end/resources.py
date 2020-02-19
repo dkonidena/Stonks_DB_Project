@@ -416,9 +416,9 @@ class Trades(Resource):
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
-            notionalValue = data['notionalValue']
+            notionalValue = data['notionalPrice']
             notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingValue']
+            underlyingValue = data['underlyingPrice']
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
