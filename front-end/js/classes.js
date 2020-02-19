@@ -1,22 +1,22 @@
-var currencies = [];
-var companies = [];
-var products = [];
-var trades = [];
+var currencies = {};
+var companies = {};
+var products = {};
+var trades = {};
 
 class Trade {
     constructor(id) {
         this.tradeId = id;
         this.tradeDate = new Date();
         this.userIdCreatedBy = 0;
-        this.lastModifiedDate = new Date();
-        this.product = new Product();
-        this.buyingParty == new Company();
-        this.sellingParty = new Company();
+        this.lastModifiedDate = null; //new Date();
+        this.product = null; //new Product();
+        this.buyingParty = null; //new Company();
+        this.sellingParty = null; //new Company();
         this.quantity = 0;
         this.notionalPrice = "";
-        this.notionalCurrency = new Currency();
+        this.notionalCurrency = null; //new Currency();
         this.underlyingPrice = ""
-        this.underlyingCurrency = new Currency();;
+        this.underlyingCurrency = null; //new Currency();;
         this.maturityDate = new Date();
         this.strikePrice = "";
     }
@@ -43,14 +43,14 @@ class Trade {
             this.tradeDate = new Date(o.tradeDate);
             this.userIdCreatedBy = o.userIDcreatedBy;
             this.lastModifiedDate = new Date(o.lastModifiedDate);
-            this.product = products.filter((x) => { x.id === o.product });
-            this.buyingParty = companies.filter((x) => { x.id === o.buyingParty });
-            this.sellingParty = companies.filter((x) => { x.id === o.sellingParty });
+            this.product = products[o.product];
+            this.buyingParty = companies[o.buyingParty];
+            this.sellingParty = companies[o.sellingParty];
             this.quantity = o.quantity;
             this.notionalPrice = o.notionalPrice;
-            this.notionalCurrency = currencies.filter((x) => { x.code === o.notionalCurrency });
+            this.notionalCurrency = currencies[o.notionalCurrency];
             this.underlyingPrice = o.underlyingPrice;
-            this.underlyingCurrency = currencies.filter((x) => { x.code === o.underlyingCurrency });
+            this.underlyingCurrency = currencies[o.underlyingCurrency];
             this.maturityDate = new Date(o.maturityDate);
             this.strikePrice = o.strikePrice;
             return this;
@@ -77,9 +77,6 @@ class APITrade {
 }
 
 function getTradeList(filter, res) {
-    // default to between 2000 and now
-    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
-
     api.get.trades(filter.getAPIObject(), false, (response) => {
         if (response['matches'] === undefined) {
             showError("Malformed server reponse", "trade matches field not present", false);
@@ -89,11 +86,10 @@ function getTradeList(filter, res) {
         for (let json of response.matches) {
             let trade = new Trade();
             trade.populateFromServerJSON(json);  // TODO error handling
-            if (trade != null)
-                trades.push(trade);
+            trades[trade.tradeId] = trade;
         }
 
-        if (res !== undefined) { res(trades); }
+        res(Object.values(trades));
     }, showError);
 }
 
@@ -101,17 +97,17 @@ class Product {
     constructor() {
         this.id = "";
         this.name = "";
-        this.company = new Company();
-        this.value = 0;
-        this.creationDate = new Date();
-        this.userIdCreatedBy = 0;
+        this.company = null; //new Company();
+        this.valueInUSD = "";
+        this.dateEnteredIntoSystem = null; //new Date();
+        this.userIDcreatedBy = "";
     }
 
 	getAPIObject() {
 		let a = new APIProduct();
-		a.id = this.id;
-		a.value = this.value;
-		a.company = this.company.id;
+		a.name = this.name;
+		a.valueInUSD = this.valueInUSD;
+		a.companyID = this.company.id;
 		return a;
 	}
 
@@ -120,10 +116,10 @@ class Product {
             //TODO make less ugly
             this.id = o.id;
             this.name = o.name;
-            this.company = companies.filter((x) => { x.id === o.company });;
-            this.value = o.value;
-            this.creationDate = new Date(o.value);
-            this.userIdCreatedBy = o.userIdCreatedBy;
+            this.company = companies[o.companyID];
+            this.valueInUSD = o.valueInUSD;
+            this.dateEnteredIntoSystem = new Date(o.dateEnteredIntoSystem);
+            this.userIDcreatedBy = o.userIDcreatedBy;
             return this;
         }
         catch {
@@ -134,9 +130,9 @@ class Product {
 
 class APIProduct {
 	constructor() {
-		this.id = "";
-		this.value = "";
-		this.company = "";
+		this.name = "";
+		this.valueInUSD = "";
+		this.companyID = "";
 	}
 }
 
@@ -150,11 +146,10 @@ function getProductList(date, res) {
         for (let json of response.matches) {
             let product = new Product();
             product.populateFromServerJSON(json);
-            if (product != null)
-                products.push(product);
+            products[product.id] = product;
         }
 
-        if (res !== undefined) { res(products); }
+        res(Object.values(products));
     }, showError);
 }
 
@@ -191,11 +186,10 @@ function getCurrencyList(date, res) {
         for (let json of response.matches) {
             let currency = new Currency();
             currency.populateFromServerJSON(json);
-            if (currency != null)
-                currencies.push(currency);
+            currencies[currency.code];
         }
 
-        if (res !== undefined) { res(currencies); }
+        res(Object.values(currencies));
     }, showError);
 }
 
@@ -203,15 +197,13 @@ class Company {
     constructor() {
         this.id = "";
         this.name = "";
-        this.foundedDate = new Date();
-        this.creationDate = new Date();
-        this.userIdCreatedBy = 0;
+        this.dateEnteredIntoSystem = null; //new Date();
+        this.userIDcreatedBy = "";
     }
 
 	getAPIObject() {
 		let c = new APICompany();
-		c.id = this.id;
-		c.foundedDate = this.foundedDate;
+		c.name = this.name;
 		return c;
 	}
 
@@ -219,9 +211,8 @@ class Company {
         try {
             this.id = o.id;
             this.name = o.name;
-            this.foundedDate = new Date(o.foundedDate);
-            this.creationDate = new Date(o.creationDate);
-            this.userIdCreatedBy = o.userIdCreatedBy;
+            this.dateEnteredIntoSystem = new Date(o.dateEnteredIntoSystem);
+            this.userIDcreatedBy = o.userIDcreatedBy;
             return this;
         }
         catch {
@@ -233,7 +224,6 @@ class Company {
 class APICompany {
 	constructor() {
 		this.name = "";
-		this.foundedDate = "";
 	}
 }
 
@@ -247,11 +237,10 @@ function getCompanyList(date, order, res) {
         for (let json of response.matches) {
             let company = new Company();
             company.populateFromServerJSON(json);
-            if (company != null)
-                companies.push(company);
+            companies[company.id] = company;
         }
 
-        if (res !== undefined) { res(companies); }
+        res(Object.values(companies));
     }, showError);
 }
 
