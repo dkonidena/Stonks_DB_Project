@@ -152,7 +152,7 @@ function filterObjectFromForm() {
 }
 
 function checkTradeButton_OnPressed() {
-    api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
+    api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showError);
     //TODO add visual feedback of the checks
 }
 
@@ -162,7 +162,7 @@ function addTradeButton_OnPressed() {
 }
 
 function saveTradeButton_OnPressed() {
-    api.post.trades(tradeObjectFromForm().getAPIObject(), console.log, showRequestError);
+    api.post.trades(tradeObjectFromForm().getAPIObject(), console.log, showError);
     //TODO add visual feedback of the save to user
 }
 
