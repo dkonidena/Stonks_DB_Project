@@ -37,12 +37,12 @@ function loadTradeToForm(trade) {
     $("#tradeIdInput").val(trade.tradeId);
 
     let elem = $("#productInput");
-    elem.val(trade.product).trigger("change");
+    elem.val(trade.product.name).trigger("change");
     if (!elem.select2("data").length) {
         showError("Could not find product for trade", trade);
     }
-    $("#buyingPartyInput").val(trade.buyingParty).trigger("change");
-    $("#sellingPartyInput").val(trade.sellingParty).trigger("change");
+    $("#buyingPartyInput").val(trade.buyingParty.name).trigger("change");
+    $("#sellingPartyInput").val(trade.sellingParty.name).trigger("change");
 
     $("#tradeDateDayInput").val(trade.tradeDate.getDate());
     $("#tradeDateMonthInput").val(trade.tradeDate.getMonth()+1);
