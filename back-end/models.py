@@ -373,6 +373,13 @@ class ProductModel(db.Model):
             with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def retrieve_products(cls):
+        try:
+            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID).\
+            with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
 
 
 class ProductValuationsModel(db.Model):
