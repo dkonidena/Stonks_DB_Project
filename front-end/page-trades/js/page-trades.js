@@ -33,20 +33,14 @@ function addCompanyToUI(c) {
     $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
 }
 
-function showRequestError(error, debugData) {
-    showError(error.message, "Request:\n" + JSON.stringify(debugData, null, 2));
-}
-
-function showError(error = '', detail = '') {
-    $('#errorShort').text(error);
-    $('#errorDetailContent').text(detail);
-    $('#apiErrorModal').modal('show');
-}
-
 function loadTradeToForm(trade) {
     $("#tradeIdInput").val(trade.tradeId);
 
-    $("#productInput").val(trade.product).trigger("change");
+    let elem = $("#productInput");
+    elem.val(trade.product).trigger("change");
+    if (!elem.select2("data").length) {
+        showError("Could not find product for trade", trade);
+    }
     $("#buyingPartyInput").val(trade.buyingParty).trigger("change");
     $("#sellingPartyInput").val(trade.sellingParty).trigger("change");
 
@@ -164,7 +158,7 @@ function checkTradeButton_OnPressed() {
 }
 
 function addTradeButton_OnPressed() {
-    showError('not implemented');
+    showError('NotImplementedError');
     // TODO
 }
 

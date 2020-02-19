@@ -9,55 +9,48 @@ class Trade {
         this.tradeDate = new Date();
         this.userIdCreatedBy = 0;
         this.lastModifiedDate = new Date();
-        this.product = ""; // a Product ID
-        this.buyingParty = ""; // a Company ID
-        this.sellingParty = ""; // a Company ID
+        this.product = new Product();
+        this.buyingParty == new Company();
+        this.sellingParty = new Company();
         this.quantity = 0;
         this.notionalPrice = "";
-        this.notionalCurrency = "";
-        this.underlyingPrice = "";
-        this.underlyingCurrency = "";
+        this.notionalCurrency = new Currency();
+        this.underlyingPrice = ""
+        this.underlyingCurrency = new Currency();;
         this.maturityDate = new Date();
         this.strikePrice = "";
     }
 
-    getNotionalCurrencyObject() {
-        return getCurrencyList().filter((x) => { x.code == this.notionalCurrency })[0];
-    }
-
-    getUnderlyingCurrencyObject() {
-        return getCurrencyList().filter((x) => { x.code == this.underlyingCurrency })[0];
-    }
-
     getAPIObject() {
         let a = new APITrade();
-        a.product = this.product;
-        a.buyingParty = this.buyingParty;
-        a.sellingParty = this.sellingParty;
+        a.product = this.product.id;
+        a.buyingParty = this.buyingParty.id;
+        a.sellingParty = this.sellingParty.id;
         a.quantity = this.quantity;
         a.notionalPrice = this.notionalPrice;
-        a.notionalCurrency = this.notionalCurrency;
+        a.notionalCurrency = this.notionalCurrency.code;
         a.underlyingPrice = this.underlyingPrice;
-        a.underlyingCurrency = this.underlyingCurrency;
+        a.underlyingCurrency = this.underlyingCurrency.code;
         a.maturityDate = this.maturityDate.toISOString();
         a.strikePrice = this.strikePrice;
         return a;
     }
 
     populateFromServerJSON(o) {
+        //TODO: make less ugly
         try {
-            this.tradeId = o.tradeId;
+            this.tradeId = o.tradeID;
             this.tradeDate = new Date(o.tradeDate);
-            this.userIdCreatedBy = o.userIdCreatedBy;
+            this.userIdCreatedBy = o.userIDCreatedBy;
             this.lastModifiedDate = new Date(o.lastModifiedDate);
-            this.product = o.product;
-            this.buyingParty = o.buyingParty;
-            this.sellingParty = o.sellingParty;
+            this.product = products.filter((x) => { x.id === o.product });
+            this.buyingParty = companies.filter((x) => { x.id === o.buyingParty });
+            this.sellingParty = companies.filter((x) => { x.id === o.sellingParty });
             this.quantity = o.quantity;
             this.notionalPrice = o.notionalPrice;
-            this.notionalCurrency = o.notionalCurrency;
+            this.notionalCurrency = currencies.filter((x) => { x.code === o.notionalCurrency });
             this.underlyingPrice = o.underlyingPrice;
-            this.underlyingCurrency = o.underlyingCurrency;
+            this.underlyingCurrency = currencies.filter((x) => { x.code === o.underlyingCurrency });
             this.maturityDate = new Date(o.maturityDate);
             this.strikePrice = o.strikePrice;
             return this;
@@ -84,9 +77,12 @@ class APITrade {
 }
 
 function getTradeList(filter, res) {
+    // default to between 2000 and now
+    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
+
     api.get.trades(filter.getAPIObject(), false, (response) => {
-        if (response.matches === undefined) {
-            showError("Malformed server reponse", "matches field not present");
+        if (response['matches'] === undefined) {
+            showError("Malformed server reponse", "trade matches field not present", false);
             return;
         }
 
@@ -98,14 +94,14 @@ function getTradeList(filter, res) {
         }
 
         if (res !== undefined) { res(trades); }
-    }, showRequestError);
+    }, showError);
 }
 
 class Product {
     constructor() {
         this.id = "";
         this.name = "";
-        this.companyId = "";
+        this.company = new Company();
         this.value = 0;
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
@@ -115,15 +111,16 @@ class Product {
 		let a = new APIProduct();
 		a.id = this.id;
 		a.value = this.value;
-		a.company = this.companyId;
+		a.company = this.company.id;
 		return a;
 	}
 
     populateFromServerJSON(o) {
         try {
+            //TODO make less ugly
             this.id = o.id;
             this.name = o.name;
-            this.companyId = o.companyId;
+            this.company = companies.filter((x) => { x.id === o.company });;
             this.value = o.value;
             this.creationDate = new Date(o.value);
             this.userIdCreatedBy = o.userIdCreatedBy;
@@ -146,7 +143,7 @@ class APIProduct {
 function getProductList(date, res) {
     api.get.products(date, false, (response) => {
         if (response.matches === undefined) {
-            showError("Malformed server reponse", "matches field not present");
+            showError("Malformed server reponse", "product matches field not present");
             return;
         }
 
@@ -158,7 +155,7 @@ function getProductList(date, res) {
         }
 
         if (res !== undefined) { res(products); }
-    }, showRequestError);
+    }, showError);
 }
 
 class Currency {
@@ -187,7 +184,7 @@ class Currency {
 function getCurrencyList(date, res) {
     api.get.currencies(date, false, (response) => {
         if (response.matches === undefined) {
-            showError("Malformed server reponse", "matches field not present");
+            showError("Malformed server reponse", "currency matches field not present");
             return;
         }
 
@@ -199,13 +196,14 @@ function getCurrencyList(date, res) {
         }
 
         if (res !== undefined) { res(currencies); }
-    }, showRequestError);
+    }, showError);
 }
 
 class Company {
     constructor() {
         this.id = "";
         this.name = "";
+        this.foundedDate = new Date();
         this.creationDate = new Date();
         this.userIdCreatedBy = 0;
     }
@@ -213,6 +211,7 @@ class Company {
 	getAPIObject() {
 		let c = new APICompany();
 		c.id = this.id;
+		c.foundedDate = this.foundedDate;
 		return c;
 	}
 
@@ -220,6 +219,7 @@ class Company {
         try {
             this.id = o.id;
             this.name = o.name;
+            this.foundedDate = new Date(o.foundedDate);
             this.creationDate = new Date(o.creationDate);
             this.userIdCreatedBy = o.userIdCreatedBy;
             return this;
@@ -233,13 +233,14 @@ class Company {
 class APICompany {
 	constructor() {
 		this.name = "";
+		this.foundedDate = "";
 	}
 }
 
 function getCompanyList(date, order, res) {
     api.get.companies(date, order, false, (response) => {
         if (response.matches === undefined) {
-            showError("Malformed server reponse", "matches field not present");
+            showError("Malformed server reponse", "company matches field not present");
             return;
         }
 
@@ -251,7 +252,7 @@ function getCompanyList(date, order, res) {
         }
 
         if (res !== undefined) { res(companies); }
-    }, showRequestError);
+    }, showError);
 }
 
 class Filter {

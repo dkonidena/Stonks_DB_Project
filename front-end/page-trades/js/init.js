@@ -63,11 +63,11 @@ function init() {
         currencies.forEach(addCurrencyToUI);
     });
 
-    getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
+    getCompanyList(null, 'mostBoughtFrom', (companies) => {
         companies.forEach(addCompanyToUI);
     });
 
-    getProductList(new Date(), (products) => {
+    getProductList(null, (products) => {
         products.forEach(addProductToUI);
     });
 

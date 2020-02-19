@@ -19,6 +19,17 @@ function setInputFilter(t, filter) {
     });
 }
 
+function showError(error, debugData = '', stringify = true) {
+    if (stringify && debugData !== '') debugData = JSON.stringify(debugData, null, 2);
+    showErrorDialogue(error, debugData);
+}
+
+function showErrorDialogue(error = '', detail = '') {
+    $('#errorShort').text(error);
+    $('#errorDetailContent').text(detail);
+    $('#apiErrorModal').modal('show');
+}
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
