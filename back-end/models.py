@@ -94,7 +94,6 @@ class CompanyModel(db.Model):
         try:
             row = cls.query.filter_by(CompanyCode = companycode).first()
             row.CompanyName = name
-            # row.DateFounded = datefounded
             db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
@@ -104,6 +103,7 @@ class CompanyModel(db.Model):
     def delete_company(cls, companycode):
         try:
             cls.query.filter_by(CompanyCode = companycode).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
@@ -278,6 +278,7 @@ class DerivativeTradesModel(db.Model):
     def delete_trade(cls, trade_id):
         try:
             cls.query.filter_by(TradeID = trade_id).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
@@ -403,6 +404,7 @@ class ProductModel(db.Model):
     def delete_product(cls, product_id):
         try:
             cls.query.filter_by(ProductID = product_id).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 

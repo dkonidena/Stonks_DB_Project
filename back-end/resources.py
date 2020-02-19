@@ -70,10 +70,10 @@ class Companies(Resource):
                 return message, 201
             elif isDryRun == "false":
                 # check if the date parameter is passed
-                if date is None: 
+                if date is None:
                     # if not, return all companies
                     result = models.CompanyModel.retrieve_all_companies()
-                else: 
+                else:
                     # if so, return all companies that existed on or before the date
                     result = models.CompanyModel.retrieve_companies_before(date)
                 i = 1
@@ -83,7 +83,6 @@ class Companies(Resource):
                     dicto['id'] = row.CompanyCode
                     dicto['name'] = row.CompanyName
                     dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                    # dicto['dateFounded'] = row.DateFounded
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                 message['matches'] = res
@@ -104,9 +103,8 @@ class Companies(Resource):
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
             user_ID = 1 # placeholder
-            # dateFounded = data['dateFounded']
             date_entered = models.formatDate(datetime.now())
-            new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID and date_entered
+            new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID
             new_company.save_to_db()
             userAction = "User has inserted a new record in the Companies table with the ID: " + code
             new_event = models.EventLogModel(userAction, date_entered, user_ID)
@@ -174,7 +172,7 @@ class Products(Resource):
                     dicto['name'] = row.ProductName
                     dicto['companyID'] = row.CompanyCode
                     dicto['valueInUSD'] = str(row.ProductPrice)
-                    # dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
+                    dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                 message['matches'] = res
@@ -345,9 +343,8 @@ class Trades(Resource):
                     dicto['underlyingCurrency'] = row.UnderlyingCurrency
                     dicto['strikePrice'] = row.StrikePrice
                     dicto['maturityDate'] = row.MaturityDate
-                    # dicto['tradeDate'] = row.TradeDate
+                    dicto['tradeDate'] = row.DateOfTrade
                     dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    # dicto['lastModifiedDate'] = row.LastModifiedDate
                     res.append(dicto)
                     i += 1
 
