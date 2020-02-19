@@ -48,7 +48,7 @@ class Currencies(Resource):
                 return {'message': 'Request malformed'}, 400
         except ValueError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'Date invalid'}, 202
+            return {'message': 'Date invalid'}, 400
         except exc.IntegrityError:
             return {'message': "An error has occured pertaining to Integrity issues. Please re-enter the parameters"}, 500
 
@@ -94,7 +94,7 @@ class Companies(Resource):
                 return {'message': 'Request malformed'}, 400
         except ValueError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'date invalid'}, 202
+            return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message':'error occurred'}, 202
@@ -194,7 +194,7 @@ class Products(Resource):
                 return {'message': 'Request malformed'}, 400
         except ValueError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'date invalid'}, 202
+            return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'error occurred'}, 202
@@ -373,7 +373,7 @@ class Trades(Resource):
                 return {'message': 'Request malformed'}, 400
         except ValueError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'Date invalid'}, 202
+            return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
