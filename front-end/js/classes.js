@@ -41,7 +41,7 @@ class Trade {
         try {
             this.tradeId = o.tradeID;
             this.tradeDate = new Date(o.tradeDate);
-            this.userIdCreatedBy = o.userIDCreatedBy;
+            this.userIdCreatedBy = o.userIDcreatedBy;
             this.lastModifiedDate = new Date(o.lastModifiedDate);
             this.product = products.filter((x) => { x.id === o.product });
             this.buyingParty = companies.filter((x) => { x.id === o.buyingParty });
