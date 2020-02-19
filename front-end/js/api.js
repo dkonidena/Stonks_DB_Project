@@ -117,7 +117,7 @@ function request(method, url, onSuccess, onFail, data) {
     })
     .then(onSuccess)
     .catch((err) => {
-        onFail(err, debugData);
+        onFail(err.message, debugData);
     });
 }
 
