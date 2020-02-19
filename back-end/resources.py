@@ -469,7 +469,58 @@ class Reports(Resource):
                 }
             ]
         }
-        return test_data, 200
+
+        #return test_data, 200
+
+        try:
+            try:
+                filter = json.loads(request.args.get('filter'))
+            except json.JSONDecodeError:
+                return {'message': 'malformed filter'}, 400
+
+            # this needs error checking
+            isDryRun = request.args.get('isDryRun')
+
+            # TODO add dateModified filter
+            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
+
+            # either dateCreated will be passed or nothing will be passed
+            if 'dateCreated' in filter:
+                results = models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1])
+                noOfMatches = results.count()
+                tradeDates = results.distinct(models.DerivativeTradesModel.DateOfTrade).group_by(models.DerivativeTradesModel.DateOfTrade)
+            else:
+                results = models.DerivativeTradesModel.get_trades_all()
+                noOfMatches = len(results)
+                tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
+            
+            if isDryRun == 'true':
+                return {'noOfMatches' : noOfMatches}
+            elif isDryRun == 'false':
+                message = {'matches' : []}
+                for each in tradeDates:
+                    report = {'date': None, 'content': None}
+                    date = str(each.DateOfTrade)
+                    formattedDate = datetime.strptime(date, '%Y-%m-%d')
+                    isoDate = formattedDate.strftime('%Y-%m-%dT%H:%M:%SZ')
+                    print(isoDate)
+                    content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
+                    for row in results:
+                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.Product) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"                
+                        #print(content)
+                    report['date'] = isoDate
+                    report['content'] = content
+                    message['matches'].append(report)
+                return message, 200
+            else:
+                return {'message' : 'Request Malformed'}, 400
+
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'Date invalid'}, 202
+        except exc.ProgrammingError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
 
 class Rules(Resource):
     def get(self):
