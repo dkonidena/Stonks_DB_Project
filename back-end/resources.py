@@ -7,7 +7,7 @@ import random
 import traceback
 from sqlalchemy import exc
 import sys
-import datetime
+from datetime import date as date_func
 from random import choice
 from string import ascii_uppercase
 
@@ -108,7 +108,7 @@ class Companies(Resource):
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
             user_ID = 1 # placeholder
-            date_entered = datetime.date.today()
+            date_entered = str(date_func.today())
             new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID
             new_company.save_to_db()
             userAction = "User has inserted a new record in the Companies table with the ID: " + code
@@ -133,7 +133,7 @@ class Companies(Resource):
             user_ID = 1 # placeholder
             models.CompanyModel.update_company(company_ID, name, date_founded)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -149,7 +149,7 @@ class Companies(Resource):
             models.CompanyModel.delete_company(company_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -210,7 +210,7 @@ class Products(Resource):
             value = data['valueInUSD']
             companyCode = data['companyID']
             # then create the date now
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             # add to product table, date_now used as dateEnteredIntoSystem
             new_product = models.ProductModel(name, date_now)
             new_productID = new_product.save_to_db()
@@ -243,7 +243,7 @@ class Products(Resource):
             value_in_USD = data['valueInUSD']
             company_ID = data['companyID']
             user_ID = 1 # placeholder
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
             models.ProductModel.update_product_sellers(product_ID, company_ID)
             models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
@@ -269,7 +269,7 @@ class Products(Resource):
             models.ProductModel.delete_product(product_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -465,7 +465,7 @@ class Trades(Resource):
             models.DerivativeTradesModel.delete_product(trade_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
-            date_now = datetime.date.today()
+            date_now = str(date_func.today())
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
