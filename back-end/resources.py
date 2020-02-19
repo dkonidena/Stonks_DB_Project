@@ -538,14 +538,11 @@ class Reports(Resource):
                 message = {'matches' : []}
                 for each in tradeDates:
                     report = {'date': None, 'content': None}
-                    date = str(each.DateOfTrade)
-                    formattedDate = datetime.strptime(date, '%Y-%m-%d')
-                    isoDate = formattedDate.strftime('%Y-%m-%dT%H:%M:%SZ')
                     content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
                     for row in results:
                         content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.Product) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
                         #print(content)
-                    report['date'] = isoDate
+                    report['date'] = each.DateOfTrade
                     report['content'] = content
                     message['matches'].append(report)
                 return message, 200
