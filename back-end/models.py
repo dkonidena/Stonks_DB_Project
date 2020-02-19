@@ -1,53 +1,15 @@
 from run import db
-from datetime import datetime
+from datetime import date
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
 import traceback
 import sys
 
-# changes a dateString to the format YYYY-MM-DD HH:MM:SS
-# works on input strings of the form YYYY-MM-DD HH:MM:SS and YYYY/MM/DD HH:MM:SS
-# excepts on strings with no time
-# unsure if ever used
-def formatDate(dateString):
+def to_iso(date_string):
     try:
-        return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10]), int(dateString[11:13]), int(dateString[14:16]), int(dateString[17:19])).strftime("%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        raise ValueError
-        print("Formatting of the String has caused an error")
-        traceback.print_exc(file=sys.stdout)
+        iso_object = date.fromisoformat(date_string)
+        return str(iso_object)
     except:
-        print("Unknown Error occurred")
-        traceback.print_exc(file=sys.stdout)
-
-# removes the time from a date string
-# can have an input string with no time, and / can be replaced with / or .
-# excepts in year in YY not YYYY or DD/MM/YYYY
-def truncateDate(dateString):
-    try:
-        return datetime(int(dateString[0:4]), int(dateString[5:7]), int(dateString[8:10])).strftime("%Y-%m-%d")
-    except ValueError:
         raise ValueError
-        print("Formatting of the String has caused an error")
-        traceback.print_exc(file=sys.stdout)
-    except:
-        print("Unknown Error occurred")
-        traceback.print_exc(file=sys.stdout)
-
-# exact same as above, but returns as string not datetime
-# fails (not excepts) if year as YY or string as DD/MM/YYYY
-# returns an incorrect string, so this can ONLY be used if the input is 100% in
-# the correct format
-def getDate(dateString):
-    try:
-        return (dateString[0:4]) + '-' + (dateString[5:7]) + '-' + (dateString[8:10])
-    except ValueError:
-        raise ValueError
-        print("Formatting of the String has caused an error")
-        traceback.print_exc(file=sys.stdout)
-    except:
-        print("Unknown Error occurred")
-        traceback.print_exc(file=sys.stdout)
-
 
 class CompanyModel(db.Model):
     __tablename__ = 'Companies'
@@ -55,8 +17,6 @@ class CompanyModel(db.Model):
     CompanyName = db.Column(db.String(120), nullable = False)
     DateEnteredInSystem = db.Column(db.String(120))
 
-    # is it possible to modularise this? every class has it so if there could be
-    # an external save to db they all call it would be better
     def save_to_db(self):
         try:
             db.session.add(self)
@@ -66,7 +26,6 @@ class CompanyModel(db.Model):
             traceback.print_exc(file=sys.stdout)
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
-        # is this possible to reach? i'll add it to all if so
         except:
             print("Unknown Error occurred")
 
@@ -75,7 +34,7 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
-            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= truncateDate(date))
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= to_iso(date))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -152,7 +111,7 @@ class CurrencyValuationsModel(db.Model):
     @classmethod
     def retrieve_currency(cls, date):
         try:
-            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(truncateDate(date)+"%")).all()
+            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation.like(to_iso(date)+"%")).all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -187,7 +146,7 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def get_trades_between(cls, startDate, endDate):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= truncateDate(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= truncateDate(endDate))
+            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= to_iso(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= to_iso(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
@@ -412,7 +371,7 @@ class ProductModel(db.Model):
     @classmethod
     def retrieve_products_on_date(cls, date):
         try:
-            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == truncateDate(date)).\
+            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == to_iso(date)).\
             with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)

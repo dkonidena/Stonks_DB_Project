@@ -4,7 +4,7 @@ from flask import request
 import json
 import uuid
 import random
-from datetime import datetime
+from datetime import date
 import traceback
 from sqlalchemy import exc
 import sys
@@ -103,7 +103,7 @@ class Companies(Resource):
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
             user_ID = 1 # placeholder
-            date_entered = models.formatDate(datetime.now())
+            date_entered = date.today()
             new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID
             new_company.save_to_db()
             userAction = "User has inserted a new record in the Companies table with the ID: " + code
@@ -127,7 +127,7 @@ class Companies(Resource):
             user_ID = 1 # placeholder
             models.CompanyModel.update_company(company_ID, name, date_founded)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -141,7 +141,7 @@ class Companies(Resource):
             models.CompanyModel.delete_company(company_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -195,7 +195,7 @@ class Products(Resource):
             value = data['valueInUSD']
             companyCode = data['companyID']
             # then create the date now
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             # add to product table, date_now used as dateEnteredIntoSystem
             new_product = models.ProductModel(name, date_now)
             new_productID = new_product.save_to_db()
@@ -227,7 +227,7 @@ class Products(Resource):
             value_in_USD = data['valueInUSD']
             company_ID = data['companyID']
             user_ID = 1 # placeholder
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             models.ProductModel.update_product(product_ID, name)
             models.ProductModel.update_product_sellers(product_ID, company_ID)
             models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
@@ -251,7 +251,7 @@ class Products(Resource):
             models.ProductModel.delete_product(product_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
@@ -277,10 +277,10 @@ class Trades(Resource):
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             if 'dateCreated' in filter:
-                results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
+                results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'], filter['dateCreated']))
 
             if 'tradeID' in filter:
-
+                # this will break if more than 1 id supplied
                     id = filter['tradeID']
                     results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
 
@@ -442,7 +442,7 @@ class Trades(Resource):
             models.DerivativeTradesModel.delete_product(trade_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
-            date_now = models.formatDate(datetime.now())
+            date_now = date.today()
             new_event = models.EventLogModel(userAction, date_now, user_ID)
             new_event.save_to_db()
             return "success", 200
