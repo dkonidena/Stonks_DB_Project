@@ -77,9 +77,6 @@ class APITrade {
 }
 
 function getTradeList(filter, res) {
-    // default to between 2000 and now
-    filter.dateCreated = [new Date("2000-01-01T00:00:00.000Z"), new Date()];
-
     api.get.trades(filter.getAPIObject(), false, (response) => {
         if (response['matches'] === undefined) {
             showError("Malformed server reponse", "trade matches field not present", false);
