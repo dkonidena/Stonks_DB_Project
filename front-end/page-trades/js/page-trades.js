@@ -169,9 +169,8 @@ function filterObjectFromForm() {
     let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
     if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
 
-    // TODO do we need to get a list of userIDs? currently is is impossible to enter anything into this input
-    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
-    if (userIDCreatedBy.length > 0) { filter.userIDCreatedBy = userIDCreatedBy; }
+    let userIDCreatedBy = $("#filter-userIDInput").val();
+    if (userIDCreatedBy !== "") { filter.userIDCreatedBy = [userIDCreatedBy]; }
 
     return filter;
 }
