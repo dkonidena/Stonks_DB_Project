@@ -30,7 +30,7 @@ class Currencies(Resource):
             if isDryRun == "true":
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
                 message['noOfMatches'] = len(results)
-                return message, 201
+                return message, 200
             elif isDryRun == "false":
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
@@ -71,7 +71,7 @@ class Companies(Resource):
                     results = models.CompanyModel.retrieve_companies_before(date)
                     noOfMatches = results.count()
                 message['noOfMatches'] = noOfMatches
-                return message, 201
+                return message, 200
             elif isDryRun == "false":
                 # check if the date parameter is passed
                 if date is None:
@@ -90,7 +90,7 @@ class Companies(Resource):
                     # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                 message['matches'] = res
-                return message, 201
+                return message, 200
             else:
                 return {'message': 'Request malformed'}, 400
         except ValueError:
@@ -98,7 +98,7 @@ class Companies(Resource):
             return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
-            return {'message':'error occurred'}, 202
+            return {'message':'error occurred'}, 500
 
     def post(self):
         # needs error checking
@@ -198,7 +198,7 @@ class Products(Resource):
             return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'error occurred'}, 202
+            return {'message': 'error occurred'}, 500
 
     def post(self):
         # needs error checking
@@ -228,10 +228,10 @@ class Products(Resource):
             return {'message': 'product has been added'}, 201
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'error occured'}, 202
+            return {'message': 'error occured'}, 500
         except exc.InterfaceError:
             traceback.print_exc(file=sys.stdout)
-            return {'message': 'error occured'}, 202
+            return {'message': 'error occured'}, 500
 
     def patch(self):
         # needs error checking
@@ -347,7 +347,7 @@ class Trades(Resource):
                 else:
                     noOfMatches = final_results.count()
                 message = {"noOfMatches" : noOfMatches}
-                return message, 201
+                return message, 200
             elif isDryRun == "false":
                 i = 1
                 res = []
@@ -369,7 +369,7 @@ class Trades(Resource):
                     dicto['lastModifiedDate'] = row.DateOfTrade # need to be changed to the event log date
                     res.append(dicto)
                 message = {'matches' : res}
-                return message, 201
+                return message, 200
             else:
                 return {'message': 'Request malformed'}, 400
         except ValueError:
@@ -454,7 +454,7 @@ class Trades(Resource):
             return "success", 200
 
         except exc.IntegrityError:
-            return {'message': "error occurred"}, 201
+            return {'message': "error occurred"}, 500
 
     def delete(self):
         try:
@@ -514,10 +514,10 @@ class Reports(Resource):
             if userIDcreatedBy is not None:
                 results.append(models.DerivativeTradesModel.get_trades_by_user(userIDcreatedBy))
 
-            return {'message' : 'need to finish'}, 201
+            return {'message' : 'need to finish'}, 200
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
-            return {'message' : 'error occured'}, 202
+            return {'message' : 'error occured'}, 500
 
 
 class Rules(Resource):
