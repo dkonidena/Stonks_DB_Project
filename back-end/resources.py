@@ -14,7 +14,7 @@ from string import ascii_uppercase
 # use models.date... instead of redefining date methods in here
 
 def returnCurrencySymbol(currencyCode):
-    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF"}
+    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
 
 
@@ -39,7 +39,7 @@ class Currencies(Resource):
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
                     # brokem until all currencies added
-                    # dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
+                    dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD)
                     res.append(dicto)
