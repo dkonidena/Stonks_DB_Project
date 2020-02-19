@@ -179,7 +179,7 @@ function saveTradeButton_OnPressed() {
 }
 
 function cancelTradeButton_OnPressed() {
-    var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+    var trade = Object.values(trades).filter(t => t.tradeId == $("#tradeIdInput").val())[0];
     loadTradeToForm(trade);
 }
 
