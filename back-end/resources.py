@@ -8,6 +8,8 @@ from datetime import datetime
 import traceback
 from sqlalchemy import exc
 import sys
+from random import choice
+from string import ascii_uppercase
 
 # use models.date... instead of redefining date methods in here
 
@@ -99,7 +101,7 @@ class Companies(Resource):
         try:
             json_data = request.data
             data = json.loads(json_data)
-            code = str(uuid.uuid4())
+            code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
             user_ID = 1 # placeholder
             # dateFounded = data['dateFounded']
@@ -364,7 +366,7 @@ class Trades(Resource):
         try:
             json_data = request.data
             data = json.loads(json_data)
-            id = str(uuid.uuid4())
+            id = ''.join(choice(ascii_uppercase) for i in range(12))
             product = data['product']
             quantity = data['quantity']
             buyingParty = data['buyingParty']

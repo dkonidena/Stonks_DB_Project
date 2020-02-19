@@ -161,7 +161,7 @@ class DerivativeTradesModel(db.Model):
     __tablename__ = 'DerivativeTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfTrade = db.Column(db.String(120), nullable = False)
-    Product = db.Column(db.String(120), nullable = False)
+    Product = db.Column(db.Integer, nullable = False)
     BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     NotionalValue = db.Column(db.Float, nullable = False)
