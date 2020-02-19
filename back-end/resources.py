@@ -107,12 +107,12 @@ class Companies(Resource):
             data = json.loads(json_data)
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
-            user_ID = 1 # placeholder
+            userID = 1 # placeholder
             date_entered = str(date_func.today())
-            new_company = models.CompanyModel(code, name, date_entered) # should have more parameters, user_ID
+            new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = date_entered, UserIDCreatedBy = userID) # should have more parameters, user_ID
             new_company.save_to_db()
-            userAction = "User has inserted a new record in the Companies table with the ID: " + code
-            new_event = models.EventLogModel(userAction, date_entered, user_ID)
+            eventDescription = "User has inserted a new record in the Companies table with the ID: " + code
+            new_event = models.EventLogModel(EventDescription = eventDescription, DateOfEvent = date_entered, Table = "Companies", TypeOfAction = "Insert", ReferenceID = code, EmployeeID = userID)
             new_event.save_to_db()
             return {'message': 'Company has been added'}, 201
         except exc.IntegrityError:
@@ -233,21 +233,21 @@ class Products(Resource):
             name = data['name']
             value = data['valueInUSD']
             companyCode = data['companyID']
+            userID = 1 # placeholder
             # then create the date now
             date_now = str(date_func.today())
             # add to product table, date_now used as dateEnteredIntoSystem
-            new_product = models.ProductModel(name, date_now)
+            new_product = models.ProductModel(ProductName = name, DateEnteredInSystem = date_now, UserIDCreatedBy = userID)
             new_productID = new_product.save_to_db()
             # add to the product seller table
-            new_product_seller = models.ProductSellersModel(new_productID, companyCode)
+            new_product_seller = models.ProductSellersModel(ProductID = new_productID, CompanyCode = companyCode)
             new_product_seller.save_to_db()
             # add to the product valuation table, date_used as DateOfValuation
-            new_product_valuation = models.ProductValuationsModel(new_productID, value, date_now)
+            new_product_valuation = models.ProductValuationsModel(ProductID = new_productID, ProductPrice = value, DateOfValuation = date_now)
             new_product_valuation.save_to_db()
             # log the action
             userAction = "User has inserted a new record in the Products table with the ID: " + str(new_productID)
-            user_ID = 1 # placeholder
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Insert", ReferenceID = new_productID, EmployeeID = userID)
             new_event.save_to_db()
             return {'message': 'product has been added'}, 201
         except exc.IntegrityError:
@@ -418,28 +418,30 @@ class Trades(Resource):
             underlyingValue = data['underlyingValue']
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
-            maturityDate = data['maturityDate']
+            maturityDate = models.parse_iso_date(str(data['maturityDate']))
             date_now = str(date_func.today())
-            user_ID = 1 # placeholder
-            new_trade = models.DerivativeTradesModel(id, date_now, product, buyingParty, sellingParty, notionalValue, quantity, notionalCurrency, maturityDate, underlyingValue, underlyingCurrency, strikePrice, user_ID)
+            userID = 1 # placeholder
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
-            if len(result) == 0:
+            if result.count() == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
+            assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
+
+            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = assetIDs[0], BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
+
 
             # need to implement checking if the currencies exist
 
             #If a the product or stock which the trade is linked to is found, then the trade
             new_tradeID = new_trade.save_to_db()
-            assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
-            new_product_trade = models.ProductTradesModel(new_tradeID, assetIDs[0])
+            new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetIDs[0])
             new_product_trade.save_to_db()
 
             #Logging the user action
             userAction = "User has inserted a new record in the Trades table with the ID: " + str(new_tradeID)
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "DerivativeTrades", TypeOfAction = "Insert", ReferenceID = new_tradeID, EmployeeID = userID)
             new_event.save_to_db()
             return {'message': 'trade has been added'}, 201
         except exc.IntegrityError:
@@ -466,7 +468,7 @@ class Trades(Resource):
             maturityDate = data['maturityDate']
             strikePrice = data['strikePrice']
 
-            models.DerivativeTradesModel.update_trade(tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
+            models.DerivativeTradesModel.update_trade(trade_ID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
 
             #Logging the user action
             userAction = "User has updated a record in the Trades table with the ID: " + trade_ID

@@ -13,7 +13,9 @@ class CompanyModel(db.Model):
     __tablename__ = 'Companies'
     CompanyCode = db.Column(db.String(120), primary_key = True, nullable = False)
     CompanyName = db.Column(db.String(120), nullable = False)
-    DateEnteredInSystem = db.Column(db.String(120))
+    DateEnteredInSystem = db.Column(db.String(120), nullable = False)
+    DateDeleted = db.Column(db.String(120), nullable = False)
+    UserIDCreatedBy = db.Column(db.String(120))
 
     def save_to_db(self):
         try:
@@ -121,7 +123,9 @@ class DerivativeTradesModel(db.Model):
     ProductID = db.Column(db.Integer, nullable = False)
     BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
+    OriginalNotionalValue = db.Column(db.Float, nullable = False)
     NotionalValue = db.Column(db.Float, nullable = False)
+    OriginalQuantity = db.Column(db.Integer, nullable = False)
     Quantity = db.Column(db.Integer, nullable = False)
     NotionalCurrency = db.Column(db.String(120), ForeignKey("CurrencyTypes.CurrencyCode"), nullable = False)
     MaturityDate = db.Column(db.String(120), nullable = False)
@@ -242,8 +246,11 @@ class DerivativeTradesModel(db.Model):
 class EventLogModel(db.Model):
     __tablename__ = 'EventLog'
     EventID = db.Column(db.Integer, primary_key = True, nullable = False)
-    UserAction = db.Column(db.String(120), nullable = False)
+    EventDescription = db.Column(db.String(120), nullable = False)
     DateOfEvent = db.Column(db.String(120), nullable = False)
+    Table = db.Column(db.String(120), nullable = False)
+    TypeOfAction = db.Column(db.String(120), nullable = False)
+    ReferenceID = db.Column(db.String(120), nullable = False)
     EmployeeID = db.Column(db.String(120), ForeignKey("Employees.EmployeeID"), nullable = False)
 
     def save_to_db(self):
@@ -334,7 +341,9 @@ class ProductModel(db.Model):
     __tablename__ = 'Products'
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
     ProductName = db.Column(db.String(120), nullable = False)
-    DateEnteredInSystem = db.Column(db.String(120))
+    DateEnteredInSystem = db.Column(db.String(120), nullable = False)
+    DateDeleted = db.Column(db.String(120))
+    UserIDCreatedBy = db.Column(db.String(120), nullable = False)
 
     def save_to_db(self):
         try:
