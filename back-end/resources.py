@@ -325,36 +325,39 @@ class Trades(Resource):
             if filter == {}:
                 results.append(models.DerivativeTradesModel.get_trades_all())
             else:
-                if 'dateCreated' in filter:
-                    results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
+                try:
+                    if 'dateCreated' in filter:
+                        results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
-                if 'tradeID' in filter:
-                    for id in filter['tradeID']:
-                        results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
+                    if 'tradeID' in filter:
+                        for id in filter['tradeID']:
+                            results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
 
-                if 'buyingParty' in filter:
-                    for id in filter['buyingParty']:
-                        results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
+                    if 'buyingParty' in filter:
+                        for id in filter['buyingParty']:
+                            results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
 
-                if 'sellingParty' in filter:
-                    for id in filter['sellingParty']:
-                        results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
+                    if 'sellingParty' in filter:
+                        for id in filter['sellingParty']:
+                            results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
 
-                if 'product' in filter:
-                    for id in filter['product']:
-                        results.append(models.DerivativeTradesModel.get_trade_by_product(id))
+                    if 'product' in filter:
+                        for id in filter['product']:
+                            results.append(models.DerivativeTradesModel.get_trade_by_product(id))
 
-                if 'notionalCurrency' in filter:
-                    for id in filter['notionalCurrency']:
-                        results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
+                    if 'notionalCurrency' in filter:
+                        for id in filter['notionalCurrency']:
+                            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
 
-                if 'underlyingCurrency' in filter:
-                    for id in filter['underlyingCurrency']:
-                        results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
+                    if 'underlyingCurrency' in filter:
+                        for id in filter['underlyingCurrency']:
+                            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
 
-                if 'userIDcreatedBy' in filter:
-                    for id in filter['userIDcreatedBy']:
-                        results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+                    if 'userIDcreatedBy' in filter:
+                        for id in filter['userIDcreatedBy']:
+                            results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+                except:
+                    return {'message': 'malformed filter'}, 400
 
             #performs intersections on each result set from each query to find the filtered results
             final_results = None
