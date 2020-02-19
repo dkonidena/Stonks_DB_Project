@@ -129,12 +129,12 @@ class Companies(Resource):
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
-            date_founded = data['dateFounded']
-            user_ID = 1 # placeholder
-            models.CompanyModel.update_company(company_ID, name, date_founded)
+            dateEnteredIntoSystem = data['dateEnteredIntoSystem']
+            userID = 1 # placeholder
+            models.CompanyModel.update_company(company_ID, name, dateEnteredIntoSystem)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = str(date_func.today())
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Update", ReferenceID = company_ID, EmployeeID = userID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -146,11 +146,11 @@ class Companies(Resource):
             company_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            models.CompanyModel.delete_company(company_ID)
+            date_now = str(date_func.today())
+            models.CompanyModel.update_date_deleted(company_ID, date_now)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
-            date_now = str(date_func.today())
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Deletion", ReferenceID = company_ID, EmployeeID = user_ID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -272,13 +272,13 @@ class Products(Resource):
             models.ProductModel.update_product_sellers(product_ID, company_ID)
             models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
             userAction = "User has updated a record in the Products table with the ID: " + product_ID
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
-            userAction = "User has updated a record in the ProductSellers table with the ID: " + product_ID
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            userAction = "A product update has cascaded to the ProductSellers table with the ID: " + product_ID
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductSellers", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
-            userAction = "User has updated a record in the ProductValuations table with the ID: " + product_ID
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            userAction = "A product update has cascaded to the ProductValuations table with the ID: " + product_ID
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductValuations", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -290,11 +290,11 @@ class Products(Resource):
             product_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            models.ProductModel.delete_product(product_ID)
+            date_now = str(date_func.today())
+            models.ProductModel.update_date_deleted(product_ID, date_now) # instead of deletion, the dateDeleted attribute is updated
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
-            date_now = str(date_func.today())
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Deletion", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -473,8 +473,8 @@ class Trades(Resource):
             #Logging the user action
             userAction = "User has updated a record in the Trades table with the ID: " + trade_ID
             dateOfEvent = str(date_func.today())
-            user_ID = 1 # placeholder
-            new_event = models.EventLogModel(userAction, dateOfEvent, user_ID)
+            userID = 1 # placeholder
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = dateOfEvent, Table = "Trades", TypeOfAction = "Update", ReferenceID = trade_ID, EmployeeID = userID)
             new_event.save_to_db()
 
             return "success", 200
@@ -488,10 +488,10 @@ class Trades(Resource):
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
             models.DerivativeTradesModel.delete_product(trade_ID)
-            user_ID = 1 # placeholder
+            userID = 1 # placeholder
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
             date_now = str(date_func.today())
-            new_event = models.EventLogModel(userAction, date_now, user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Trades", TypeOfAction = "Deletion", ReferenceID = trade_ID, EmployeeID = userID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:

@@ -34,7 +34,7 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
-            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date))
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) > cls.DateDeleted, cls.DateDeleted == None))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -56,6 +56,15 @@ class CompanyModel(db.Model):
             db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
+
+    @classmethod
+    def update_date_deleted(cls, companycode, date):
+        try:
+            row = cls.query.filter_by(CompanyCode = companycode).first()
+            row.DateDeleted = date
+            db.session.commit()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("", "", 1)
 
     # serves the comapany delete request
     @classmethod
@@ -365,6 +374,15 @@ class ProductModel(db.Model):
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
+    @classmethod
+    def update_date_deleted(cls, product_id, date):
+        try:
+            row = cls.query.filter_by(ProductID = product_id).first()
+            row.DateDeleted = date
+            db.session.commit()
+        except exc.IntegrityError:
+            raise exc.IntegrityError("", "", 1)
+
     # serves the product delete request
     @classmethod
     def delete_product(cls, product_id):
@@ -378,7 +396,7 @@ class ProductModel(db.Model):
     @classmethod
     def retrieve_products_on_date(cls, date):
         try:
-            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) == parse_iso_date(date)).\
+            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) < func.DATE(cls.DateDeleted), cls.DateDeleted == None)).\
             with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
