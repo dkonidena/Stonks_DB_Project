@@ -94,7 +94,6 @@ class CompanyModel(db.Model):
         try:
             row = cls.query.filter_by(CompanyCode = companycode).first()
             row.CompanyName = name
-            # row.DateFounded = datefounded
             db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
@@ -104,6 +103,7 @@ class CompanyModel(db.Model):
     def delete_company(cls, companycode):
         try:
             cls.query.filter_by(CompanyCode = companycode).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
@@ -161,7 +161,7 @@ class DerivativeTradesModel(db.Model):
     __tablename__ = 'DerivativeTrades'
     TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
     DateOfTrade = db.Column(db.String(120), nullable = False)
-    Product = db.Column(db.String(120), nullable = False)
+    Product = db.Column(db.Integer, nullable = False)
     BuyingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     SellingParty = db.Column(db.String(120), ForeignKey("Companies.CompanyCode"), nullable = False)
     NotionalValue = db.Column(db.Float, nullable = False)
@@ -278,6 +278,7 @@ class DerivativeTradesModel(db.Model):
     def delete_trade(cls, trade_id):
         try:
             cls.query.filter_by(TradeID = trade_id).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
@@ -403,6 +404,7 @@ class ProductModel(db.Model):
     def delete_product(cls, product_id):
         try:
             cls.query.filter_by(ProductID = product_id).delete()
+            db.session.commit()
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
