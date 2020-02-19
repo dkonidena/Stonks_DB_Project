@@ -66,10 +66,9 @@ function tradeObjectFromForm() {
     // TODO whole function needs error handling
     let trade = new Trade();
 
-    // TODO these 3 members need to be populated with IDs not names
-    trade.product = $("#productInput").val();
-    trade.buyingParty = $("#buyingPartyInput").val();
-    trade.sellingParty = $("#sellingPartyInput").val();
+    trade.product = Object.values(products).filter(x => x.name === $("#productInput").val())[0];
+    trade.buyingParty = Object.values(companies).filter(x => x.name === $("#buyingPartyInput").val())[0];;
+    trade.sellingParty = Object.values(companies).filter(x => x.name === $("#sellingPartyInput").val())[0];;
 
     trade.tradeDate.setDate($("#tradeDateDayInput").val());
     trade.tradeDate.setMonth($("#tradeDateMonthInput").val()-1);
@@ -79,9 +78,9 @@ function tradeObjectFromForm() {
     trade.maturityDate.setMonth($("#maturityDateMonthInput").val()-1);
     trade.maturityDate.setFullYear($("#maturityDateYearInput").val());
 
-    trade.notionalCurrency = $("#notionalCurrencyInput").val();
+    trade.notionalCurrency = currencies[$("#notionalCurrencyInput").val()];
     trade.notionalPrice = $("#notionalPriceInput").val();
-    trade.underlyingCurrency = $("#underlyingCurrencyInput").val();
+    trade.underlyingCurrency = currencies[$("#underlyingCurrencyInput").val()];
     trade.underlyingPrice = $("#underlyingPriceInput").val();
 
     trade.quantity = $("#quantityInput").val();
