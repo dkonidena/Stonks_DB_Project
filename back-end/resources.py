@@ -327,6 +327,11 @@ class Trades(Resource):
             else:
                 try:
                     if 'dateCreated' in filter:
+                        # if str(filter['dateCreated'][1]) == "0000-12-31T00:01:15.000Z":
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0]))
+                        # elif if str(filter['dateCreated'][1]) == null end date:
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][1]))
+                        # else:
                         results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
                     if 'tradeID' in filter:
@@ -464,9 +469,9 @@ class Trades(Resource):
             quantity = data['quantity']
             buyingParty = data['buyingParty']
             sellingParty = data['sellingParty']
-            notionalValue = data['notionalValue']
+            notionalValue = data['notionalPrice']
             notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingValue']
+            underlyingValue = data['underlyingPrice']
             underlyingCurrency = data['underlyingCurrency']
             maturityDate = data['maturityDate']
             strikePrice = data['strikePrice']
@@ -505,7 +510,6 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-        # delete below?
 
         try:
             dateCreated = request.args.getlist('date')
