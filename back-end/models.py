@@ -7,7 +7,7 @@ import sys
 def parse_iso_date(date_string):
     # this function takes an iso8601 string and converts it into a YYYY-MM-DD string
     date = datetime.fromisoformat(date_string.replace("Z", "+00:00"))
-    return str(date)
+    return date.strftime('%Y-%m-%d')
 
 class CompanyModel(db.Model):
     __tablename__ = 'Companies'
