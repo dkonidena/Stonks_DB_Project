@@ -7,7 +7,11 @@ const filters = [
     ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
 ];
 
+let status;
+
 $(document).ready(() => {
+    status = document.querySelector("#status");
+
     filters.forEach((x) => {
         var t = x[0];
         setInputFilter(t, (v) => { return x[1].test(v) });

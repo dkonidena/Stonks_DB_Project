@@ -9,6 +9,7 @@ CsvToHtmlTable = {
         var csv_options = options.csv_options || {};
         var datatables_options = options.datatables_options || {};
         var custom_formatting = options.custom_formatting || [];
+        var onComplete = options.onComplete;
         var customTemplates = {};
         $.each(custom_formatting, function (i, v) {
             var colIdx = v[0];
@@ -55,6 +56,8 @@ CsvToHtmlTable = {
                 if (allow_download) {
                     $containerElement.append("<p><a class='btn btn-info' href='" + csv_path + "'><i class='glyphicon glyphicon-download'></i> Download as CSV</a></p>");
                 }
+
+                onComplete();
             });
     }
 };

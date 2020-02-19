@@ -38,6 +38,7 @@ function filterObjectFromForm() {
 }
 
 function renderTable(csv) {
+    status.innerText = "loading report...";
     let blob = new Blob([csv], { type: "text/plain" });
 
     CsvToHtmlTable.init({
@@ -45,6 +46,7 @@ function renderTable(csv) {
         element: "table-container",
         allow_download: true,
         csv_options: {separator: ",", delimiter: "\""},
-        datatables_options: {"paging": true}
+        datatables_options: {"paging": true},
+        onComplete: () => { status.innerText = ""; }
     });
 }
