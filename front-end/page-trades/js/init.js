@@ -1,5 +1,5 @@
 const filters = [
-    ["#tradeIdInput", /^\d{0,9}$/],
+    ["#tradeIdInput", /^[0-9A-Z]{0,16}$/],
     ["#quantityInput", /^\d*$/],
     ["#notionalPriceInput", /^\d*\.?\d*$/],
     ["#underlyingPriceInput", /^\d*\.?\d*$/],
