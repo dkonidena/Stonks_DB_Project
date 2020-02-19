@@ -166,33 +166,57 @@ class Products(Resource):
             date = request.args.get('date')
             if date is None:
                 # TODO return all products when the date is not specifed, as per API spec
-                raise NotImplementedError("getting all products is not yet supported!")
-
-            isDryRun = request.args.get('isDryRun')
-            if 'isDryRun' not in request.args:
-                return {'message': 'Request malformed'}, 400
-            if isDryRun == "true":
-                # need error handling to deal with ValueError raised
-                result = models.ProductModel.retrieve_products_on_date(date)
-                message = {"noOfMatches" : result.count()}
-                return message, 201
-            elif isDryRun == "false":
-                result = models.ProductModel.retrieve_products_on_date(date)
-                i = 1
-                res = []
-                for row in result:
-                    dicto = {}
-                    dicto['id'] = str(row.ProductID)
-                    dicto['name'] = row.ProductName
-                    dicto['companyID'] = row.CompanyCode
-                    dicto['valueInUSD'] = str(row.ProductPrice)
-                    dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                    # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
-                    res.append(dicto)
-                message['matches'] = res
-                return message, 201
+                isDryRun = request.args.get('isDryRun')
+                if 'isDryRun' not in request.args:
+                    return {'message': 'Request malformed'}, 400
+                if isDryRun == "true":
+                    # need error handling to deal with ValueError raised
+                    result = models.ProductModel.retrieve_products()
+                    message = {"noOfMatches" : result.count()}
+                    return message, 201
+                elif isDryRun == "false":
+                    result = models.ProductModel.retrieve_products()
+                    i = 1
+                    res = []
+                    for row in result:
+                        dicto = {}
+                        dicto['id'] = str(row.ProductID)
+                        dicto['name'] = row.ProductName
+                        dicto['companyID'] = row.CompanyCode
+                        dicto['valueInUSD'] = str(row.ProductPrice)
+                        dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
+                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
+                        res.append(dicto)
+                    message['matches'] = res
+                    return message, 201
+                else:
+                    return {'message': 'Request malformed'}, 400
             else:
-                return {'message': 'Request malformed'}, 400
+                isDryRun = request.args.get('isDryRun')
+                if 'isDryRun' not in request.args:
+                    return {'message': 'Request malformed'}, 400
+                if isDryRun == "true":
+                    # need error handling to deal with ValueError raised
+                    result = models.ProductModel.retrieve_products_on_date(date)
+                    message = {"noOfMatches" : result.count()}
+                    return message, 201
+                elif isDryRun == "false":
+                    result = models.ProductModel.retrieve_products_on_date(date)
+                    i = 1
+                    res = []
+                    for row in result:
+                        dicto = {}
+                        dicto['id'] = str(row.ProductID)
+                        dicto['name'] = row.ProductName
+                        dicto['companyID'] = row.CompanyCode
+                        dicto['valueInUSD'] = str(row.ProductPrice)
+                        dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
+                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
+                        res.append(dicto)
+                    message['matches'] = res
+                    return message, 201
+                else:
+                    return {'message': 'Request malformed'}, 400
         except ValueError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'Date invalid'}, 400
