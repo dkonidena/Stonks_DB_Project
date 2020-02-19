@@ -277,7 +277,7 @@ class Trades(Resource):
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             if 'dateCreated' in filter:
-                results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'], filter['dateCreated']))
+                results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
             if 'tradeID' in filter:
                 # this will break if more than 1 id supplied
