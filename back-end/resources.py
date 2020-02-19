@@ -24,6 +24,8 @@ class Currencies(Resource):
         message = {}
         try:
             date = request.args.get('date')
+            if 'isDryRun' not in request.args:
+                return {'message': 'Request malformed'}, 400
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 results = models.CurrencyValuationsModel.retrieve_currency(date)
@@ -58,6 +60,8 @@ class Companies(Resource):
         message = {}
         try:
             date = request.args.get('date')
+            if 'isDryRun' not in request.args:
+                return {'message': 'Request malformed'}, 400
             isDryRun = request.args.get('isDryRun')
             if isDryRun == "true":
                 if date is None:
@@ -97,6 +101,7 @@ class Companies(Resource):
             return {'message':'error occurred'}, 202
 
     def post(self):
+        # needs error checking
         try:
             json_data = request.data
             data = json.loads(json_data)
@@ -118,6 +123,7 @@ class Companies(Resource):
             return {'message' : 'Interface Error occurred, please re-try entering the parameters'}, 500
 
     def patch(self):
+        # needs error checking
         try:
             company_ID = request.args.get('id')
             json_data = request.data
@@ -138,6 +144,8 @@ class Companies(Resource):
     def delete(self):
         try:
             company_ID = request.args.get('id')
+            if 'id' not in request.args:
+                return {'message': 'Request malformed'}, 400
             models.CompanyModel.delete_company(company_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
@@ -157,6 +165,8 @@ class Products(Resource):
         try:
             date =  request.args.get('date')
             isDryRun = request.args.get('isDryRun')
+            if 'isDryRun' not in request.args:
+                return {'message': 'Request malformed'}, 400
             if isDryRun == "true":
                 # need error handling to deal with ValueError raised
                 result = models.ProductModel.retrieve_products_on_date(date)
@@ -187,6 +197,7 @@ class Products(Resource):
             return {'message': 'error occurred'}, 202
 
     def post(self):
+        # needs error checking
         try:
             # get the name, value, and company ID from request
             json_data = request.data
@@ -219,6 +230,7 @@ class Products(Resource):
             return {'message': 'error occured'}, 202
 
     def patch(self):
+        # needs error checking
         try:
             product_ID = request.args.get('id')
             json_data = request.data
@@ -248,6 +260,8 @@ class Products(Resource):
     def delete(self):
         try:
             product_ID = request.args.get('id')
+            if 'id' not in request.args:
+                return {'message': 'Request malformed'}, 400
             models.ProductModel.delete_product(product_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
@@ -264,11 +278,14 @@ class Trades(Resource):
     def get(self):
         try:
             try:
+                if 'filter' not in request.args:
+                    return {'message': 'malformed filter'}, 400
                 filter = json.loads(request.args.get('filter'))
             except json.JSONDecodeError:
                 return {'message': 'malformed filter'}, 400
 
-            # this needs error checking
+            if 'isDryRun' not in request.args:
+                return {'message': 'malformed filter'}, 400
             isDryRun = request.args.get('isDryRun')
 
             results = list() # stores results for each query/filter that is applied by the user
@@ -359,6 +376,7 @@ class Trades(Resource):
             return {'message' : 'error occurred'}, 500
 
     def post(self):
+        # needs error checking
         try:
             json_data = request.data
             data = json.loads(json_data)
@@ -405,7 +423,7 @@ class Trades(Resource):
             return {'message' : 'error occurred'}, 500
 
     def patch(self):
-
+        # needs error checking
         try:
             trade_ID = request.args.get('id')
             json_data = request.data
@@ -438,6 +456,8 @@ class Trades(Resource):
     def delete(self):
         try:
             trade_ID = request.args.get('id')
+            if 'id' not in request.args:
+                return {'message': 'Request malformed'}, 400
             models.DerivativeTradesModel.delete_product(trade_ID)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
