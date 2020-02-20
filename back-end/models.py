@@ -238,6 +238,14 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    # returns all dates the trades were made on
+    @classmethod
+    def get_all_trade_dates(cls):
+        try:
+            return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
     # serves the trade patch request
     @classmethod
     def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
