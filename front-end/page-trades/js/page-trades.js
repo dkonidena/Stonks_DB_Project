@@ -5,6 +5,7 @@ function addTradeToUI(trade) {
     let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
     b.on("click", () => {
         loadTradeToForm(trade);
+        showTradeForm();
     })
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#trades").append(li);
@@ -33,6 +34,13 @@ function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
     $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
+}
+
+function showTradeForm() {
+    if(!$("#tradeEditorForm:visible").length) {
+        $("#tradeEditorMessage").hide();
+        $("#tradeEditorForm").show();
+    }
 }
 
 function loadTradeToForm(trade) {
@@ -195,6 +203,7 @@ function addTradeButton_OnPressed() {
     t.tradeId = `NEW${newTradeCount++}`;
     addTradeToUI(t);
     loadTradeToForm(t);
+    showTradeForm();
 }
 
 function saveTradeButton_OnPressed() {
