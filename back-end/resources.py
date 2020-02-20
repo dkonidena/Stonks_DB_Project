@@ -564,7 +564,7 @@ class Reports(Resource):
             # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
                 # find the dates trades are made between these dates
-                tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated'][0], filter['dateCreated'][1])
+                tradeDates = models.DerivativeTradesModel.get_trade_between(filter['dateCreated'][0], filter['dateCreated'][1])
                 for each in tradeDates:
                     results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
                 noOfMatches = len(results) # gives the no. of reports available
