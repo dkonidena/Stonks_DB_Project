@@ -129,9 +129,8 @@ class Companies(Resource):
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
-            dateEnteredIntoSystem = data['dateEnteredIntoSystem']
             userID = 1 # placeholder
-            models.CompanyModel.update_company(company_ID, name, dateEnteredIntoSystem)
+            models.CompanyModel.update_company(company_ID, name)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = str(date_func.today())
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Update", ReferenceID = company_ID, EmployeeID = userID)
@@ -332,7 +331,7 @@ class Trades(Resource):
                                 results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after']))
                             else:
                                 results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before']))
-                        else:  
+                        else:
                             results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before']))
                     if 'dateModified' in filter:
                         if len(filter['dateModified']) == 1:
@@ -340,7 +339,7 @@ class Trades(Resource):
                                 results.append(models.DerivativeTradesModel.get_trades_after(filter['dateModified']['after']))
                             else:
                                 results.append(models.DerivativeTradesModel.get_trades_before(filter['dateModified']['before']))
-                        else:  
+                        else:
                             results.append(models.DerivativeTradesModel.get_trades_between(filter['dateModified']['after'], filter['dateModified']['before']))
 
                     if 'tradeID' in filter:
@@ -544,7 +543,7 @@ class Reports(Resource):
         }
 
         #return test_data, 200
-        
+
         try:
             try:
                 filter = json.loads(request.args.get('filter'))
@@ -581,7 +580,7 @@ class Reports(Resource):
                     report = {'date': None, 'content': None}
                     content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
                     for row in results[i]:
-                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"                        
+                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
                     report['date'] = tradeDates[i].DateOfTrade
                     report['content'] = content
                     message['matches'].append(report)

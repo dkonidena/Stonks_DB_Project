@@ -49,7 +49,7 @@ class CompanyModel(db.Model):
 
     # serves the company patch request
     @classmethod
-    def update_company(cls, companycode, name, datefounded):
+    def update_company(cls, companycode, name):
         try:
             row = cls.query.filter_by(CompanyCode = companycode).first()
             row.CompanyName = name
@@ -237,7 +237,7 @@ class DerivativeTradesModel(db.Model):
             return cls.query.all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-    
+
 
     # returns all dates the trades were made on
     @classmethod
