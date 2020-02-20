@@ -327,21 +327,12 @@ class Trades(Resource):
             else:
                 try:
                     if 'dateCreated' in filter:
-                        if len(filter['dateCreated']) == 1:
-                            if 'after' in filter['dateCreated']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after']))
-                            else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before']))
-                        else:  
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before']))
-                    if 'dateModified' in filter:
-                        if len(filter['dateModified']) == 1:
-                            if 'after' in filter['dateModified']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateModified']['after']))
-                            else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateModified']['before']))
-                        else:  
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateModified']['after'], filter['dateModified']['before']))
+                        # if str(filter['dateCreated'][1]) == "0000-12-31T00:01:15.000Z":
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0]))
+                        # elif if str(filter['dateCreated'][1]) == null end date:
+                        #     results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][1]))
+                        # else:
+                        results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1]))
 
                     if 'tradeID' in filter:
                         for id in filter['tradeID']:
@@ -553,6 +544,12 @@ class Reports(Resource):
             except json.JSONDecodeError:
                 return {'message': 'malformed filter'}, 400
 
+            # this needs error checking
+            isDryRun = request.args.get('isDryRun')
+
+            # TODO add dateModified filter
+            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
+
             results = list()
 
             # either dateCreated will be passed or nothing will be passed
@@ -596,10 +593,13 @@ class Reports(Resource):
                 return message, 200
             else:
                 return {'message' : 'Request Malformed'}, 400
+
+        except ValueError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
-            return {'message' : 'error occured'}, 500
-
+            return {'message' : 'error occurred'}, 500
 
 class Rules(Resource):
     def get(self):
