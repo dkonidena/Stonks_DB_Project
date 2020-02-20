@@ -74,6 +74,8 @@ function tradeObjectFromForm() {
     // TODO whole function needs error handling
     let trade = new Trade();
 
+    trade.tradeId = $("#tradeIdInput").val();
+
     trade.product = productNameToObject($("#productInput").val());
     trade.buyingParty = companyNameToObject($("#buyingPartyInput").val());
     trade.sellingParty = companyNameToObject($("#sellingPartyInput").val());
@@ -181,8 +183,8 @@ function checkTradeButton_OnPressed() {
 }
 
 function addTradeButton_OnPressed() {
-    showError('NotImplementedError');
-    // TODO
+    let t = tradeObjectFromForm();
+    api.post.trades(t.getAPIObject(), () => {}, showError);
 }
 
 function saveTradeButton_OnPressed() {
