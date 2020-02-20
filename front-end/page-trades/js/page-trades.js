@@ -34,32 +34,34 @@ function addCompanyToUI(c) {
 }
 
 function loadTradeToForm(trade) {
-    $("#tradeIdInput").val(trade.tradeId);
+    const fields = [
+        ["#tradeIdInput", trade.tradeId],
+        ["#productInput", trade.product.name],
+        ["#buyingPartyInput", trade.buyingParty.name],
+        ["#sellingPartyInput", trade.sellingParty.name],
+        ["#tradeDateDayInput", trade.tradeDate.getDate()],
+        ["#tradeDateMonthInput", trade.tradeDate.getMonth()+1],
+        ["#tradeDateYearInput", trade.tradeDate.getFullYear()],
+        ["#maturityDateDayInput", trade.maturityDate.getDate()],
+        ["#maturityDateMonthInput", trade.maturityDate.getMonth()+1],
+        ["#maturityDateYearInput", trade.maturityDate.getFullYear()],
+        ["#notionalCurrency", trade.notionalCurrency.code],
+        ["#notionalPriceInput", trade.notionalPrice],
+        ["#underlyingCurrencyInput", trade.underlyingCurrency.code],
+        ["#underlyingPriceInput", trade.underlyingPrice],
+        ["#quantityInput", trade.quantity],
+        ["#strikePriceInput", trade.strikePrice],
+    ]
 
-    let elem = $("#productInput");
-    elem.val(trade.product.name).trigger("change");
-    if (!elem.select2("data").length) {
-        showError("Could not find product for trade", trade);
-    }
-    $("#buyingPartyInput").val(trade.buyingParty.name).trigger("change");
-    $("#sellingPartyInput").val(trade.sellingParty.name).trigger("change");
+    fields.forEach((x) => {
+        try {
+            $(x[0]).val(x[1]).trigger("change");
+        }
+        catch {
+            $(x[0]).val(null).trigger("change");
+        }
 
-    $("#tradeDateDayInput").val(trade.tradeDate.getDate());
-    $("#tradeDateMonthInput").val(trade.tradeDate.getMonth()+1);
-    $("#tradeDateYearInput").val(trade.tradeDate.getFullYear());
-
-    $("#maturityDateDayInput").val(trade.maturityDate.getDate());
-    $("#maturityDateMonthInput").val(trade.maturityDate.getMonth()+1);
-    $("#maturityDateYearInput").val(trade.maturityDate.getFullYear());
-
-    $("#notionalCurrencyInput").val(trade.notionalCurrency.code).trigger("change");
-    $("#notionalPriceInput").val(trade.notionalPrice);
-    $("#underlyingCurrencyInput").val(trade.underlyingCurrency.code).trigger("change");
-    $("#underlyingPriceInput").val(trade.underlyingPrice);
-
-
-    $("#quantityInput").val(trade.quantity);
-    $("#strikePriceInput").val(trade.strikePrice);
+    });
 }
 
 function companyNameToObject(name) {
@@ -183,13 +185,23 @@ function checkTradeButton_OnPressed() {
 }
 
 function addTradeButton_OnPressed() {
-    let t = tradeObjectFromForm();
-    api.post.trades(t.getAPIObject(), () => {}, showError);
+    //showError("NotImplementedError");
+    let t = new Trade();
+    t.tradeId = "-";
+    t.product = null;
+    t.buyingParty = null;
+    addTradeToUI(t);
+    loadTradeToForm(t);
 }
 
 function saveTradeButton_OnPressed() {
     let t = tradeObjectFromForm();
-    api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
+    if (t.tradeId != undefined) {
+        api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
+    }
+    else {
+        api.post.trades(t.getAPIObject(), () => {}, showError);
+    }
     //TODO add visual feedback of the save to user
 }
 
