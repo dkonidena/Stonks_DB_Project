@@ -278,38 +278,3 @@ class TradeFilter extends Filter {
         this.userIDCreatedBy = null;
     }
 }
-
-class Report {
-    constructor() {
-        this.date = new Date();
-        this.content = "";
-    }
-
-    populateFromServerJSON(o) {
-        try {
-            this.date = new Date(o.date);
-            this.content = o.content;
-            return this;
-        }
-        catch {
-            return null;
-        }
-    }
-}
-
-function getReportList(filter, res, err) {
-    api.get.reports(filter.getAPIObject(), false, (response) => {
-        if (response.matches === undefined) {
-            showError("Malformed server reponse for reports", "matches field not present");
-            return;
-        }
-
-        let reports = [];
-        for (let json of response.matches) {
-            let report = new Report();
-            reports.push(report.populateFromServerJSON(json));
-        }
-
-        if (res !== undefined) { res(reports); }
-    }, showError);
-}
