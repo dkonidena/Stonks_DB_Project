@@ -59,6 +59,59 @@
                 </div>
            </div>
          </nav>
+
+        <div class="col-md-10 ml-auto">
+
+             <div class="row justify-content-center border-bottom">
+                 <div class="col-auto display-4 py-3">Product Editor</div>
+             </div>
+
+             <form>
+
+             <div class="row pb-4">
+                 <label class="col-1 col-form-label-lg" for="productIdInput">Product ID</label>
+                 <div class="col-auto">
+                     <input type="text" readonly class="form-control-lg form-control-plaintext" id="productIdInput">
+                 </div>
+                 <label class="col-auto col-form-label-lg" for="productDateInput">Creation Date</label>
+                 <div class="col-3">
+                     <div class="form-inline" id="productDateInput">
+                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateDayInput"/>
+                         <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateMonthInput"/>
+                         <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="productDateYearInput"/>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="row pb-3">
+                 <div class="col-3">
+                     <label for="productInput">Name</label>
+                     <input class="form-control" type="text" id="productInput">
+                     </select>
+                 </div>
+             </div>
+
+             <div class="row pb-3">
+                 <div class="col-3">
+                     <label for="companyInput">Seller</label>
+                     <select class="form-control select2-comp" id="companyInput">
+                     </select>
+                 </div>
+             </div>
+
+             <div class="row pb-3">
+                 <div class="col-3">
+                     <label for="valueInUSDInput">Value</label>
+                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                         <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
+                         <input type="text" class="form-control" id="valueInUSDInput" placeholder="0.00">
+                     </div>
+                 </div>
+             </div>
+         </form>
+         </div>
     </div>
 
     <div class="modal fade" id="advancedSearch" tabindex="-1" role="dialog">
