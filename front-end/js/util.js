@@ -19,7 +19,7 @@ function setInputFilter(t, filter) {
     });
 }
 
-function showError(error, debugData = '', stringify = true) {
+function showError(error, debugData = 'no additional data', stringify = true) {
     if (stringify && debugData !== '') debugData = JSON.stringify(debugData, null, 2);
     showErrorDialogue(error, debugData);
 }
@@ -28,6 +28,14 @@ function showErrorDialogue(error = '', detail = '') {
     $('#errorShort').text(error);
     $('#errorDetailContent').text(detail);
     $('#apiErrorModal').modal('show');
+}
+
+//use for accessing xxx.yyy where xxx can be null
+function nullMemberAccess(parent, child) {
+    if (parent === null || parent === undefined) {
+        return null;
+    }
+    else return parent[child];
 }
 
 function randInt(min, max) {

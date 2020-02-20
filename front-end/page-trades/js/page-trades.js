@@ -1,3 +1,5 @@
+let newTradeCount = 0;
+
 function addTradeToUI(trade) {
     let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
     let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
@@ -34,20 +36,24 @@ function addCompanyToUI(c) {
 }
 
 function loadTradeToForm(trade) {
+    if (trade === null) {
+        showError("Tried to load null trade to form");
+        return;
+    }
     const fields = [
         ["#tradeIdInput", trade.tradeId],
-        ["#productInput", trade.product.name],
-        ["#buyingPartyInput", trade.buyingParty.name],
-        ["#sellingPartyInput", trade.sellingParty.name],
+        ["#productInput", nullMemberAccess(trade.product, "name")],
+        ["#buyingPartyInput", nullMemberAccess(trade.buyingParty, "name")],
+        ["#sellingPartyInput", nullMemberAccess(trade.sellingParty, "name")],
         ["#tradeDateDayInput", trade.tradeDate.getDate()],
         ["#tradeDateMonthInput", trade.tradeDate.getMonth()+1],
         ["#tradeDateYearInput", trade.tradeDate.getFullYear()],
         ["#maturityDateDayInput", trade.maturityDate.getDate()],
         ["#maturityDateMonthInput", trade.maturityDate.getMonth()+1],
         ["#maturityDateYearInput", trade.maturityDate.getFullYear()],
-        ["#notionalCurrency", trade.notionalCurrency.code],
+        ["#notionalCurrency", nullMemberAccess(trade.notionalCurrency, "code")],
         ["#notionalPriceInput", trade.notionalPrice],
-        ["#underlyingCurrencyInput", trade.underlyingCurrency.code],
+        ["#underlyingCurrencyInput", nullMemberAccess(trade.underlyingCurrency, "code")],
         ["#underlyingPriceInput", trade.underlyingPrice],
         ["#quantityInput", trade.quantity],
         ["#strikePriceInput", trade.strikePrice],
@@ -185,11 +191,8 @@ function checkTradeButton_OnPressed() {
 }
 
 function addTradeButton_OnPressed() {
-    //showError("NotImplementedError");
     let t = new Trade();
-    t.tradeId = "-";
-    t.product = null;
-    t.buyingParty = null;
+    t.tradeId = `NEW${newTradeCount++}`;
     addTradeToUI(t);
     loadTradeToForm(t);
 }
