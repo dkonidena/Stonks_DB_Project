@@ -49,7 +49,7 @@ function init() {
     });
 
     $("#addTradeButton").on("click", addTradeButton_OnPressed);
-    $("#saveTradeButton").on("click",saveTradeButton_OnPressed);
+    $("#saveTradeButton").on("click", saveTradeButton_OnPressed);
     $("#checkTradeButton").on("click",checkTradeButton_OnPressed);
     $("#discardChangesButton").on("click", cancelTradeButton_OnPressed);
     $("#doAdvancedSearch").on("click", advancedSearchButton_OnPressed);

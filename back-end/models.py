@@ -238,12 +238,6 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
     
-    @classmethod
-    def get_trade_dates_between(cls, startDate, endDate):
-        try:
-            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
-        except exc.ProgrammingError:
-            raise exc.ProgrammingError("", "", 1)
 
     # returns all dates the trades were made on
     @classmethod
@@ -258,7 +252,7 @@ class DerivativeTradesModel(db.Model):
     def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
         try:
             row = cls.query.filter_by(TradeID = tradeID).first()
-            row.Product = product
+            row.ProductID = product
             row.BuyingParty = buyingParty
             row.SellingParty = sellingParty
             row.NotionalValue = notionalValue
@@ -353,9 +347,9 @@ class ProductSellersModel(db.Model):
     # unsure what this does
     # maybe checks if a comapny sells that product
     @classmethod
-    def getProductID(cls, productName, companyCode):
+    def getProductID(cls, productID, companyCode):
         try:
-            return cls.query.filter(ProductSellersModel.CompanyCode == companyCode).filter(ProductSellersModel.ProductID == ProductModel.ProductID).filter(ProductModel.ProductName == productName).with_entities(ProductSellersModel.ProductID)
+            return cls.query.filter(ProductSellersModel.CompanyCode == companyCode).filter(ProductSellersModel.ProductID == productID).all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 

@@ -441,19 +441,17 @@ class Trades(Resource):
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
-            if result.count() == 0:
+            if len(result) == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
-            assetIDs = [value for value, in result] #results returns a result set object - need to format this // formatted into a list to get the product id // there should only be 1 product id
-
-            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = assetIDs[0], BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
+            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
 
 
             # need to implement checking if the currencies exist
 
             #If a the product or stock which the trade is linked to is found, then the trade
             new_tradeID = new_trade.save_to_db()
-            new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = assetIDs[0])
+            new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = result[0].ProductID)
             new_product_trade.save_to_db()
 
             #Logging the user action
@@ -564,7 +562,7 @@ class Reports(Resource):
             # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
                 # find the dates trades are made between these dates
-                tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated'][0], filter['dateCreated'][1])
+                tradeDates = models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1])
                 for each in tradeDates:
                     results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
                 noOfMatches = len(results) # gives the no. of reports available
