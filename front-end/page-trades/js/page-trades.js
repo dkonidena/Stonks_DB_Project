@@ -187,12 +187,12 @@ function addTradeButton_OnPressed() {
 
 function saveTradeButton_OnPressed() {
     let t = tradeObjectFromForm();
-    api.post.trades(t.tradeId, t.getAPIObject(), console.log, showError);
+    api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
     //TODO add visual feedback of the save to user
 }
 
 function cancelTradeButton_OnPressed() {
-    var trade = trades.filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+    var trade = Objects.values(trades).filter(t => t.tradeId == $("#tradeIdInput").val())[0];
     loadTradeToForm(trade);
 }
 
