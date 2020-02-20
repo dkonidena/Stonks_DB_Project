@@ -155,6 +155,20 @@ class DerivativeTradesModel(db.Model):
 
     # serves the get request for a filtered date
     @classmethod
+    def get_trades_after(cls, startDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_before(cls, endDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
     def get_trades_between(cls, startDate, endDate):
         try:
             return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
@@ -217,19 +231,10 @@ class DerivativeTradesModel(db.Model):
             return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-
-    # returns all trades that have existed
     @classmethod
     def get_trades_all(cls):
         try:
             return cls.query.all()
-        except exc.ProgrammingError:
-            raise exc.ProgrammingError("", "", 1)
-
-    @classmethod
-    def get_trade_dates_between(cls, startDate, endDate):
-        try:
-            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
