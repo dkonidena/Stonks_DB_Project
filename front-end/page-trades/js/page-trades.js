@@ -1,8 +1,11 @@
+let newTradeCount = 0;
+
 function addTradeToUI(trade) {
     let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
     let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
     b.on("click", () => {
         loadTradeToForm(trade);
+        showTradeForm();
     })
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#trades").append(li);
@@ -33,34 +36,39 @@ function addCompanyToUI(c) {
     $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
 }
 
+function showTradeForm() {
+    if(!$("#tradeEditorForm:visible").length) {
+        $("#tradeEditorMessage").hide();
+        $("#tradeEditorForm").show();
+    }
+}
+
 function loadTradeToForm(trade) {
+    if (trade === null) {
+        showError("Tried to load null trade to form");
+        return;
+    }
     const fields = [
         ["#tradeIdInput", trade.tradeId],
-        ["#productInput", trade.product.name],
-        ["#buyingPartyInput", trade.buyingParty.name],
-        ["#sellingPartyInput", trade.sellingParty.name],
+        ["#productInput", nullMemberAccess(trade.product, "name")],
+        ["#buyingPartyInput", nullMemberAccess(trade.buyingParty, "name")],
+        ["#sellingPartyInput", nullMemberAccess(trade.sellingParty, "name")],
         ["#tradeDateDayInput", trade.tradeDate.getDate()],
         ["#tradeDateMonthInput", trade.tradeDate.getMonth()+1],
         ["#tradeDateYearInput", trade.tradeDate.getFullYear()],
         ["#maturityDateDayInput", trade.maturityDate.getDate()],
         ["#maturityDateMonthInput", trade.maturityDate.getMonth()+1],
         ["#maturityDateYearInput", trade.maturityDate.getFullYear()],
-        ["#notionalCurrency", trade.notionalCurrency.code],
+        ["#notionalCurrencyInput", nullMemberAccess(trade.notionalCurrency, "code")],
         ["#notionalPriceInput", trade.notionalPrice],
-        ["#underlyingCurrencyInput", trade.underlyingCurrency.code],
+        ["#underlyingCurrencyInput", nullMemberAccess(trade.underlyingCurrency, "code")],
         ["#underlyingPriceInput", trade.underlyingPrice],
         ["#quantityInput", trade.quantity],
         ["#strikePriceInput", trade.strikePrice],
     ]
 
     fields.forEach((x) => {
-        try {
-            $(x[0]).val(x[1]).trigger("change");
-        }
-        catch {
-            $(x[0]).val(null).trigger("change");
-        }
-
+        $(x[0]).val(x[1]).trigger("change");
     });
 }
 
@@ -185,13 +193,14 @@ function checkTradeButton_OnPressed() {
 }
 
 function addTradeButton_OnPressed() {
-    //showError("NotImplementedError");
     let t = new Trade();
-    t.tradeId = "-";
-    t.product = null;
-    t.buyingParty = null;
+    t.tradeId = `NEW${newTradeCount++}`;
+    t.notionalCurrency = currencies['USD'];
+    t.underlyingCurrency = currencies['USD'];
+    trades[t.tradeId] = t;
     addTradeToUI(t);
     loadTradeToForm(t);
+    showTradeForm();
 }
 
 function saveTradeButton_OnPressed() {
