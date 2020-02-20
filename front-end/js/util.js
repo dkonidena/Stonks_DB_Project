@@ -31,9 +31,10 @@ function showErrorDialogue(error = '', detail = '') {
 }
 
 //use for accessing xxx.yyy where xxx can be null
-function nullMemberAccess(parent, child) {
+//optionally return a specified value instead of null
+function nullMemberAccess(parent, child, val = null) {
     if (parent === null || parent === undefined) {
-        return null;
+        return val;
     }
     else return parent[child];
 }

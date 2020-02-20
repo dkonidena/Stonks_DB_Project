@@ -59,7 +59,7 @@ function loadTradeToForm(trade) {
         ["#maturityDateDayInput", trade.maturityDate.getDate()],
         ["#maturityDateMonthInput", trade.maturityDate.getMonth()+1],
         ["#maturityDateYearInput", trade.maturityDate.getFullYear()],
-        ["#notionalCurrency", nullMemberAccess(trade.notionalCurrency, "code")],
+        ["#notionalCurrencyInput", nullMemberAccess(trade.notionalCurrency, "code")],
         ["#notionalPriceInput", trade.notionalPrice],
         ["#underlyingCurrencyInput", nullMemberAccess(trade.underlyingCurrency, "code")],
         ["#underlyingPriceInput", trade.underlyingPrice],
@@ -68,13 +68,7 @@ function loadTradeToForm(trade) {
     ]
 
     fields.forEach((x) => {
-        try {
-            $(x[0]).val(x[1]).trigger("change");
-        }
-        catch {
-            $(x[0]).val(null).trigger("change");
-        }
-
+        $(x[0]).val(x[1]).trigger("change");
     });
 }
 
@@ -201,6 +195,9 @@ function checkTradeButton_OnPressed() {
 function addTradeButton_OnPressed() {
     let t = new Trade();
     t.tradeId = `NEW${newTradeCount++}`;
+    t.notionalCurrency = currencies['USD'];
+    t.underlyingCurrency = currencies['USD'];
+    trades[t.tradeId] = t;
     addTradeToUI(t);
     loadTradeToForm(t);
     showTradeForm();
