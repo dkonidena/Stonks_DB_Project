@@ -226,6 +226,13 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    @classmethod
+    def get_trade_dates_between(cls, startDate, endDate):
+        try:
+            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
     # returns all dates the trades were made on
     @classmethod
     def get_all_trade_dates(cls):
