@@ -143,9 +143,18 @@ class Companies(Resource):
     def delete(self):
         try:
             company_ID = request.args.get('id')
+            date_now = str(date_func.today())
+            # check to see if the company exists today
+            # return the tuple of the company wanting to be deleted
+            specificCompany = models.CompanyModel.retrieve_company_by_code(company_ID)
+            # returns tuples of companies that exist currently
+            existingCompanies = models.CompanyModel.retrieve_companies_before(date_now)
+            # intersection to see if the desired company exists or not
+            deletedCompany = existingCompanies.intersect(specificCompany)
+            if deletedCompany.count() == 0:
+                return {'message':'Cannot delete a non-existant company'}, 400
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            date_now = str(date_func.today())
             models.CompanyModel.update_date_deleted(company_ID, date_now)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
@@ -561,9 +570,11 @@ class Reports(Resource):
             # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
                 # find the dates trades are made between these dates
-                tradeDates = models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1])
+                tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated'][0], filter['dateCreated'][1])
                 for each in tradeDates:
+                    print(each.DateOfTrade)
                     results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
+                exit(0)
                 noOfMatches = len(results) # gives the no. of reports available
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()

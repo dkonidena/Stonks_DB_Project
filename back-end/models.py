@@ -34,7 +34,14 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
-            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) > cls.DateDeleted, cls.DateDeleted == None))
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) < cls.DateDeleted, cls.DateDeleted == None))
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
+    @classmethod
+    def retrieve_company_by_code(cls, code):
+        try:
+            return cls.query.filter(cls.CompanyCode == code)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -244,6 +251,13 @@ class DerivativeTradesModel(db.Model):
     def get_all_trade_dates(cls):
         try:
             return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
+    @classmethod
+    def get_trade_dates_between(cls, startDate, endDate):
+        try:
+            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
