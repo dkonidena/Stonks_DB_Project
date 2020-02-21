@@ -8,10 +8,10 @@ const filters = [
     ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
 ];
 
-$(document).ready(() => {
+function init() {
 
     filters.forEach((x) => {
-        var t = x[0];
+        var t = $(x[0]);
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
@@ -73,4 +73,6 @@ $(document).ready(() => {
     $('.select2-comp').select2({
         theme: "bootstrap4"
     });
-});
+}
+
+$(document).ready(init);

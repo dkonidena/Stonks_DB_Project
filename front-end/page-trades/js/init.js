@@ -57,14 +57,48 @@ function init() {
         elemTradeListEmptyMessage.hide();
     });
 
-    $("#addTradeButton").on("click", addTradeButton_OnPressed);
-    $("#saveTradeButton").on("click", saveTradeButton_OnPressed);
-    $("#checkTradeButton").on("click",checkTradeButton_OnPressed);
-    $("#discardChangesButton").on("click", cancelTradeButton_OnPressed);
-    $("#doAdvancedSearch").on("click", advancedSearchButton_OnPressed);
+    $("#addTradeButton").on("click", () => {
+        let t = new Trade();
+        t.tradeId = `NEW${newTradeCount++}`;
+        t.notionalCurrency = currencies['USD'];
+        t.underlyingCurrency = currencies['USD'];
+        trades[t.tradeId] = t;
+        addTradeToUI(t);
+        loadTradeToForm(t);
+        showTradeForm();
+    })
+    ;
+    $("#saveTradeButton").on("click", () => {
+        let t = tradeObjectFromForm();
+        if (t.tradeId != undefined) {
+            api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
+        }
+        else {
+            api.post.trades(t.getAPIObject(), () => {}, showError);
+        }
+        //TODO add visual feedback of the save to user
+    });
+
+    $("#checkTradeButton").on("click", () => {
+        api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showError);
+        //TODO add visual feedback of the checks
+    });
+
+    $("#discardChangesButton").on("click", () => {
+        var trade = Object.values(trades).filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+        loadTradeToForm(trade);
+    });
+
+    $("#doAdvancedSearch").on("click", () => {
+        let filter = filterObjectFromForm();
+        clearTradeList();
+        getTradeList(filter, (trades) => {
+            trades.forEach(addTradeToUI);
+        });
+    });
 
     filters.forEach((x) => {
-        var t = x[0];
+        var t = $(x[0]);
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
@@ -104,6 +138,4 @@ function init() {
     $("span[aria-labelledby='select2-underlyingCurrencyInput-container']").css("background-color", "#e9ecef");
 }
 
-$(document).ready(function() {
-    init();
-});
+$(document).ready(init);

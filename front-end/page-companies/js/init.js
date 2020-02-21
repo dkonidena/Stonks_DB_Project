@@ -7,7 +7,7 @@ const filters = [
     ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
 ];
 
-$(document).ready(() => {
+function init() {
     let elemCompanyListEmptyMessage = $("#companyListEmptyMessage");
     elemCompanyListEmptyMessage.hide();
     elemCompanyListEmptyMessage.removeClass("d-none");
@@ -25,7 +25,7 @@ $(document).ready(() => {
     });
 
     filters.forEach((x) => {
-        var t = x[0];
+        var t = $(x[0]);
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
@@ -54,4 +54,6 @@ $(document).ready(() => {
             companies.forEach(addCompanyToUI);
         })
     });
-});
+}
+
+$(document).ready(init);

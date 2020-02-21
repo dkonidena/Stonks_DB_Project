@@ -2,7 +2,7 @@ const events = ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "
 
 function setInputFilter(t, filter) {
     events.forEach((e) => {
-        $(t).on(e, function () {
+        t.on(e, function () {
             if (filter(this.value)) {
                 this.oldValue = this.value;
                 this.oldSelectionStart = this.selectionStart;
