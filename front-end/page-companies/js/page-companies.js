@@ -13,6 +13,15 @@ function addCompanyToUI(company) {
     $("#companies").append(li);
 }
 
+function clearCompanyList() {
+    $("#companies").html("");
+    $("#filter-companyIdInput").html("");
+}
+
+function isCompanyListEmpty() {
+    return $("#companies").html() === "";
+}
+
 function filterObjectFromForm() {
     if ($("#filter-creationDateLowerDayInput").val() !== "") {
         let date = new Date();
@@ -57,12 +66,6 @@ function loadCompanyToForm(company) {
     ]
 
     fields.forEach((x) => {
-        try {
             $(x[0]).val(x[1]).trigger("change");
-        }
-        catch {
-            $(x[0]).val(null).trigger("change");
-        }
-
     });
 }

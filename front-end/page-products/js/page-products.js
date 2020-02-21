@@ -27,6 +27,15 @@ function showProductForm() {
     }
 }
 
+function clearProductList() {
+    $("#products").html("");
+    $("#filter-productIdInput").html("");
+}
+
+function isProductListEmpty() {
+    return $("#products").html() === "";
+}
+
 function filterObjectFromForm() {
     if ($("#filter-creationDateLowerDayInput").val() !== "") {
         let date = new Date();

@@ -9,9 +9,26 @@ const filters = [
 ];
 
 $(document).ready(() => {
+
     filters.forEach((x) => {
         var t = x[0];
         setInputFilter(t, (v) => { return x[1].test(v) });
+    });
+
+    let elemProductListEmptyMessage = $("#productListEmptyMessage");
+    elemProductListEmptyMessage.hide();
+    elemProductListEmptyMessage.removeClass("d-none");
+
+    $("#productList").on("show.bs.collapse", () => {
+        $("#productListCollapseSymbol").text("expand_less");
+        if (isProductListEmpty()) {
+            elemProductListEmptyMessage.show();
+        }
+    });
+
+    $("#productList").on("hide.bs.collapse", () => {
+        $("#productListCollapseSymbol").text("expand_more");
+        elemProductListEmptyMessage.hide();
     });
 
     $("#addProductButton").click( () => {
@@ -43,6 +60,7 @@ $(document).ready(() => {
     });
 
     $("#doAdvancedSearch").click( () => {
+        clearProductList();
         getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {
             companies.forEach(addCompanyToUI);
 

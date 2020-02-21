@@ -15,6 +15,15 @@ function addTradeToUI(trade) {
     $("#filter-tradeIdInput").append(t);
 };
 
+function clearTradeList() {
+    $("#trades").html("");
+    $("#filter-tradeIdInput").html("");
+}
+
+function isTradeListEmpty() {
+    return $("#trades").html() === "";
+}
+
 function addCurrencyToUI(cur) {
     let o = "<option></option>";
     let c = $(o).text(cur.code).attr({
@@ -221,6 +230,7 @@ function cancelTradeButton_OnPressed() {
 
 function advancedSearchButton_OnPressed() {
     let filter = filterObjectFromForm();
+    clearTradeList();
     getTradeList(filter, (trades) => {
         trades.forEach(addTradeToUI);
     });

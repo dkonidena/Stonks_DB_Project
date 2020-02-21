@@ -8,6 +8,22 @@ const filters = [
 ];
 
 $(document).ready(() => {
+    let elemCompanyListEmptyMessage = $("#companyListEmptyMessage");
+    elemCompanyListEmptyMessage.hide();
+    elemCompanyListEmptyMessage.removeClass("d-none");
+
+    $("#companyList").on("show.bs.collapse", () => {
+        $("#companyListCollapseSymbol").text("expand_less");
+        if (isCompanyListEmpty()) {
+            elemCompanyListEmptyMessage.show();
+        }
+    });
+
+    $("#companyList").on("hide.bs.collapse", () => {
+        $("#companyListCollapseSymbol").text("expand_more");
+        elemCompanyListEmptyMessage.hide();
+    });
+
     filters.forEach((x) => {
         var t = x[0];
         setInputFilter(t, (v) => { return x[1].test(v) });
@@ -33,6 +49,7 @@ $(document).ready(() => {
     });
 
     $("#doAdvancedSearch").click( () => {
+        clearCompanyList();
         getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {
             companies.forEach(addCompanyToUI);
         })

@@ -26,6 +26,11 @@ const filters = [
 
 function init() {
 
+    let elemTradeListEmptyMessage = $("#tradeListEmptyMessage");
+    elemTradeListEmptyMessage.hide();
+    elemTradeListEmptyMessage.removeClass("d-none");
+
+
     $("#notionalCurrencyInput").on("change", () => {
         var selected = $("#notionalCurrencyInput option:selected");
         $("#notionalCurrencySymbol").text(selected.data("symbol"));
@@ -42,10 +47,14 @@ function init() {
 
     $("#tradeList").on("show.bs.collapse", () => {
         $("#tradeListCollapseSymbol").text("expand_less");
+        if (isTradeListEmpty()) {
+            elemTradeListEmptyMessage.show();
+        }
     });
 
     $("#tradeList").on("hide.bs.collapse", () => {
         $("#tradeListCollapseSymbol").text("expand_more");
+        elemTradeListEmptyMessage.hide();
     });
 
     $("#addTradeButton").on("click", addTradeButton_OnPressed);
