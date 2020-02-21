@@ -345,11 +345,11 @@ class Trades(Resource):
                     if 'dateModified' in filter:
                         if len(filter['dateModified']) == 1:
                             if 'after' in filter['dateModified']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateModified']['after']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after']))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateModified']['before']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before']))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateModified']['after'], filter['dateModified']['before']))
+                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before']))
 
                     if 'tradeID' in filter:
                         for id in filter['tradeID']:

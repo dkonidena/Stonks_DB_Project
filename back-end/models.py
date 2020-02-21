@@ -185,6 +185,29 @@ class DerivativeTradesModel(db.Model):
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
 
+    # serves the get request for a filtered date
+    @classmethod
+    def get_trades_modified_after(cls, startDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_modified_before(cls, endDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_modified_between(cls, startDate, endDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+
     # serves the get request for a filtered trade ID
     @classmethod
     def get_trade_with_ID(cls, tradeID):
