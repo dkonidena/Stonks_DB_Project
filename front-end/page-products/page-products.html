@@ -41,13 +41,19 @@
     <div class="container-fluid">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right border-dark" style="margin-top:56px;">
             <div class="sidebar-sticky">
+                <button id="addProductButton" class="btn btn-light btn-lg btn-block" type="button" href="#">
+                    <div class="text-left h4 mb-0">
+                        <i class="material-icons align-bottom" style="font-size:28px;">add</i>
+                        New Product
+                    </div>
+                </button>
                 <button id="searchProductsButton" class="btn btn-light btn-lg btn-block" type="button" data-toggle="modal" data-target="#advancedSearch">
                     <div class="text-left h4 mb-0">
                     <i class="material-icons align-bottom" style="font-size:28px;">search</i>
                     Filter Products...
                     </div>
                 </button>
-                <button class="btn btn-light btn-lg btn-block" type="button" data-toggle="collapse" data-target="#reportList">
+                <button class="btn btn-light btn-lg btn-block" type="button" data-toggle="collapse" data-target="#productList">
                     <div class="text-left h4 mb-0">
                     <i class="material-icons align-bottom" style="font-size:28px;">assessment</i>
                     Products
@@ -111,7 +117,36 @@
                  </div>
              </div>
          </form>
+
+         <div class="row mt-5">
+             <div class="col-auto ">
+                 <button class="btn btn-lg btn-block btn-primary" id="saveProductButton">Save Product</button>
+             </div>
+             <div class="col-auto">
+                 <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelProductModal" id="cancelProductButton">Discard Changes</button>
+             </div>
          </div>
+         </div>
+    </div>
+
+    <div class="modal fade" id="confirmCancelProductModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelProductModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm Discard</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to discard your changes made to this product?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="discardChangesButton" data-dismiss="modal">Discard Changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Return to Editor</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="advancedSearch" tabindex="-1" role="dialog">

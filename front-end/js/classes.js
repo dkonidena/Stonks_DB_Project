@@ -99,7 +99,7 @@ class Product {
         this.name = "";
         this.company = null; //new Company();
         this.valueInUSD = "";
-        this.dateEnteredIntoSystem = null; //new Date();
+        this.dateEnteredIntoSystem = new Date();
         this.userIDcreatedBy = "";
     }
 
