@@ -3,12 +3,6 @@ var products = {};
 
 var newProdCount = 0;
 
-function addProductToUI(c) {
-    let o = "<option></option>";
-    let d = $(o).text(c.name);
-    $("#companyInput").append(d);
-}
-
 function addProductToUI(product) {
     let s = "<button class=\"btn product-button d-block text-muted py-0 my-n1\"></button>";
     let b = $(s).text(product.name).data("product", product);
