@@ -14,11 +14,11 @@ $(document).ready(() => {
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
-    getCompanyList(null, 'mostBoughtFrom', (companies) => {
-        companies.forEach(addCompanyToUI);
-    });
-
     $("#addProductButton").click( () => {
+        getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
+            companies.forEach(addCompanyToUI);
+        });
+
         let product = new Product();
         product.if = `NEW${newProdCount++}`;
         addProductToUI(product);
@@ -42,9 +42,13 @@ $(document).ready(() => {
     });
 
     $("#doAdvancedSearch").click( () => {
-        getProductList(filterObjectFromForm(), (products) => {
-            products.forEach(addProductToUI);
-        })
+        getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {
+            companies.forEach(addCompanyToUI);
+
+            getProductList(filterObjectFromForm(), (products) => {
+                products.forEach(addProductToUI);
+            })
+        });
     });
 
     $('.select2-comp').select2({
