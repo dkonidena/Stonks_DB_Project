@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
 import traceback
 import sys
+from datetime import date as date_func
 
 def parse_iso_date(date_string):
     # this function takes an iso8601 string and converts it into a YYYY-MM-DD string
@@ -148,6 +149,7 @@ class DerivativeTradesModel(db.Model):
     UnderlyingValue = db.Column(db.Float, nullable = False)
     UnderlyingCurrency = db.Column(db.String(120), ForeignKey("CurrencyTypes.CurrencyCode"), nullable = False)
     StrikePrice = db.Column(db.Float, nullable = False)
+    LastModifiedDate = db.Column(db.String(120), nullable = False)
     UserIDCreatedBy = db.Column(db.Integer, ForeignKey("Employees.EmployeeID"), nullable = False)
 
     def save_to_db(self):
@@ -254,6 +256,7 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    # returns all dates trades happen between a certain start and end date -> used for reports generation
     @classmethod
     def get_trade_dates_between(cls, startDate, endDate):
         try:
@@ -265,7 +268,7 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
         try:
-            row = cls.query.filter_by(TradeID = tradeID).first()
+            row = cls.query.filter_by(TradeID = tradeID)
             row.ProductID = product
             row.BuyingParty = buyingParty
             row.SellingParty = sellingParty
@@ -276,6 +279,7 @@ class DerivativeTradesModel(db.Model):
             row.UnderlyingValue = underlyingValue
             row.UnderlyingCurrency = underlyingCurrency
             row.StrikePrice = strikePrice
+            row.LastModifiedDate = date_now = str(date_func.today())
             db.session.commit()
         except exc.IntegrityError:
            raise exc.IntegrityError("", "", 1)

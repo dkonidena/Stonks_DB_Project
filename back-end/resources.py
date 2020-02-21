@@ -452,7 +452,7 @@ class Trades(Resource):
             if len(result) == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
-            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
+            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = models.parse_iso_date(maturityDate), UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, LastModifiedDate = date_now, UserIDCreatedBy = userID)
 
 
             # need to implement checking if the currencies exist
@@ -477,9 +477,9 @@ class Trades(Resource):
     def patch(self):
         # needs error checking
         try:
-            trade_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
+            trade_ID = data['id']
             product = data['product']
             quantity = data['quantity']
             buyingParty = data['buyingParty']
