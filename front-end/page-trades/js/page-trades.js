@@ -27,12 +27,12 @@ const elements = {
     filterModificationDateUpperMonthInput: $("#filter-modificationDateUpperMonthInput"),
     filterModificationDateLowerDayInput: $("#filter-modificationDateLowerDayInput"),
     filterModificationDateUpperDayInput: $("#filter-modificationDateUpperDayInput"),
-    filterCreationDateLowerYearInput: $("#filter-CreationDateLowerYearInput"),
-    filterCreationDateUpperYearInput: $("#filter-CreationDateUpperYearInput"),
-    filterCreationDateLowerMOnthInput: $("#filter-CreationDateLowerMOnthInput"),
-    filterCreationDateUpperMOnthInput: $("#filter-CreationDateUpperMOnthInput"),
-    filterCreationDateLowerDayInput: $("#filter-CreationDateLowerDayInput"),
-    filterCreationDateUpperDayInput: $("#filter-CreationDateUpperDayInput"),
+    filterCreationDateLowerYearInput: $("#filter-creationDateLowerYearInput"),
+    filterCreationDateUpperYearInput: $("#filter-creationDateUpperYearInput"),
+    filterCreationDateLowerMonthInput: $("#filter-creationDateLowerMonthInput"),
+    filterCreationDateUpperMonthInput: $("#filter-creationDateUpperMonthInput"),
+    filterCreationDateLowerDayInput: $("#filter-creationDateLowerDayInput"),
+    filterCreationDateUpperDayInput: $("#filter-creationDateUpperDayInput"),
     tradeListEmptyMessage: $("#tradeListEmptyMessage"),
 }
 

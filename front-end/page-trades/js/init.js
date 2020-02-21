@@ -1,27 +1,27 @@
 const filters = [
-    ["#tradeIdInput", /^[0-9A-Z]{0,16}$/],
-    ["#quantityInput", /^\d*$/],
-    ["#notionalPriceInput", /^\d*\.?\d*$/],
-    ["#underlyingPriceInput", /^\d*\.?\d*$/],
-    ["#strikePriceInput", /^\d*\.?\d*$/],
-    ["#tradeDateDayInput", /^\d{0,2}$/],
-    ["#tradeDateMonthInput", /^\d{0,2}$/],
-    ["#tradeDateYearInput", /^\d{0,4}$/],
-    ["#maturityDateDayInput", /^\d{0,2}$/],
-    ["#maturityDateMonthInput", /^\d{0,2}$/],
-    ["#maturityDateYearInput", /^\d{0,4}$/],
-    ["#filter-creationDateLowerDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerYearInput", /^\d{0,4}$/],
-    ["#filter-creationDateUpperDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
-    ["#filter-modificationDateLowerDayInput", /^\d{0,2}$/],
-    ["#filter-modificationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#filter-modificationDateLowerYearInput", /^\d{0,4}$/],
-    ["#filter-modificationDateUpperDayInput", /^\d{0,2}$/],
-    ["#filter-modificationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#filter-modificationDateUpperYearInput", /^\d{0,4}$/],
+    [elements.tradeIdInput, /^[0-9A-Z]{0,16}$/],
+    [elements.quantityInput, /^\d*$/],
+    [elements.notionalPriceInput, /^\d*\.?\d*$/],
+    [elements.underlyingPriceInput, /^\d*\.?\d*$/],
+    [elements.strikePriceInput, /^\d*\.?\d*$/],
+    [elements.tradeDateDayInput, /^\d{0,2}$/],
+    [elements.tradeDateMonthInput, /^\d{0,2}$/],
+    [elements.tradeDateYearInput, /^\d{0,4}$/],
+    [elements.maturityDateDayInput, /^\d{0,2}$/],
+    [elements.maturityDateMonthInput, /^\d{0,2}$/],
+    [elements.maturityDateYearInput, /^\d{0,4}$/],
+    [elements.filterCreationDateLowerDayInput, /^\d{0,2}$/],
+    [elements.filterCreationDateLowerMonthInput, /^\d{0,2}$/],
+    [elements.filterCreationDateLowerYearInput, /^\d{0,4}$/],
+    [elements.filterCreationDateUpperDayInput, /^\d{0,2}$/],
+    [elements.filterCreationDateUpperMonthInput, /^\d{0,2}$/],
+    [elements.filterCreationDateUpperYearInput, /^\d{0,4}$/],
+    [elements.filterModificationDateLowerDayInput, /^\d{0,2}$/],
+    [elements.filterModificationDateLowerMonthInput, /^\d{0,2}$/],
+    [elements.filterModificationDateLowerYearInput, /^\d{0,4}$/],
+    [elements.filterModificationDateUpperDayInput, /^\d{0,2}$/],
+    [elements.filterModificationDateUpperMonthInput, /^\d{0,2}$/],
+    [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
 ];
 
 function init() {
@@ -30,8 +30,7 @@ function init() {
     elements.tradeListEmptyMessage.removeClass("d-none");
 
     filters.forEach((x) => {
-        var t = $(x[0]);
-        setInputFilter(t, (v) => { return x[1].test(v) });
+        setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
     elements.notionalCurrencyInput.on("change", () => {
@@ -74,7 +73,7 @@ function init() {
         loadTradeToForm(t);
         showTradeForm();
     });
-    
+
     $("#saveTradeButton").on("click", () => {
         let t = tradeObjectFromForm();
         if (t.tradeId != undefined) {
@@ -92,7 +91,7 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        var trade = trades[elements.tradeIdInput.val()];
+        let trade = trades[elements.tradeIdInput.val()];
         loadTradeToForm(trade);
     });
 

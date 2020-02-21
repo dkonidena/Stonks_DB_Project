@@ -25,8 +25,7 @@ function init() {
     });
 
     filters.forEach((x) => {
-        var t = $(x[0]);
-        setInputFilter(t, (v) => { return x[1].test(v) });
+        setInputFilter($(x[0]), (v) => { return x[1].test(v) });
     });
 
     $("#addCompanyButton").click( () => {
