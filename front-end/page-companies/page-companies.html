@@ -41,13 +41,19 @@
     <div class="container-fluid">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar border-right border-dark" style="margin-top:56px;">
             <div class="sidebar-sticky">
+                <button id="addCompanyButton" class="btn btn-light btn-lg btn-block" type="button" href="#">
+                    <div class="text-left h4 mb-0">
+                    <i class="material-icons align-bottom" style="font-size:28px;">add</i>
+                    New Company
+                    </div>
+                </button>
                 <button id="searchCompaniesButton" class="btn btn-light btn-lg btn-block" type="button" data-toggle="modal" data-target="#advancedSearch">
                     <div class="text-left h4 mb-0">
                     <i class="material-icons align-bottom" style="font-size:28px;">search</i>
                     Filter Companies...
                     </div>
                 </button>
-                <button class="btn btn-light btn-lg btn-block" type="button" data-toggle="collapse" data-target="#reportList">
+                <button class="btn btn-light btn-lg btn-block" type="button" data-toggle="collapse" data-target="#companyList">
                     <div class="text-left h4 mb-0">
                     <i class="material-icons align-bottom" style="font-size:28px;">assessment</i>
                     Companies
@@ -69,7 +75,7 @@
               <form>
 
               <div class="row pb-4">
-                  <label class="col-1 col-form-label-lg" for="productIdInput">Company ID</label>
+                  <label class="col-1 col-form-label-lg" for="companyIdInput">Company ID</label>
                   <div class="col-auto">
                       <input type="text" readonly class="form-control-lg form-control-plaintext" id="companyIdInput">
                   </div>
@@ -87,12 +93,21 @@
 
               <div class="row pb-3">
                   <div class="col-3">
-                      <label for="productInput">Name</label>
+                      <label for="companyInput">Name</label>
                       <input class="form-control" type="text" id="companyInput">
                       </select>
                   </div>
               </div>
           </form>
+
+          <div class="row mt-5">
+              <div class="col-auto ">
+                  <button class="btn btn-lg btn-block btn-primary" id="saveCompanyButton">Save Company</button>
+              </div>
+              <div class="col-auto">
+                  <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelCompnayModal" id="cancelCompanyButton">Discard Changes</button>
+              </div>
+          </div>
           </div>
     </div>
 

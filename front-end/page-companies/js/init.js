@@ -12,4 +12,28 @@ $(document).ready(() => {
         var t = x[0];
         setInputFilter(t, (v) => { return x[1].test(v) });
     });
+
+    $("#addCompanyButton").click( () => {
+        let company = new Company();
+        company.if = `NEW${newCompCount++}`;
+        addCompanyToUI(company);
+        loadCompanyToForm(company);
+    });
+
+    $("#saveCompanyButton").click( () => {
+        let company = companyObjectFromForm();
+        if (company.id != "") {
+            api.patch.companies(company.id, company.getAPIObject(), console.log, showError);
+        }
+        else {
+            api.post.companies(company.getAPIObject(), console.log, showError);
+        }
+        //TODO add visual feedback of the save to user
+    });
+
+    $("#doAdvancedSearch").click( () => {
+        getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {
+            companies.forEach(addCompanyToUI);
+        })
+    });
 });

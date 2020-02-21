@@ -197,7 +197,7 @@ class Company {
     constructor() {
         this.id = "";
         this.name = "";
-        this.dateEnteredIntoSystem = null; //new Date();
+        this.dateEnteredIntoSystem = new Date();
         this.userIDcreatedBy = "";
     }
 
