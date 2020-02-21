@@ -477,9 +477,9 @@ class Trades(Resource):
     def patch(self):
         # needs error checking
         try:
+            trade_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
-            trade_ID = data['id']
             product = data['product']
             quantity = data['quantity']
             buyingParty = data['buyingParty']
