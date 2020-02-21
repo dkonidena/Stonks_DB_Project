@@ -18,6 +18,7 @@ $(document).ready(() => {
         company.if = `NEW${newCompCount++}`;
         addCompanyToUI(company);
         loadCompanyToForm(company);
+        showCompanyForm();
     });
 
     $("#saveCompanyButton").click( () => {

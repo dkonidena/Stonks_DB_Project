@@ -8,6 +8,7 @@ function addProductToUI(product) {
     let b = $(s).text(product.name).data("product", product);
     b.on("click", () => {
         loadProductToForm(product);
+        showProductForm();
     })
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#products").append(li);
@@ -17,6 +18,13 @@ function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
     $("#companyInput").append(d);
+}
+
+function showProductForm() {
+    if(!$("#productEditorForm:visible").length) {
+        $("#productEditorMessage").hide();
+        $("#productEditorForm").show();
+    }
 }
 
 function filterObjectFromForm() {

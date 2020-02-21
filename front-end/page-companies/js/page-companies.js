@@ -7,6 +7,7 @@ function addCompanyToUI(company) {
     let b = $(s).text(company.name).data("company", company);
     b.on("click", () => {
         loadCompanyToForm(company);
+        showCompanyForm();
     })
     let li = $("<li class=\"nav-item\"></li>").html(b);
     $("#companies").append(li);
@@ -22,6 +23,13 @@ function filterObjectFromForm() {
         return date;
     } else {
         return null;
+    }
+}
+
+function showCompanyForm() {
+    if(!$("#companyEditorForm:visible").length) {
+        $("#companyEditorMessage").hide();
+        $("#companyEditorForm").show();
     }
 }
 

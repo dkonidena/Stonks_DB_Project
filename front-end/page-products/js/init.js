@@ -23,6 +23,7 @@ $(document).ready(() => {
         product.if = `NEW${newProdCount++}`;
         addProductToUI(product);
         loadProductToForm(product);
+        showProductForm();
     });
 
     $("#saveProductButton").click( () => {

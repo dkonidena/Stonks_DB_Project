@@ -72,10 +72,14 @@
                  <div class="col-auto display-4 py-3">Product Editor</div>
              </div>
 
-             <form>
+             <div class="h4 text-muted text-center pt-5" id="productEditorMessage">
+                 Search for an existing product or add a new product to get started.
+             </div>
+
+             <form id="productEditorForm" style="display:none;" >
 
              <div class="row pb-4">
-                 <label class="col-1 col-form-label-lg" for="productIdInput">Product ID</label>
+                 <label class="col-auto col-form-label-lg" for="productIdInput">Product ID</label>
                  <div class="col-auto">
                      <input type="text" readonly class="form-control-lg form-control-plaintext" id="productIdInput">
                  </div>
@@ -116,16 +120,16 @@
                      </div>
                  </div>
              </div>
+             <div class="row mt-5">
+                 <div class="col-auto ">
+                     <button class="btn btn-lg btn-block btn-primary" id="saveProductButton">Save Product</button>
+                 </div>
+                 <div class="col-auto">
+                     <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelProductModal" id="cancelProductButton">Discard Changes</button>
+                 </div>
+             </div>
          </form>
 
-         <div class="row mt-5">
-             <div class="col-auto ">
-                 <button class="btn btn-lg btn-block btn-primary" id="saveProductButton">Save Product</button>
-             </div>
-             <div class="col-auto">
-                 <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelProductModal" id="cancelProductButton">Discard Changes</button>
-             </div>
-         </div>
          </div>
     </div>
 
