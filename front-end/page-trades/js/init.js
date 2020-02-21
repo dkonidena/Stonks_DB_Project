@@ -26,35 +26,42 @@ const filters = [
 
 function init() {
 
-    let elemTradeListEmptyMessage = $("#tradeListEmptyMessage");
-    elemTradeListEmptyMessage.hide();
-    elemTradeListEmptyMessage.removeClass("d-none");
+    elements.tradeListEmptyMessage.hide();
+    elements.tradeListEmptyMessage.removeClass("d-none");
 
-
-    $("#notionalCurrencyInput").on("change", () => {
-        var selected = $("#notionalCurrencyInput option:selected");
-        $("#notionalCurrencySymbol").text(selected.data("symbol"));
-        $("#notionalValueInput").prop("placeholder", selected.data("placeholder"));
+    filters.forEach((x) => {
+        var t = $(x[0]);
+        setInputFilter(t, (v) => { return x[1].test(v) });
     });
 
-    $("#underlyingCurrencyInput").on("change", () => {
-        var selected = $("#underlyingCurrencyInput option:selected");
-        $("#underlyingCurrencySymbol").text(selected.data("symbol"));
-        $("#strikePriceCurrencyCymbol").text(selected.data("symbol"));
-        $("#underlyingValueInput").prop("placeholder", selected.data("placeholder"));
-        $("#strikePriceInput").prop("placeholder", selected.data("placeholder"));
+    elements.notionalCurrencyInput.on("change", () => {
+        let selection = elements.notionalCurrencyInput.select2("data")[0]
+        let curr = currencies[selection.text];
+
+        $("#notionalCurrencySymbol").text(curr.symbol);
+        elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
     });
 
-    $("#tradeList").on("show.bs.collapse", () => {
-        $("#tradeListCollapseSymbol").text("expand_less");
+    elements.underlyingCurrencyInput.on("change", () => {
+        let selection = elements.underlyingCurrencyInput.select2("data")[0];
+        let curr = currencies[selection.text];
+
+        $("#underlyingCurrencySymbol").text(curr.symbol);
+        $("#strikePriceCurrencySymbol").text(curr.symbol);
+        elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
+        elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+    });
+
+    elements.tradeList.on("show.bs.collapse", () => {
+        elements.tradeListCollapseSymbol.text("expand_less");
         if (isTradeListEmpty()) {
-            elemTradeListEmptyMessage.show();
+            elements.tradeListEmptyMessage.show();
         }
     });
 
-    $("#tradeList").on("hide.bs.collapse", () => {
-        $("#tradeListCollapseSymbol").text("expand_more");
-        elemTradeListEmptyMessage.hide();
+    elements.tradeList.on("hide.bs.collapse", () => {
+        elements.tradeListCollapseSymbol.text("expand_more");
+        elements.tradeListEmptyMessage.hide();
     });
 
     $("#addTradeButton").on("click", () => {
@@ -66,8 +73,8 @@ function init() {
         addTradeToUI(t);
         loadTradeToForm(t);
         showTradeForm();
-    })
-    ;
+    });
+    
     $("#saveTradeButton").on("click", () => {
         let t = tradeObjectFromForm();
         if (t.tradeId != undefined) {
@@ -85,7 +92,7 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        var trade = Object.values(trades).filter(t => t.tradeId == $("#tradeIdInput").val())[0];
+        var trade = trades[elements.tradeIdInput.val()];
         loadTradeToForm(trade);
     });
 
@@ -97,10 +104,6 @@ function init() {
         });
     });
 
-    filters.forEach((x) => {
-        var t = $(x[0]);
-        setInputFilter(t, (v) => { return x[1].test(v) });
-    });
 
     getCurrencyList(new Date(), (currencies) => {
         currencies.forEach(addCurrencyToUI);

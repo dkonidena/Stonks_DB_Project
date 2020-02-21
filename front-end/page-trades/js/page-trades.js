@@ -2,6 +2,8 @@ let newTradeCount = 0;
 //search for elements needed only once to improve performance
 const elements = {
     trades: $("#trades"),
+    tradeList: $("#tradeList"),
+    tradeListCollapseSymbol: $("#tradeListCollapseSymbol"),
     tradeIdInput: $("#tradeIdInput"),
     productInput: $("#productInput"),
     buyingPartyInput: $("#buyingPartyInput"),
@@ -31,6 +33,7 @@ const elements = {
     filterCreationDateUpperMOnthInput: $("#filter-CreationDateUpperMOnthInput"),
     filterCreationDateLowerDayInput: $("#filter-CreationDateLowerDayInput"),
     filterCreationDateUpperDayInput: $("#filter-CreationDateUpperDayInput"),
+    tradeListEmptyMessage: $("#tradeListEmptyMessage"),
 }
 
 function addTradeToUI(trade) {

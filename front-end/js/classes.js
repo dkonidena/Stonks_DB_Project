@@ -161,6 +161,10 @@ class Currency {
         this.valueInUSD = "";
     }
 
+    getPlaceholder() {
+        return this.allowDecimal ? "0.00" : "0";
+    }
+
     populateFromServerJSON(o) {
         try {
             this.code = o.code;
@@ -172,7 +176,6 @@ class Currency {
         catch {
             return null;
         }
-
     }
 };
 
