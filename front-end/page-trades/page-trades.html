@@ -11,31 +11,41 @@
     <title>CS261 GROUP32</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="./home.html">Stonks</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../page-home/page-home.html">Home</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="../page-trades/page-trades.html">Trades<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../page-companies/page-companies.html">Companies</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../page-products/page-products.html">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../page-reports/page-reports.html">Daily Reports</a>
-          </li>
-        </ul>
-      </div>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand pr-2" href="../page-home/page-home.html">
+            <i style="font-size:36px;" class="border border-warning rounded-pill bg-light text-warning d-inline-block material-icons align-top px-1 mr-1">trending_up</i>
+            <strong style="font-size:24px;">Stonks</strong>
+        </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="../page-home/page-home.html">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="../page-trades/page-trades.html">Trades<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../page-companies/page-companies.html">Companies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../page-products/page-products.html">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../page-reports/page-reports.html">Daily Reports</a>
+                </li>
+            </ul>
+            <div class="nav-item dropdown mr-3">
+                <button type="button" class="btn nav-link dropdown-toggle" style="color:rgb(255,255,255,0.7)" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons align-bottom" style="">account_box</i>
+                    User
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#">Login</a>
+                    <a class="dropdown-item" href="#">Activity Log</a>
+                    <a class="dropdown-item" href="#">Logout</a>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="container-fluid">
