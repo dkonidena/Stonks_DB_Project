@@ -20,7 +20,7 @@ const elements = {
     underlyingPriceInput: $("#underlyingPriceInput"),
     quantityInput: $("#quantityInput"),
     strikePriceInput: $("#strikePriceInput"),
-    filterTradeIdInput: $("#filter-tradeIdInput"),
+    filterTradeIdInput: $("#filter-tradeIDInput"),
     filterModificationDateLowerYearInput: $("#filter-modificationDateLowerYearInput"),
     filterModificationDateUpperYearInput: $("#filter-modificationDateUpperYearInput"),
     filterModificationDateLowerMonthInput: $("#filter-modificationDateLowerMonthInput"),
