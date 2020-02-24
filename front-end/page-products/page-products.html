@@ -86,59 +86,58 @@
                  Search for an existing product or add a new product to get started.
              </div>
 
-             <form id="productEditorForm" style="display:none;" >
+            <div id="productEditorForm" style="display:none;">
+                <form>
+                    <div class="row pb-4">
+                        <label class="col-auto col-form-label-lg" for="productIdInput">Product ID</label>
+                        <div class="col-auto">
+                            <input type="text" readonly class="form-control-lg form-control-plaintext" id="productIdInput">
+                        </div>
+                        <label class="col-auto col-form-label-lg" for="productDateInput">Creation Date</label>
+                        <div class="col-3">
+                            <div class="form-inline" id="productDateInput">
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateDayInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateMonthInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="productDateYearInput"/>
+                            </div>
+                        </div>
+                    </div>
 
-             <div class="row pb-4">
-                 <label class="col-auto col-form-label-lg" for="productIdInput">Product ID</label>
-                 <div class="col-auto">
-                     <input type="text" readonly class="form-control-lg form-control-plaintext" id="productIdInput">
-                 </div>
-                 <label class="col-auto col-form-label-lg" for="productDateInput">Creation Date</label>
-                 <div class="col-3">
-                     <div class="form-inline" id="productDateInput">
-                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateDayInput"/>
-                         <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="productDateMonthInput"/>
-                         <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="productDateYearInput"/>
-                     </div>
-                 </div>
-             </div>
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="productInput">Name</label>
+                            <input class="form-control" type="text" id="productInput">
+                        </div>
+                    </div>
 
-             <div class="row pb-3">
-                 <div class="col-3">
-                     <label for="productInput">Name</label>
-                     <input class="form-control" type="text" id="productInput">
-                     </select>
-                 </div>
-             </div>
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="companyInput">Seller</label>
+                            <select class="form-control select2-comp" id="companyInput"></select>
+                        </div>
+                    </div>
 
-             <div class="row pb-3">
-                 <div class="col-3">
-                     <label for="companyInput">Seller</label>
-                     <select class="form-control select2-comp" id="companyInput">
-                     </select>
-                 </div>
-             </div>
-
-             <div class="row pb-3">
-                 <div class="col-3">
-                     <label for="valueInUSDInput">Value</label>
-                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                         <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
-                         <input type="text" class="form-control" id="valueInUSDInput" placeholder="0.00">
-                     </div>
-                 </div>
-             </div>
-             <div class="row mt-5">
-                 <div class="col-auto ">
-                     <button class="btn btn-lg btn-block btn-primary" id="saveProductButton">Save Product</button>
-                 </div>
-                 <div class="col-auto">
-                     <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelProductModal" id="cancelProductButton">Discard Changes</button>
-                 </div>
-             </div>
-         </form>
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="valueInUSDInput">Value</label>
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
+                                <input type="text" class="form-control" id="valueInUSDInput" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row mt-5">
+                    <div class="col-auto ">
+                        <button class="btn btn-lg btn-block btn-primary" id="saveProductButton">Save Product</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelProductModal" id="cancelProductButton">Discard Changes</button>
+                    </div>
+                </div>
+         </div>
 
          </div>
     </div>

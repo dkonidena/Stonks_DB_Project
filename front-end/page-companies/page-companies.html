@@ -78,51 +78,50 @@
 
          <div class="col-md-10 ml-auto">
 
-              <div class="row justify-content-center border-bottom">
-                  <div class="col-auto display-4 py-3">Company Editor</div>
-              </div>
+            <div class="row justify-content-center border-bottom">
+                <div class="col-auto display-4 py-3">Company Editor</div>
+            </div>
 
-              <div class="h4 text-muted text-center pt-5" id="companyEditorMessage">
-                  Search for an existing company or add a new company to get started.
-              </div>
+            <div class="h4 text-muted text-center pt-5" id="companyEditorMessage">
+                Search for an existing company or add a new company to get started.
+            </div>
 
-              <form id="companyEditorForm" style="display:none;">
+            <div id="companyEditorForm" style="display:none;">
+                <form>
+                    <div class="row pb-4">
+                        <label class="col-auto col-form-label-lg" for="companyIdInput">Company ID</label>
+                        <div class="col-auto">
+                            <input type="text" readonly class="form-control-lg form-control-plaintext" id="companyIdInput">
+                        </div>
+                        <label class="col-auto col-form-label-lg" for="companyDateInput">Creation Date</label>
+                        <div class="col-3">
+                            <div class="form-inline" id="companyDateInput">
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="companyDayInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="companyMonthInput"/>
+                                <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="companyYearInput"/>
+                            </div>
+                        </div>
+                    </div>
 
-              <div class="row pb-4">
-                  <label class="col-auto col-form-label-lg" for="companyIdInput">Company ID</label>
-                  <div class="col-auto">
-                      <input type="text" readonly class="form-control-lg form-control-plaintext" id="companyIdInput">
-                  </div>
-                  <label class="col-auto col-form-label-lg" for="companyDateInput">Creation Date</label>
-                  <div class="col-3">
-                      <div class="form-inline" id="companyDateInput">
-                          <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="companyDayInput"/>
-                          <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                          <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="companyMonthInput"/>
-                          <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                          <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="companyYearInput"/>
-                      </div>
-                  </div>
-              </div>
-
-              <div class="row pb-3">
-                  <div class="col-3">
-                      <label for="companyInput">Name</label>
-                      <input class="form-control" type="text" id="companyInput">
-                      </select>
-                  </div>
-              </div>
-              <div class="row mt-5">
-                  <div class="col-auto ">
-                      <button class="btn btn-lg btn-block btn-primary" id="saveCompanyButton">Save Company</button>
-                  </div>
-                  <div class="col-auto">
-                      <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelCompnayModal" id="cancelCompanyButton">Discard Changes</button>
-                  </div>
-              </div>
-          </form>
-
-          </div>
+                    <div class="row pb-3">
+                        <div class="col-3">
+                            <label for="companyInput">Name</label>
+                            <input class="form-control" type="text" id="companyInput">
+                        </div>
+                    </div>
+                </form>
+                <div class="row mt-5">
+                    <div class="col-auto ">
+                        <button class="btn btn-lg btn-block btn-primary" id="saveCompanyButton">Save Company</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelCompnayModal" id="cancelCompanyButton">Discard Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="advancedSearch" tabindex="-1" role="dialog">
