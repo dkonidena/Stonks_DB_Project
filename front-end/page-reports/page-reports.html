@@ -37,14 +37,11 @@
                 </li>
             </ul>
             <div class="nav-item dropdown mr-3">
-                <button type="button" class="btn nav-link dropdown-toggle" style="color:rgb(255,255,255,0.7)" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons align-bottom" style="">account_box</i>
-                    User
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">Login</a>
-                    <a class="dropdown-item" href="#">Activity Log</a>
-                    <a class="dropdown-item" href="#">Logout</a>
+                <button type="button" class="btn nav-link dropdown-toggle" style="color:rgb(255,255,255,0.7)" data-toggle="dropdown" id="userButton" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons align-bottom" id="userIcon" style="">account_box</i>
+                    <span id="userLabel">User<span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" id="userDropdown" aria-labelledby="userDropdown">
                 </div>
             </div>
         </div>
@@ -137,6 +134,55 @@
         </div>
     </div>
 
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">User Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
+                            <div class="col-sm pb-4">
+                                <input class="form-control" id="loginModalUserID" type="text">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        Are you sure you want to log out?
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="logoutModalLogoutButton">Logout</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal modal-fade" id="apiErrorModal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -177,6 +223,7 @@
     <script src="../js/api.js"></script>
     <script src="../js/classes.js"></script>
     <script src="../js/util.js"></script>
+    <script src="../js/user.js"></script>
     <script src="js/dataTables.bootstrap.js"></script>
     <script src="js/csv_to_html_table.js"></script>
     <script src="js/page-reports.js"></script>

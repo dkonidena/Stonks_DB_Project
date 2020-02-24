@@ -2,7 +2,7 @@ const TIMEOUT = 10000;
 const API_ENDPOINT = "http://localhost:8002/api";
 
 const api = {
-    userID: "",
+    userID: getCurrentUserID(),
     get: {
         currencies: (date, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);

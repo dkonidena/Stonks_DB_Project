@@ -1,30 +1,30 @@
-const filters = [
-    [elements.tradeIdInput, /^[0-9A-Z]{0,16}$/],
-    [elements.quantityInput, /^\d*$/],
-    [elements.notionalPriceInput, /^\d*\.?\d*$/],
-    [elements.underlyingPriceInput, /^\d*\.?\d*$/],
-    [elements.strikePriceInput, /^\d*\.?\d*$/],
-    [elements.tradeDateDayInput, /^\d{0,2}$/],
-    [elements.tradeDateMonthInput, /^\d{0,2}$/],
-    [elements.tradeDateYearInput, /^\d{0,4}$/],
-    [elements.maturityDateDayInput, /^\d{0,2}$/],
-    [elements.maturityDateMonthInput, /^\d{0,2}$/],
-    [elements.maturityDateYearInput, /^\d{0,4}$/],
-    [elements.filterCreationDateLowerDayInput, /^\d{0,2}$/],
-    [elements.filterCreationDateLowerMonthInput, /^\d{0,2}$/],
-    [elements.filterCreationDateLowerYearInput, /^\d{0,4}$/],
-    [elements.filterCreationDateUpperDayInput, /^\d{0,2}$/],
-    [elements.filterCreationDateUpperMonthInput, /^\d{0,2}$/],
-    [elements.filterCreationDateUpperYearInput, /^\d{0,4}$/],
-    [elements.filterModificationDateLowerDayInput, /^\d{0,2}$/],
-    [elements.filterModificationDateLowerMonthInput, /^\d{0,2}$/],
-    [elements.filterModificationDateLowerYearInput, /^\d{0,4}$/],
-    [elements.filterModificationDateUpperDayInput, /^\d{0,2}$/],
-    [elements.filterModificationDateUpperMonthInput, /^\d{0,2}$/],
-    [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
-];
-
 function init() {
+
+    const filters = [
+        [elements.tradeIdInput, /^[0-9A-Z]{0,16}$/],
+        [elements.quantityInput, /^\d*$/],
+        [elements.notionalPriceInput, /^\d*\.?\d*$/],
+        [elements.underlyingPriceInput, /^\d*\.?\d*$/],
+        [elements.strikePriceInput, /^\d*\.?\d*$/],
+        [elements.tradeDateDayInput, /^\d{0,2}$/],
+        [elements.tradeDateMonthInput, /^\d{0,2}$/],
+        [elements.tradeDateYearInput, /^\d{0,4}$/],
+        [elements.maturityDateDayInput, /^\d{0,2}$/],
+        [elements.maturityDateMonthInput, /^\d{0,2}$/],
+        [elements.maturityDateYearInput, /^\d{0,4}$/],
+        [elements.filterCreationDateLowerDayInput, /^\d{0,2}$/],
+        [elements.filterCreationDateLowerMonthInput, /^\d{0,2}$/],
+        [elements.filterCreationDateLowerYearInput, /^\d{0,4}$/],
+        [elements.filterCreationDateUpperDayInput, /^\d{0,2}$/],
+        [elements.filterCreationDateUpperMonthInput, /^\d{0,2}$/],
+        [elements.filterCreationDateUpperYearInput, /^\d{0,4}$/],
+        [elements.filterModificationDateLowerDayInput, /^\d{0,2}$/],
+        [elements.filterModificationDateLowerMonthInput, /^\d{0,2}$/],
+        [elements.filterModificationDateLowerYearInput, /^\d{0,4}$/],
+        [elements.filterModificationDateUpperDayInput, /^\d{0,2}$/],
+        [elements.filterModificationDateUpperMonthInput, /^\d{0,2}$/],
+        [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
+    ];
 
     elements.tradeListEmptyMessage.hide();
     elements.tradeListEmptyMessage.removeClass("d-none");
@@ -80,7 +80,7 @@ function init() {
             api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
         }
         else {
-            api.post.trades(t.getAPIObject(), () => {}, showError);
+            api.post.trades(t.getAPIObject(), console.log, showError);
         }
         //TODO add visual feedback of the save to user
     });
