@@ -10,13 +10,16 @@ import sys
 from datetime import date as date_func
 from random import choice
 from string import ascii_uppercase
-
-# use models.date... instead of redefining date methods in here
+import ML.main as ml
+import ML.tradeObj
+import ML.cron
 
 def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
 
+def run_cron_job():
+    cron.cronJob(allTrades, 7, 100)
 
 class Currencies(Resource):
 
@@ -443,12 +446,24 @@ class Trades(Resource):
             if len(result) == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
-            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
+
+            # before adding a trade call the machine learning algorithm to suggest corrections
+            # first parse the relevant data into a trade object
+
+            input_trade = tradeObj.trade(notionalValue, None, quantity, None)
+
+            returned_trade = ml.suggestChange(trade)
+
+            if (notionalValue != returned_trade.getCurrentNotional()) or (quantity != returned_trade.getCurrentQuantity()):
+                new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
+                new_tradeID = new_trade.save_to_db()
+                return {'message': 'corrections suggested', 'notional': str(returned_trade.getCurrentNotional()), 'quantity': str(returned_trade.getCurrentQuantity())}, 400
 
 
             # need to implement checking if the currencies exist
 
             #If a the product or stock which the trade is linked to is found, then the trade
+            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
             new_tradeID = new_trade.save_to_db()
             new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = result[0].ProductID)
             new_product_trade.save_to_db()
