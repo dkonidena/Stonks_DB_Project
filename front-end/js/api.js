@@ -4,6 +4,9 @@ const API_ENDPOINT = "http://localhost:8002/api";
 const api = {
     getUserID: getCurrentUserID,
     get: {
+        users: (dryRun, res, err) => {
+            request("GET", `${API_ENDPOINT}/users?&isDryRun=${dryRun}`, res, err);
+        },
         currencies: (date, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
         },

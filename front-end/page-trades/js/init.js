@@ -112,9 +112,13 @@ function init() {
 
             getProductList(null, (products) => {
                 products.forEach(addProductToUI);
-                
+
             });
         });
+    });
+
+    getUserList((users) => {
+        users.forEach(addUserToUI);
     });
 
     $('.select2-cur').select2({

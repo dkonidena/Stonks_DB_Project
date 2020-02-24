@@ -75,6 +75,12 @@ function addProductToUI(p) {
     $("#productInput, #filter-productInput").append(c);
 }
 
+function addUserToUI(p) {
+    let o = "<option></option>";
+    let c = $(o).text(p.name);
+    $("#filter-userIDInput").append(c);
+}
+
 function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
@@ -123,6 +129,10 @@ function companyNameToObject(name) {
 
 function productNameToObject(name) {
     return Object.values(products).filter(x => x.name === name)[0];
+}
+
+function userNameToObject(name) {
+    return Object.values(users).filter(x => x.name === name)[0];
 }
 
 function tradeObjectFromForm() {
@@ -226,8 +236,10 @@ function filterObjectFromForm() {
     let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
     if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
 
-    let userIDCreatedBy = $("#filter-userIDInput").val();
-    if (userIDCreatedBy !== "") { filter.userIDCreatedBy = [userIDCreatedBy]; }
+    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
+    if (userIDCreatedBy.length > 0) {
+        filter.userIDCreatedBy = userIDCreatedBy.map((entry) => { return userNameToObject(entry.text).id });
+    }
 
     return filter;
 }
