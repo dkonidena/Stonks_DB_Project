@@ -56,7 +56,7 @@ function clearTradeList() {
 }
 
 function isTradeListEmpty() {
-    return elements.trades.html() === "";
+    return elements.trades.html().isBlank();
 }
 
 function addCurrencyToUI(cur) {

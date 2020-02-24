@@ -41,6 +41,10 @@ String.prototype.hashCode = function() {
   return hash;
 };
 
+String.prototype.isBlank = function() {
+    return (!this || /^\s*$/.test(this));
+}
+
 //use for accessing xxx.yyy where xxx can be null
 //optionally return a specified value instead of null
 function nullMemberAccess(parent, child, val = null) {
