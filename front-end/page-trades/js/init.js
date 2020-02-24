@@ -112,10 +112,7 @@ function init() {
 
             getProductList(null, (products) => {
                 products.forEach(addProductToUI);
-
-                getTradeList(new TradeFilter(), (trades) => {
-                    trades.forEach(addTradeToUI);
-                });
+                
             });
         });
     });
