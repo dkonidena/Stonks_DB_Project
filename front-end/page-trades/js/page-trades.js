@@ -1,4 +1,3 @@
-let newTradeCount = 0;
 //search for elements needed only once to improve performance
 const elements = {
     trades: $("#trades"),

@@ -65,18 +65,16 @@ function init() {
 
     $("#addTradeButton").on("click", () => {
         let t = new Trade();
-        t.tradeId = `NEW${newTradeCount++}`;
         t.notionalCurrency = currencies['USD'];
         t.underlyingCurrency = currencies['USD'];
         trades[t.tradeId] = t;
-        addTradeToUI(t);
         loadTradeToForm(t);
         showTradeForm();
     });
 
     $("#saveTradeButton").on("click", () => {
         let t = tradeObjectFromForm();
-        if (t.tradeId != undefined) {
+        if (t.tradeId !== "") {
             api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
         }
         else {
