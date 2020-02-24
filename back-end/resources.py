@@ -605,6 +605,24 @@ class Reports(Resource):
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
 
+class Users(Resource):
+    def get(self):
+        try:
+            isDryRun = request.args['isDryRun']
+        except KeyError:
+            return {'message': 'isDryRun paramater missing'}, 400
+
+        test_data = [
+            {"id":"1", "name":"John Smith"},
+            {"id":"2", "name":"Smith John"},
+        ]
+
+        if isDryRun == "true":
+            return {'noOfMatches' : 2}, 200
+        elif isDryRun == "false":
+            return {'matches' : test_data}, 200
+        else:
+            return {'message': 'isDryRun must be \'true\' or \'false\''}, 400
 
 class Rules(Resource):
     def get(self):
