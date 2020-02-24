@@ -360,6 +360,13 @@ class EmployeesModel(db.Model):
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
 
+    @classmethod
+    def retrieve_all(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
 
 class ProductSellersModel(db.Model):
     __tablename__ = 'ProductSellers'

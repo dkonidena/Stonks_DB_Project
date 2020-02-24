@@ -612,15 +612,21 @@ class Users(Resource):
         except KeyError:
             return {'message': 'isDryRun paramater missing'}, 400
 
-        test_data = [
-            {"id":"1", "name":"John Smith"},
-            {"id":"2", "name":"Smith John"},
-        ]
+        matches = models.EmployeesModel.retrieve_all()
+        noOfMatches = len(matches)
+
+        user_objects = []
+
+        for match in matches:
+            user_objects.append({
+                "id": str(match.EmployeeID),
+                "name": f"{match.FirstName} {match.LastName}"
+            })
 
         if isDryRun == "true":
-            return {'noOfMatches' : 2}, 200
+            return {'noOfMatches' : noOfMatches}, 200
         elif isDryRun == "false":
-            return {'matches' : test_data}, 200
+            return {'matches' : user_objects}, 200
         else:
             return {'message': 'isDryRun must be \'true\' or \'false\''}, 400
 
