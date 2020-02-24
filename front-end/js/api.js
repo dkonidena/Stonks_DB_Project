@@ -2,7 +2,7 @@ const TIMEOUT = 10000;
 const API_ENDPOINT = "http://localhost:8002/api";
 
 const api = {
-    userID: getCurrentUserID(),
+    getUserID: getCurrentUserID,
     get: {
         currencies: (date, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
@@ -100,7 +100,7 @@ function request(method, url, onSuccess, onFail, data) {
     Promise.race([
         fetch(encodeURI(url), {
             method: method,
-            headers: { 'Content-Type': 'application/json', 'userID': api.userID },
+            headers: { 'Content-Type': 'application/json', 'userID': api.getUserID() },
             body: payload
         }),
         new Promise((resolve) => {
