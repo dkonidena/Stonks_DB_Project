@@ -101,18 +101,16 @@ function init() {
         });
     });
 
+    getCompanyList(null, 'mostBoughtFrom', (companies) => {
+        companies.forEach(addCompanyToUI);
+
+        getProductList(null, (products) => {
+            products.forEach(addProductToUI);
+        });
+    });
 
     getCurrencyList(new Date(), (currencies) => {
         currencies.forEach(addCurrencyToUI);
-
-        getCompanyList(null, 'mostBoughtFrom', (companies) => {
-            companies.forEach(addCompanyToUI);
-
-            getProductList(null, (products) => {
-                products.forEach(addProductToUI);
-
-            });
-        });
     });
 
     getUserList((users) => {
