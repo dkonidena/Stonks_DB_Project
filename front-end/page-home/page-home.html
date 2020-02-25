@@ -43,7 +43,28 @@
     </nav>
 
     <div class="container-fluid" style="padding-top:54px;">
-        <!-- Button trigger modal -->
+
+        <div class="modal-dialog" role="document" id="loginModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Please log in to use this site</h5>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
+                            <div class="col-sm pb-4">
+                                <input class="form-control" id="loginModalUserID" type="text">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
+                </div>
+            </div>
+        </div>
+
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
             Confirm Modal Mockup
         </button>
@@ -160,5 +181,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="../js/util.js"></script>
     <script src="../js/user.js"></script>
+    <script src="./js/init.js"></script>
   </body>
 </html>

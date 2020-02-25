@@ -49,12 +49,17 @@ function userLogIn(id) {
 
 function userLogOut() {
     const userLoggedOutHTML = "<a class=\"dropdown-item\" id=\"userLoginButton\">Login</a>";
-    
+
     userElements.label.text("Not logged in");
     setCurrentUserID(null);
     userElements.dropdown.html(userLoggedOutHTML);
     $("#userLoginButton").on("click", showLoginModal);
     userElements.icon.css("color", "rgb(255,255,255,0.7)");
+
+    let w = window.location.href;
+    if (!w.endsWith("/page-home/page-home.html")) {
+        window.location.href = "../page-home/page-home.html";
+    }
 }
 
 function showLoginModal() {
