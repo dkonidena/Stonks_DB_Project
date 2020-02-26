@@ -39,10 +39,10 @@ function init() {
     $("#saveCompanyButton").click( () => {
         let company = companyObjectFromForm();
         if (company.id != "") {
-            api.patch.companies(company.id, company.getAPIObject(), console.log, showError);
+            api.patch.companies(company.id, company.getAPIObject(), () => showSuccess('Company updated.'), showError);
         }
         else {
-            api.post.companies(company.getAPIObject(), console.log, showError);
+            api.post.companies(company.getAPIObject(), () => showSuccess('Company saved.'), showError);
         }
         //TODO add visual feedback of the save to user
     });

@@ -45,10 +45,10 @@ function init() {
     $("#saveProductButton").click( () => {
         let product = productObjectFromForm();
         if (product.id != "") {
-            api.patch.products(product.id, product.getAPIObject(), console.log, showError);
+            api.patch.products(product.id, product.getAPIObject(), () => showSuccess('Product updated.'), showError);
         }
         else {
-            api.post.products(product.getAPIObject(), console.log, showError);
+            api.post.products(product.getAPIObject(), () => showSuccess('Product saved.'), showError);
         }
         //TODO add visual feedback of the save to user
     });

@@ -75,10 +75,10 @@ function init() {
     $("#saveTradeButton").on("click", () => {
         let t = tradeObjectFromForm();
         if (t.tradeId !== "") {
-            api.patch.trades(t.tradeId, t.getAPIObject(), console.log, showError);
+            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
         }
         else {
-            api.post.trades(t.getAPIObject(), console.log, showError);
+            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
         }
         //TODO add visual feedback of the save to user
     });

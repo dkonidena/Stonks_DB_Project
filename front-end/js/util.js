@@ -24,6 +24,11 @@ function showError(error, debugData = 'no additional data', stringify = true) {
     showErrorDialogue(error, debugData);
 }
 
+function showSuccess(message = '(no message specified)') {
+    $("#successModal #successMessage").text(message);
+    $("#successModal").modal("show");
+}
+
 function showErrorDialogue(error = '', detail = '') {
     $('#errorShort').text(error);
     $('#errorDetailContent').text(detail);
