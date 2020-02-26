@@ -21,18 +21,25 @@ def returnCurrencySymbol(currencyCode):
 
 def get_all_trades():
     trades = models.DerivativeTradesModel.get_trades_all()
-    tradeObjectList = []
+    trade_object_list = []
     for trade in trades:
         tradeO = Trade(trade.OriginalNotionalValue, trade.NotionalValue, trade.OriginalQuantity, trade.Quantity)
-        tradeObjectList.append(tradeO)
-    return tradeObjectList
+        trade_object_list.append(tradeO)
+    return trade_object_list
 
 def run_cron_job():
     all_trades = get_all_trades
     cron.cronJob(all_trades, 7, 100)
 
+# run this in seperate thread?
+# or if we just have a call at the start of the program, then we can show that
+# the machine learning algorithm learns from previous trades by running the
+# program, adding a bunch of trades with the same mistake, and then closing
+# and reloading the program and adding a trade with the same error
+# this trade should be flagged by the algorithm
+
 # schedule.every().day.at("16:00").do(run_cron_job)
-#
+
 # while True:
 #     schedule.run_pending()
 #     time.sleep(86400)
