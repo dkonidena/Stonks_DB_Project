@@ -7,6 +7,7 @@ import random
 import math
 import time
 import ML.tradeObj
+import schedule
 
 # create the function which has this Trade[] object passed to it
 def cronJob(allTrades, neigboursFromRules, noOfIterations):
@@ -46,6 +47,16 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
     with open('knn_quantity.pkl', 'wb') as output:
 	    pickle.dump(knn_quantity, output, pickle.HIGHEST_PROTOCOL)
 
+def main():
+    # allTrades = 
+    # neigboursFromRules =
+    # noOfIterations =
+    schedule.every().day.at("00:00").do(cronJob, allTrades, neigboursFromRules, noOfIterations)
+    while True: 
+        # Checks whether a scheduled task  
+        # is pending to run or not 
+        schedule.run_pending() 
+        time.sleep(1) 
 '''
 TODO: get this running on the server
 - Dhruva needs to convert all of the database Trade information to Trade[], the parameter allTrades
