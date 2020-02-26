@@ -20,18 +20,24 @@ function filterObjectFromForm() {
     // TODO whole function needs error handling
     let filter = new Filter();
 
-    if ($("#filter-creationDateLowerDayInput").val() !== "") {
-        filter.dateCreated = [new Date(), new Date()];
-        filter.dateCreated[0].setHours(0,0,0,0);
-        filter.dateCreated[0].setDate($("#filter-creationDateLowerDayInput").val());
-        filter.dateCreated[0].setMonth($("#filter-creationDateLowerMonthInput").val()-1);
-        filter.dateCreated[0].setFullYear($("#filter-creationDateLowerYearInput").val());
-        filter.dateCreated[1].setHours(0,0,0,0);
-        filter.dateCreated[1].setDate($("#filter-creationDateUpperDayInput").val());
-        filter.dateCreated[1].setMonth($("#filter-creationDateUpperMonthInput").val()-1);
-        filter.dateCreated[1].setFullYear($("#filter-creationDateUpperYearInput").val());
-        filter.dateCreated[0] = filter.dateCreated[0].toISOString();
-        filter.dateCreated[1] = filter.dateCreated[1].toISOString();
+    if ($("#filter-creationDateLowerYearInput").val() !== "") {
+        if (!filter.dateCreated) { filter.dateCreated = {}; }
+        filter.dateCreated['after'] = new Date();
+        filter.dateCreated.after.setHours(0,0,0,0);
+        filter.dateCreated.after.setDate($("#filter-creationDateLowerDayInput").val());
+        filter.dateCreated.after.setMonth($("#filter-creationDateLowerMonthInput").val()-1);
+        filter.dateCreated.after.setFullYear($("#filter-creationDateLowerYearInput").val());
+        filter.dateCreated.after = filter.dateCreated.after.toISOString();
+    }
+
+    if ($("#filter-creationDateUpperYearInput").val() !== "") {
+        if (!filter.dateCreated) { filter.dateCreated = {}; }
+        filter.dateCreated['before'] = new Date();
+        filter.dateCreated.before.setHours(0,0,0,0);
+        filter.dateCreated.before.setDate($("#filter-creationDateUpperDayInput").val());
+        filter.dateCreated.before.setMonth($("#filter-creationDateUpperMonthInput").val()-1);
+        filter.dateCreated.before.setFullYear($("#filter-creationDateUpperYearInput").val());
+        filter.dateCreated.before = filter.dateCreated.before.toISOString();
     }
 
     return filter;
