@@ -277,8 +277,8 @@ class Products(Resource):
             user_ID = 1 # placeholder
             date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
-            models.ProductModel.update_product_sellers(product_ID, company_ID)
-            models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
+            models.ProductSellersModel.update_product_sellers(product_ID, company_ID)
+            models.ProductValuationsModel.update_product_valuations(product_ID, value_in_USD, date_now)
             userAction = "User has updated a record in the Products table with the ID: " + product_ID
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
@@ -525,34 +525,6 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-        test_data = {
-            "matches" : [{
-                    "date": "2020-02-18T00:28:38.365Z",
-                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
-01/04/2010 00:00,ACCKXNIA50698568,Scope Lens,AWYB85,UACN81,18120.0,USD,800,07/04/2011,22.65,USD,20.89
-01/04/2010 00:00,TFVNUIEV14019758,Stocks,IJPI82,BBAX06,3733800.0,USD,70000,10/07/2013,53.34,USD,57.62
-01/04/2010 00:38,SFKFEMNI33385795,Stocks,AMRO66,TGZI54,203496.08,KWD,100,31/01/2012,279.47,USD,2173.46
-01/04/2010 00:39,NFPPXKJO32502934,Premium Nanotech,EDYH00,DREA89,920080.0,USD,4000,31/10/2011,230.02,USD,197.94
-01/04/2010 00:39,WLLMPGMU67753060,Stocks,NQJL85,BDBU00,563545.77,KZT,900,28/07/2012,158.88,USD,632.4
-01/04/2010 00:40,VQYITYKX67468667,Black Materia Orbs,EWUY52,VCSF07,492600.0,USD,60000,02/04/2013,8.21,USD,8.72
-01/04/2010 00:40,MVWWGUEO36009262,Stocks,TBVE46,QLMY86,13120100.0,USD,70000,14/04/2011,187.43,USD,205.65"""
-                },
-                {
-                    "date": "2020-02-17T00:28:38.365Z",
-                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
-01/04/2010 00:12,XNTJSSWX82102942,Stocks,KKGY69,SFZS08,14978600.0,USD,70000,19/06/2013,213.98,USD,236.56
-01/04/2010 00:12,SRAKJKES56980699,Stocks,BBJG05,KKZA87,74360.0,USD,2000,05/04/2014,37.18,USD,42.13
-01/04/2010 00:16,SHUUQNAF89208519,Stocks,KUWI70,IIZF28,47470.0,USD,500,19/09/2011,94.94,USD,82.87
-01/04/2010 00:16,OXXDOFBX41047829,Stocks,SUOX82,FAWI50,19980111.75,HRK,700,27/05/2011,260.54,USD,25251.2
-01/04/2010 00:16,LWAKBSFC76100584,Stocks,CMZC67,LBKT00,5691.0,USD,700,05/03/2011,8.13,USD,8.58
-01/04/2010 00:17,NAFWJEQM83465255,Muscle Bands,GZED20,EDYH00,2813580.0,USD,9000,26/07/2012,312.62,USD,341.29
-01/04/2010 00:17,MNPRZYBF65527748,Stocks,HFLM11,YLGZ72,5832000.0,USD,80000,11/11/2011,72.9,USD,64.03"""
-                }
-            ]
-        }
-
-        #return test_data, 200
-
         try:
             try:
                 filter = json.loads(request.args.get('filter'))
@@ -567,8 +539,27 @@ class Reports(Resource):
 
             results = list()
 
-            # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
+                if len(filter['dateCreated']) == 1:
+                    if 'after' in filter['dateCreated']:
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'])
+                    else:
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'])
+                elif len(filter['dateCreated']) == 2:
+                    tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'])
+                else:
+                    tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
+            else:
+                tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
+            
+            for each in tradeDates:
+                result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
+                print(result.count())
+                results.append(result)
+            noOfMatches = len(results)
+
+            # either dateCreated will be passed or nothing will be passed
+            """if 'dateCreated' in filter:
                 # find the dates trades are made between these dates
                 tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated'][0], filter['dateCreated'][1])
                 for each in tradeDates:
@@ -578,7 +569,7 @@ class Reports(Resource):
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
                 for each in tradeDates:
                     results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
-                noOfMatches = len(results)
+                noOfMatches = len(results)"""
 
             if isDryRun == 'true':
                 return {'noOfMatches' : noOfMatches}

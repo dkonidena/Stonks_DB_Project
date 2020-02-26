@@ -279,6 +279,20 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    @classmethod
+    def get_trade_dates_after(cls, startDate):
+        try:
+            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+    
+    @classmethod
+    def get_trade_dates_before(cls, endDate):
+        try:
+            return cls.query.filter(parse_iso_date(endDate) >= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
     # returns all dates trades happen between a certain start and end date -> used for reports generation
     @classmethod
     def get_trade_dates_between(cls, startDate, endDate):
@@ -362,6 +376,13 @@ class EmployeesModel(db.Model):
 
     @classmethod
     def retrieve_all(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
+    @classmethod
+    def retrieve_by_user_id(cls):
         try:
             return cls.query.all()
         except exc.ProgrammingError:
