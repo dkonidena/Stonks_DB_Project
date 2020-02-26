@@ -13,6 +13,7 @@ from string import ascii_uppercase
 import ML.main as ml
 import ML.tradeObj
 import ML.cron
+import schedule
 
 def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
@@ -29,6 +30,12 @@ def get_all_trades():
 def run_cron_job():
     all_trades = get_all_trades
     cron.cronJob(all_trades, 7, 100)
+
+# schedule.every().day.at("16:00").do(run_cron_job)
+#
+# while True:
+#     schedule.run_pending()
+#     time.sleep(86400)
 
 class Currencies(Resource):
 
@@ -466,7 +473,7 @@ class Trades(Resource):
             if (notionalValue != returned_trade.getCurrentNotional()) or (quantity != returned_trade.getCurrentQuantity()):
                 new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
                 new_tradeID = new_trade.save_to_db()
-                return {'message': 'corrections suggested', 'notional': str(returned_trade.getCurrentNotional()), 'quantity': str(returned_trade.getCurrentQuantity())}, 400
+                return {'product': product, 'quantity': str(returned_trade.getCurrentQuantity()), 'buyingParty': buyingParty, 'sellingParty': sellingParty, 'notionalPrice': str(returned_trade.getCurrentNotional()), 'notionalCurrency': notionalCurrency, 'underlyingPrice': underlyingPrice, 'underlyingCurrency': underlyingCurrency, 'strikePrice': strikePrice, 'maturityDate': maturityDate, 'tradeID': id, 'tradeDate': date_now, "userIDcreatedBy": userID}, 400
 
 
             # need to implement checking if the currencies exist
