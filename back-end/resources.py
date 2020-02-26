@@ -18,8 +18,17 @@ def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
 
+def get_all_trades():
+    trades = models.DerivativeTradesModel.get_trades_all()
+    tradeObjectList = []
+    for trade in trades:
+        tradeO = Trade(trade.OriginalNotionalValue, trade.NotionalValue, trade.OriginalQuantity, trade.Quantity)
+        tradeObjectList.append(tradeO)
+    return tradeObjectList
+
 def run_cron_job():
-    cron.cronJob(allTrades, 7, 100)
+    all_trades = get_all_trades
+    cron.cronJob(all_trades, 7, 100)
 
 class Currencies(Resource):
 
