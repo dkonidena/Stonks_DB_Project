@@ -30,9 +30,9 @@ def get_all_trades():
     return trade_object_list
 
 def run_cron_job():
-    all_trades = get_all_trades
+    all_trades = get_all_trades()
     ML.cron.cronJob(all_trades, 7, 100)
-    
+
 run_cron_job()
 # run this in seperate thread?
 # or if we just have a call at the start of the program, then we can show that
