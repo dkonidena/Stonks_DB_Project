@@ -5,11 +5,21 @@ import json
 import uuid
 import random
 import traceback
+import base64
+import tempfile
+import os
 from sqlalchemy import exc
 import sys
 from datetime import date as date_func
 from random import choice
 from string import ascii_uppercase
+
+#for PDF report generation
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
 
 # use models.date... instead of redefining date methods in here
 
@@ -539,6 +549,7 @@ class Reports(Resource):
 
             results = list()
 
+            # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
                 if len(filter['dateCreated']) == 1:
                     if 'after' in filter['dateCreated']:
@@ -554,22 +565,15 @@ class Reports(Resource):
             
             for each in tradeDates:
                 result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
-                print(result.count())
                 results.append(result)
             noOfMatches = len(results)
 
-            # either dateCreated will be passed or nothing will be passed
-            """if 'dateCreated' in filter:
-                # find the dates trades are made between these dates
-                tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated'][0], filter['dateCreated'][1])
-                for each in tradeDates:
-                    results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
-                noOfMatches = len(results) # gives the no. of reports available
-            else:
-                tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                for each in tradeDates:
-                    results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
-                noOfMatches = len(results)"""
+            # contents for the pdf file
+            story = [] # all relevant data for the pdf
+            styles = getSampleStyleSheet() # defining the styles/text style for the trades table in the pdf
+            styleB = styles['BodyText']
+            styleB.fontSize = 8
+            styleB.wordWrap = 'CJK' # adding text wrapping for the table cells in the pdf
 
             if isDryRun == 'true':
                 return {'noOfMatches' : noOfMatches}
@@ -577,14 +581,26 @@ class Reports(Resource):
                 message = {'matches' : []}
                 i = 0
                 while i < len(results):
-                    report = {'date': None, 'content': None}
-                    content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
-                    for row in results[i]:
-                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
-                    report['date'] = tradeDates[i].DateOfTrade
-                    report['content'] = content
-                    message['matches'].append(report)
-                    i += 1
+                    handle, fn = tempfile.mkstemp(suffix='.csv')
+                    with os.fdopen(handle, "w", encoding='utf8', newline='') as f:
+                        report = {'date': None, 'content': None}
+                        # data that will be contained in the pdf table
+                        tableData = [['Date Of Trade', 'Trade ID', 'Product', 'Buying Party', 'Selling Party', 'Notional Value', 'Notional Currency', 'Quantity', 'Maturity Date', 'Underlying Value', Paragraph('Underlying Currency', styleB), 'Strike Price']]
+                        content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
+                        for row in results[i]:
+                            # adding rows to the pdf table
+                            tableData.append([str(row.DateOfTrade), Paragraph(str(row.TradeID), styleB), str(row.ProductID), str(row.BuyingParty), str(row.SellingParty), str(row.NotionalValue), str(row.NotionalCurrency), str(row.Quantity), str(row.MaturityDate), str(row.UnderlyingValue), str(row.UnderlyingCurrency), str(row.StrikePrice)])
+                            content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
+                        report['date'] = tradeDates[i].DateOfTrade
+                        report['content'] = content
+                        # adding the whole table for the single date into its own pdf file
+                        story.append(Table(tableData,colWidths=65, rowHeights=30, repeatRows=0, splitByRow=1, style=TableStyle([('FONTSIZE', (0,0), (-1,-1), 8)])))
+                        doc = SimpleDocTemplate('output.pdf', pagesize = landscape(A4), title = "Report")
+                        doc.build(story)
+                        encodedPDF = base64.b64encode(open("output.pdf", "rb").read()).decode()
+                        report['pdfFile'] = encodedPDF
+                        message['matches'].append(report)
+                        i += 1
                 return message, 200
             else:
                 return {'message' : 'Request Malformed'}, 400
