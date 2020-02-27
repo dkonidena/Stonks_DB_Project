@@ -11,29 +11,28 @@ from datetime import date as date_func
 from random import choice
 from string import ascii_uppercase
 import ML.main as ml
-import ML.tradeObj
+from ML.tradeObj import trade
 import ML.cron
 import schedule
 
 
-
+# class Machine(Resource):
 def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
 
-def get_all_trades():
+def get_trade_objects():
     trades = models.DerivativeTradesModel.get_trades_all()
     trade_object_list = []
-    for trade in trades:
-        trade0 = Trade(trade.OriginalNotionalValue, trade.NotionalValue, trade.OriginalQuantity, trade.Quantity)
+    for t in trades:
+        trade0 = trade(t.OriginalNotionalValue, t.NotionalValue, t.OriginalQuantity, t.Quantity)
         trade_object_list.append(trade0)
     return trade_object_list
 
 def run_cron_job():
-    all_trades = get_all_trades()
-    ML.cron.cronJob(all_trades, 7, 100)
+    all_trades = get_trade_objects()
+    ML.cron.job(all_trades, 7, 100)
 
-run_cron_job()
 # run this in seperate thread?
 # or if we just have a call at the start of the program, then we can show that
 # the machine learning algorithm learns from previous trades by running the

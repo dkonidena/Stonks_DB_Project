@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import datetime
 import models, resources
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 
 
 
@@ -27,9 +29,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+executor = ThreadPoolExecutor(1)
+
+@app.route('/jobs')
+def run_jobs():
+    executor.submit(resources.run_cron_job)
+    return 'Job was launched in background!'
+
 @app.route('/')
 def index():
     return jsonify({'message':'Welcome to Deustche Bank'})
 
 if __name__=="__main__":
     app.run(debug=True,port=8002,host = '0.0.0.0')
+

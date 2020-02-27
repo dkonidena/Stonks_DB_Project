@@ -47,12 +47,10 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
     with open('knn_quantity.pkl', 'wb') as output:
 	    pickle.dump(knn_quantity, output, pickle.HIGHEST_PROTOCOL)
 
-def main():
-    # allTrades = 
-    # neigboursFromRules =
-    # noOfIterations =
+def job(allTrades, neigboursFromRules, noOfIterations):
     schedule.every().day.at("00:00").do(cronJob, allTrades, neigboursFromRules, noOfIterations)
     while True: 
+        print("hi")
         # Checks whether a scheduled task  
         # is pending to run or not 
         schedule.run_pending() 
