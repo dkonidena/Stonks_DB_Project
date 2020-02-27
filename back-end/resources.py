@@ -20,12 +20,12 @@ def returnCurrencySymbol(currencyCode):
     return currencyDict[currencyCode]
 
 def get_all_trades():
-    trades = models.DerivativeTradesModel.get_trades_all()
-    trade_object_list = []
-    for trade in trades:
-        tradeO = Trade(trade.OriginalNotionalValue, trade.NotionalValue, trade.OriginalQuantity, trade.Quantity)
-        trade_object_list.append(tradeO)
-    return trade_object_list
+    trades = models.DerivativeTradesModel.get_trades_all()
+    trade_object_list = []
+    for trade in trades:
+        trade0 = Trade(trade.OriginalNotionalValue, trade.NotionalValue, trade.OriginalQuantity, trade.Quantity)
+        trade_object_list.append(trade0)
+    return trade_object_list
 
 def run_cron_job():
     all_trades = get_all_trades
