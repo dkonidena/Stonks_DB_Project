@@ -15,6 +15,8 @@ import ML.tradeObj
 import ML.cron
 import schedule
 
+
+
 def returnCurrencySymbol(currencyCode):
     currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
     return currencyDict[currencyCode]
@@ -29,8 +31,9 @@ def get_all_trades():
 
 def run_cron_job():
     all_trades = get_all_trades
-    cron.cronJob(all_trades, 7, 100)
-
+    ML.cron.cronJob(all_trades, 7, 100)
+    
+run_cron_job()
 # run this in seperate thread?
 # or if we just have a call at the start of the program, then we can show that
 # the machine learning algorithm learns from previous trades by running the
