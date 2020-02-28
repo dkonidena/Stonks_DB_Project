@@ -482,7 +482,7 @@ class Trades(Resource):
             if (notionalValue != returned_trade.getCurrentNotional()) or (quantity != returned_trade.getCurrentQuantity()):
                 new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
                 new_tradeID = new_trade.save_to_db()
-                return {'product': product, 'quantity': str(returned_trade.getCurrentQuantity()), 'buyingParty': buyingParty, 'sellingParty': sellingParty, 'notionalPrice': str(returned_trade.getCurrentNotional()), 'notionalCurrency': notionalCurrency, 'underlyingPrice': underlyingPrice, 'underlyingCurrency': underlyingCurrency, 'strikePrice': strikePrice, 'maturityDate': maturityDate, 'tradeID': id, 'tradeDate': date_now, "userIDcreatedBy": userID}, 400
+                return {'product': product, 'quantity': str(returned_trade.getCurrentQuantity()), 'buyingParty': buyingParty, 'sellingParty': sellingParty, 'notionalPrice': str(returned_trade.getCurrentNotional()), 'notionalCurrency': notionalCurrency, 'underlyingPrice': underlyingValue, 'underlyingCurrency': underlyingCurrency, 'strikePrice': strikePrice, 'maturityDate': maturityDate, 'tradeID': id, 'tradeDate': date_now, "userIDcreatedBy": userID}, 400
 
 
             # need to implement checking if the currencies exist
