@@ -11,6 +11,7 @@ import schedule
 
 # create the function which has this Trade[] object passed to it
 def cronJob(allTrades, neigboursFromRules, noOfIterations):
+    print("here")
     trades = list()
     # get the size of the trades list
     d = len(allTrades)
@@ -44,17 +45,19 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
     # now save the state of these objects to the server
     with open('knn_notional.pkl', 'wb') as output:
 	    pickle.dump(knn_notional, output, pickle.HIGHEST_PROTOCOL)
+    print("here2")
     with open('knn_quantity.pkl', 'wb') as output:
 	    pickle.dump(knn_quantity, output, pickle.HIGHEST_PROTOCOL)
+    print("here3")
 
 def job(allTrades, neigboursFromRules, noOfIterations):
     schedule.every().day.at("00:00").do(cronJob, allTrades, neigboursFromRules, noOfIterations)
-    while True: 
-        print("hi")
-        # Checks whether a scheduled task  
-        # is pending to run or not 
-        schedule.run_pending() 
-        time.sleep(1) 
+    while True:
+        # print("hi")
+        # Checks whether a scheduled task
+        # is pending to run or not
+        schedule.run_pending()
+        time.sleep(1)
 '''
 TODO: get this running on the server
 - Dhruva needs to convert all of the database Trade information to Trade[], the parameter allTrades

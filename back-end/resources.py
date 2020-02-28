@@ -475,9 +475,9 @@ class Trades(Resource):
             # before adding a trade call the machine learning algorithm to suggest corrections
             # first parse the relevant data into a trade object
 
-            input_trade = tradeObj.trade(notionalValue, None, quantity, None)
+            input_trade = ML.tradeObj.trade(notionalValue, None, quantity, None)
 
-            returned_trade = ml.suggestChange(trade)
+            returned_trade = ml.suggestChange(input_trade)
 
             if (notionalValue != returned_trade.getCurrentNotional()) or (quantity != returned_trade.getCurrentQuantity()):
                 new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
