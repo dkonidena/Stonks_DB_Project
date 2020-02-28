@@ -14,11 +14,11 @@ def suggestChange(trade):
         knn_quantity = pickle.load(inp)
 
     # Predict on dataset which model has not seen before
-    y_test_notional = knn_notional.predict(trade.getPreviousNotional())
-    y_test_quantity = knn_quantity.predict(trade.getPreviousQuantity())
+    y_test_notional = knn_notional.predict([[trade.getPreviousNotional()]])
+    y_test_quantity = knn_quantity.predict([[trade.getPreviousQuantity()]])
 
     # working under the assumption the order of test does not change when being iterated upon
-    trade.setBothValues(y_test_notional, y_test_quantity)
+    trade.setBothValues(y_test_notional[0], y_test_quantity[0])
 
     return trade
 '''
