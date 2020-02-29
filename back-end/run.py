@@ -22,6 +22,7 @@ api.add_resource(resources.Currencies, '/api/currencies')
 api.add_resource(resources.Companies, '/api/companies')
 api.add_resource(resources.Products, '/api/products')
 api.add_resource(resources.Trades, '/api/trades')
+api.add_resource(resources.CheckTrade, '/api/check_trade')
 api.add_resource(resources.Reports, '/api/reports')
 api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
@@ -43,4 +44,3 @@ def index():
 
 if __name__=="__main__":
     app.run(debug=True,port=8002,host = '0.0.0.0')
-

@@ -677,7 +677,58 @@ class Rules(Resource):
     def delete(self):
         return 1
 
-# redundant
 class CheckTrade(Resource):
     def post(self):
-        return 1
+        # needs error checking
+        try:
+            json_data = request.data
+            data = json.loads(json_data)
+            id = ''.join(choice(ascii_uppercase) for i in range(12))
+            product = data['product']
+            quantity = data['quantity']
+            buyingParty = data['buyingParty']
+            sellingParty = data['sellingParty']
+            notionalValue = data['notionalPrice']
+            notionalCurrency = data['notionalCurrency']
+            underlyingValue = data['underlyingPrice']
+            underlyingCurrency = data['underlyingCurrency']
+            strikePrice = data['strikePrice']
+            maturityDate = models.parse_iso_date(str(data['maturityDate']))
+            date_now = str(date_func.today())
+            userID = 1 # TODO remove placeholder
+
+            #make a query to check if the product exists
+            result = models.ProductSellersModel.getProductID(product, sellingParty)
+            if len(result) == 0:
+                print("Product does not exist")
+                return {'message' : 'product not found'}, 404
+
+            # before adding a trade call the machine learning algorithm to suggest corrections
+            # first parse the relevant data into a trade object
+
+            input_trade = ML.tradeObj.trade(notionalValue, None, quantity, None)
+
+            returned_trade = ml.suggestChange(input_trade)
+
+            return {
+                'product': product,
+                'quantity': str(returned_trade.getCurrentQuantity()),
+                'buyingParty': buyingParty,
+                'sellingParty': sellingParty,
+                'notionalPrice': str(returned_trade.getCurrentNotional()),
+                'notionalCurrency': notionalCurrency,
+                'underlyingPrice': underlyingValue,
+                'underlyingCurrency': underlyingCurrency,
+                'strikePrice': strikePrice,
+                'maturityDate': maturityDate,
+                'tradeID': id,
+                'tradeDate': date_now,
+                'userIDcreatedBy': userID
+                }, 200
+
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
+        except exc.InterfaceError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
