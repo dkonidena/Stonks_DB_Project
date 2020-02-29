@@ -5,6 +5,9 @@ import json
 import uuid
 import random
 import traceback
+import base64
+import tempfile
+import os
 from sqlalchemy import exc
 import sys
 from datetime import date as date_func
@@ -15,6 +18,14 @@ from ML.tradeObj import trade
 import ML.cron
 import schedule
 
+#for PDF report generation
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
+
+# use models.date... instead of redefining date methods in here
 
 # class Machine(Resource):
 def returnCurrencySymbol(currencyCode):
@@ -171,9 +182,18 @@ class Companies(Resource):
     def delete(self):
         try:
             company_ID = request.args.get('id')
+            date_now = str(date_func.today())
+            # check to see if the company exists today
+            # return the tuple of the company wanting to be deleted
+            specificCompany = models.CompanyModel.retrieve_company_by_code(company_ID)
+            # returns tuples of companies that exist currently
+            existingCompanies = models.CompanyModel.retrieve_companies_before(date_now)
+            # intersection to see if the desired company exists or not
+            deletedCompany = existingCompanies.intersect(specificCompany)
+            if deletedCompany.count() == 0:
+                return {'message':'Cannot delete a non-existant company'}, 400
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            date_now = str(date_func.today())
             models.CompanyModel.update_date_deleted(company_ID, date_now)
             user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
@@ -296,8 +316,8 @@ class Products(Resource):
             user_ID = 1 # placeholder
             date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
-            models.ProductModel.update_product_sellers(product_ID, company_ID)
-            models.ProductModel.update_product_valuations(product_ID, value_in_USD, date_now)
+            models.ProductSellersModel.update_product_sellers(product_ID, company_ID)
+            models.ProductValuationsModel.update_product_valuations(product_ID, value_in_USD, date_now)
             userAction = "User has updated a record in the Products table with the ID: " + product_ID
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
@@ -364,11 +384,11 @@ class Trades(Resource):
                     if 'dateModified' in filter:
                         if len(filter['dateModified']) == 1:
                             if 'after' in filter['dateModified']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateModified']['after']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after']))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateModified']['before']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before']))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateModified']['after'], filter['dateModified']['before']))
+                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before']))
 
                     if 'tradeID' in filter:
                         for id in filter['tradeID']:
@@ -471,18 +491,7 @@ class Trades(Resource):
             if len(result) == 0:
                 print("Product does not exist")
                 return {'message' : 'product not found'}, 404
-
-            # before adding a trade call the machine learning algorithm to suggest corrections
-            # first parse the relevant data into a trade object
-
-            input_trade = ML.tradeObj.trade(notionalValue, None, quantity, None)
-
-            returned_trade = ml.suggestChange(input_trade)
-
-            if (notionalValue != returned_trade.getCurrentNotional()) or (quantity != returned_trade.getCurrentQuantity()):
-                new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
-                new_tradeID = new_trade.save_to_db()
-                return {'product': product, 'quantity': str(returned_trade.getCurrentQuantity()), 'buyingParty': buyingParty, 'sellingParty': sellingParty, 'notionalPrice': str(returned_trade.getCurrentNotional()), 'notionalCurrency': notionalCurrency, 'underlyingPrice': underlyingValue, 'underlyingCurrency': underlyingCurrency, 'strikePrice': strikePrice, 'maturityDate': maturityDate, 'tradeID': id, 'tradeDate': date_now, "userIDcreatedBy": userID}, 400
+            new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = models.parse_iso_date(maturityDate), UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, LastModifiedDate = date_now, UserIDCreatedBy = userID)
 
 
             # need to implement checking if the currencies exist
@@ -556,34 +565,6 @@ class Trades(Resource):
 class Reports(Resource):
 
     def get(self):
-        test_data = {
-            "matches" : [{
-                    "date": "2020-02-18T00:28:38.365Z",
-                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
-01/04/2010 00:00,ACCKXNIA50698568,Scope Lens,AWYB85,UACN81,18120.0,USD,800,07/04/2011,22.65,USD,20.89
-01/04/2010 00:00,TFVNUIEV14019758,Stocks,IJPI82,BBAX06,3733800.0,USD,70000,10/07/2013,53.34,USD,57.62
-01/04/2010 00:38,SFKFEMNI33385795,Stocks,AMRO66,TGZI54,203496.08,KWD,100,31/01/2012,279.47,USD,2173.46
-01/04/2010 00:39,NFPPXKJO32502934,Premium Nanotech,EDYH00,DREA89,920080.0,USD,4000,31/10/2011,230.02,USD,197.94
-01/04/2010 00:39,WLLMPGMU67753060,Stocks,NQJL85,BDBU00,563545.77,KZT,900,28/07/2012,158.88,USD,632.4
-01/04/2010 00:40,VQYITYKX67468667,Black Materia Orbs,EWUY52,VCSF07,492600.0,USD,60000,02/04/2013,8.21,USD,8.72
-01/04/2010 00:40,MVWWGUEO36009262,Stocks,TBVE46,QLMY86,13120100.0,USD,70000,14/04/2011,187.43,USD,205.65"""
-                },
-                {
-                    "date": "2020-02-17T00:28:38.365Z",
-                    "content": """dateOfTrade,tradeID,product,buyingParty,sellingParty,notionalAmount,notionalCurrency,quantity,maturityDate,underlyingPrice,underlyingCurrency,strikePrice
-01/04/2010 00:12,XNTJSSWX82102942,Stocks,KKGY69,SFZS08,14978600.0,USD,70000,19/06/2013,213.98,USD,236.56
-01/04/2010 00:12,SRAKJKES56980699,Stocks,BBJG05,KKZA87,74360.0,USD,2000,05/04/2014,37.18,USD,42.13
-01/04/2010 00:16,SHUUQNAF89208519,Stocks,KUWI70,IIZF28,47470.0,USD,500,19/09/2011,94.94,USD,82.87
-01/04/2010 00:16,OXXDOFBX41047829,Stocks,SUOX82,FAWI50,19980111.75,HRK,700,27/05/2011,260.54,USD,25251.2
-01/04/2010 00:16,LWAKBSFC76100584,Stocks,CMZC67,LBKT00,5691.0,USD,700,05/03/2011,8.13,USD,8.58
-01/04/2010 00:17,NAFWJEQM83465255,Muscle Bands,GZED20,EDYH00,2813580.0,USD,9000,26/07/2012,312.62,USD,341.29
-01/04/2010 00:17,MNPRZYBF65527748,Stocks,HFLM11,YLGZ72,5832000.0,USD,80000,11/11/2011,72.9,USD,64.03"""
-                }
-            ]
-        }
-
-        #return test_data, 200
-
         try:
             try:
                 filter = json.loads(request.args.get('filter'))
@@ -600,16 +581,29 @@ class Reports(Resource):
 
             # either dateCreated will be passed or nothing will be passed
             if 'dateCreated' in filter:
-                # find the dates trades are made between these dates
-                tradeDates = models.DerivativeTradesModel.get_trades_between(filter['dateCreated'][0], filter['dateCreated'][1])
-                for each in tradeDates:
-                    results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
-                noOfMatches = len(results) # gives the no. of reports available
+                if len(filter['dateCreated']) == 1:
+                    if 'after' in filter['dateCreated']:
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'])
+                    else:
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'])
+                elif len(filter['dateCreated']) == 2:
+                    tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'])
+                else:
+                    tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                for each in tradeDates:
-                    results.append(models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade))
-                noOfMatches = len(results)
+
+            for each in tradeDates:
+                result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
+                results.append(result)
+            noOfMatches = len(results)
+
+            # contents for the pdf file
+            story = [] # all relevant data for the pdf
+            styles = getSampleStyleSheet() # defining the styles/text style for the trades table in the pdf
+            styleB = styles['BodyText']
+            styleB.fontSize = 8
+            styleB.wordWrap = 'CJK' # adding text wrapping for the table cells in the pdf
 
             if isDryRun == 'true':
                 return {'noOfMatches' : noOfMatches}
@@ -617,14 +611,26 @@ class Reports(Resource):
                 message = {'matches' : []}
                 i = 0
                 while i < len(results):
-                    report = {'date': None, 'content': None}
-                    content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,MaturityDate,Underlying Value,Underlying Currency,Strike Price\n"""
-                    for row in results[i]:
-                        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
-                    report['date'] = tradeDates[i].DateOfTrade
-                    report['content'] = content
-                    message['matches'].append(report)
-                    i += 1
+                    handle, fn = tempfile.mkstemp(suffix='.csv')
+                    with os.fdopen(handle, "w", encoding='utf8', newline='') as f:
+                        report = {'date': None, 'content': None}
+                        # data that will be contained in the pdf table
+                        tableData = [['Date Of Trade', 'Trade ID', 'Product', 'Buying Party', 'Selling Party', 'Notional Value', 'Notional Currency', 'Quantity', 'Maturity Date', 'Underlying Value', Paragraph('Underlying Currency', styleB), 'Strike Price']]
+                        content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
+                        for row in results[i]:
+                            # adding rows to the pdf table
+                            tableData.append([str(row.DateOfTrade), Paragraph(str(row.TradeID), styleB), str(row.ProductID), str(row.BuyingParty), str(row.SellingParty), str(row.NotionalValue), str(row.NotionalCurrency), str(row.Quantity), str(row.MaturityDate), str(row.UnderlyingValue), str(row.UnderlyingCurrency), str(row.StrikePrice)])
+                            content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
+                        report['date'] = tradeDates[i].DateOfTrade
+                        report['content'] = content
+                        # adding the whole table for the single date into its own pdf file
+                        story.append(Table(tableData,colWidths=65, rowHeights=30, repeatRows=0, splitByRow=1, style=TableStyle([('FONTSIZE', (0,0), (-1,-1), 8)])))
+                        doc = SimpleDocTemplate('output.pdf', pagesize = landscape(A4), title = "Report")
+                        doc.build(story)
+                        encodedPDF = base64.b64encode(open("output.pdf", "rb").read()).decode()
+                        report['pdfFile'] = encodedPDF
+                        message['matches'].append(report)
+                        i += 1
                 return message, 200
             else:
                 return {'message' : 'Request Malformed'}, 400
@@ -636,6 +642,30 @@ class Reports(Resource):
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
 
+class Users(Resource):
+    def get(self):
+        try:
+            isDryRun = request.args['isDryRun']
+        except KeyError:
+            return {'message': 'isDryRun paramater missing'}, 400
+
+        matches = models.EmployeesModel.retrieve_all()
+        noOfMatches = len(matches)
+
+        user_objects = []
+
+        for match in matches:
+            user_objects.append({
+                "id": str(match.EmployeeID),
+                "name": f"{match.FirstName} {match.LastName}"
+            })
+
+        if isDryRun == "true":
+            return {'noOfMatches' : noOfMatches}, 200
+        elif isDryRun == "false":
+            return {'matches' : user_objects}, 200
+        else:
+            return {'message': 'isDryRun must be \'true\' or \'false\''}, 400
 
 class Rules(Resource):
     def get(self):

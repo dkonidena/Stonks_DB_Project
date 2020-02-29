@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
 import traceback
 import sys
+from datetime import date as date_func
 
 def parse_iso_date(date_string):
     # this function takes an iso8601 string and converts it into a YYYY-MM-DD string
@@ -34,7 +35,14 @@ class CompanyModel(db.Model):
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
-            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) > cls.DateDeleted, cls.DateDeleted == None))
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) < cls.DateDeleted, cls.DateDeleted == None))
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
+    @classmethod
+    def retrieve_company_by_code(cls, code):
+        try:
+            return cls.query.filter(cls.CompanyCode == code)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -141,6 +149,7 @@ class DerivativeTradesModel(db.Model):
     UnderlyingValue = db.Column(db.Float, nullable = False)
     UnderlyingCurrency = db.Column(db.String(120), ForeignKey("CurrencyTypes.CurrencyCode"), nullable = False)
     StrikePrice = db.Column(db.Float, nullable = False)
+    LastModifiedDate = db.Column(db.String(120), nullable = False)
     UserIDCreatedBy = db.Column(db.Integer, ForeignKey("Employees.EmployeeID"), nullable = False)
 
     def save_to_db(self):
@@ -172,6 +181,29 @@ class DerivativeTradesModel(db.Model):
     def get_trades_between(cls, startDate, endDate):
         try:
             return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+
+    # serves the get request for a filtered date
+    @classmethod
+    def get_trades_modified_after(cls, startDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_modified_before(cls, endDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
+        except exc.ProgrammingError:
+            # is there a reason it's "", "" not "",""?
+            raise exc.ProgrammingError("", "", 1)
+    @classmethod
+    def get_trades_modified_between(cls, startDate, endDate):
+        try:
+            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
@@ -247,11 +279,33 @@ class DerivativeTradesModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    @classmethod
+    def get_trade_dates_after(cls, startDate):
+        try:
+            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+    
+    @classmethod
+    def get_trade_dates_before(cls, endDate):
+        try:
+            return cls.query.filter(parse_iso_date(endDate) >= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
+    # returns all dates trades happen between a certain start and end date -> used for reports generation
+    @classmethod
+    def get_trade_dates_between(cls, startDate, endDate):
+        try:
+            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
     # serves the trade patch request
     @classmethod
     def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
         try:
-            row = cls.query.filter_by(TradeID = tradeID).first()
+            row = cls.query.filter_by(TradeID = tradeID)
             row.ProductID = product
             row.BuyingParty = buyingParty
             row.SellingParty = sellingParty
@@ -262,6 +316,7 @@ class DerivativeTradesModel(db.Model):
             row.UnderlyingValue = underlyingValue
             row.UnderlyingCurrency = underlyingCurrency
             row.StrikePrice = strikePrice
+            row.LastModifiedDate = date_now = str(date_func.today())
             db.session.commit()
         except exc.IntegrityError:
            raise exc.IntegrityError("", "", 1)
@@ -318,6 +373,20 @@ class EmployeesModel(db.Model):
             raise exc.IntegrityError("","",1)
         except exc.InterfaceError:
             raise exc.InterfaceError("","", 1)
+
+    @classmethod
+    def retrieve_all(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
+    @classmethod
+    def retrieve_by_user_id(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
 
 
 class ProductSellersModel(db.Model):

@@ -2,7 +2,7 @@ const events = ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "
 
 function setInputFilter(t, filter) {
     events.forEach((e) => {
-        $(t).on(e, function () {
+        t.on(e, function () {
             if (filter(this.value)) {
                 this.oldValue = this.value;
                 this.oldSelectionStart = this.selectionStart;
@@ -19,15 +19,44 @@ function setInputFilter(t, filter) {
     });
 }
 
-function showError(error, debugData = '', stringify = true) {
+function showError(error, debugData = 'no additional data', stringify = true) {
     if (stringify && debugData !== '') debugData = JSON.stringify(debugData, null, 2);
     showErrorDialogue(error, debugData);
+}
+
+function showSuccess(message = '(no message specified)') {
+    $("#successModal #successMessage").text(message);
+    $("#successModal").modal("show");
 }
 
 function showErrorDialogue(error = '', detail = '') {
     $('#errorShort').text(error);
     $('#errorDetailContent').text(detail);
     $('#apiErrorModal').modal('show');
+}
+
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
+
+String.prototype.isBlank = function() {
+    return (!this || /^\s*$/.test(this));
+}
+
+//use for accessing xxx.yyy where xxx can be null
+//optionally return a specified value instead of null
+function nullMemberAccess(parent, child, val = null) {
+    if (parent === null || parent === undefined) {
+        return val;
+    }
+    else return parent[child];
 }
 
 function randInt(min, max) {

@@ -2,6 +2,7 @@ var currencies = {};
 var companies = {};
 var products = {};
 var trades = {};
+var users = {};
 
 class Trade {
     constructor(id) {
@@ -99,7 +100,7 @@ class Product {
         this.name = "";
         this.company = null; //new Company();
         this.valueInUSD = "";
-        this.dateEnteredIntoSystem = null; //new Date();
+        this.dateEnteredIntoSystem = new Date();
         this.userIDcreatedBy = "";
     }
 
@@ -161,6 +162,10 @@ class Currency {
         this.valueInUSD = "";
     }
 
+    getPlaceholder() {
+        return this.allowDecimal ? "0.00" : "0";
+    }
+
     populateFromServerJSON(o) {
         try {
             this.code = o.code;
@@ -172,7 +177,6 @@ class Currency {
         catch {
             return null;
         }
-
     }
 };
 
@@ -197,7 +201,7 @@ class Company {
     constructor() {
         this.id = "";
         this.name = "";
-        this.dateEnteredIntoSystem = null; //new Date();
+        this.dateEnteredIntoSystem = new Date();
         this.userIDcreatedBy = "";
     }
 
@@ -311,5 +315,40 @@ function getReportList(filter, res, err) {
         }
 
         if (res !== undefined) { res(reports); }
+    }, showError);
+}
+
+class User {
+    constructor() {
+        this.id = "";
+        this.name = "";
+    }
+
+    populateFromServerJSON(o) {
+        try {
+            this.id = o.id;
+            this.name = o.name;
+            return this;
+        }
+        catch {
+            return null;
+        }
+    }
+}
+
+function getUserList(res, err) {
+    api.get.users(false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse for users", "matches field not present");
+            return;
+        }
+
+        for (let json of response.matches) {
+            let user = new User();
+            user.populateFromServerJSON(json);
+            users[user.id] = user;
+        }
+
+        res(Object.values(users));
     }, showError);
 }
