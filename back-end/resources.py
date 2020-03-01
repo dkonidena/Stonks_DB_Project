@@ -149,6 +149,8 @@ class Companies(Resource):
             data = json.loads(json_data)
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
+            if len(name) == 0:
+                return {'message':'company name is empty'}, 400
             date_entered = str(date_func.today())
             new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = date_entered, UserIDCreatedBy = userID) # should have more parameters, user_ID
             new_company.save_to_db()
@@ -173,6 +175,8 @@ class Companies(Resource):
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
+            if len(name) == 0:
+                return {'message':'company name is empty'}, 400
             models.CompanyModel.update_company(company_ID, name)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = str(date_func.today())
@@ -289,6 +293,12 @@ class Products(Resource):
             name = data['name']
             value = data['valueInUSD']
             companyCode = data['companyID']
+            if len(name) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(value) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(companyCode) == 0:
+                return {'message':'company code is empty'}, 400
             # then create the date now
             date_now = str(date_func.today())
             # add to product table, date_now used as dateEnteredIntoSystem
@@ -324,6 +334,12 @@ class Products(Resource):
             name = data['name']
             value_in_USD = data['valueInUSD']
             company_ID = data['companyID']
+            if len(name) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(value) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(companyCode) == 0:
+                return {'message':'company code is empty'}, 400
             date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
             models.ProductSellersModel.update_product_sellers(product_ID, company_ID)
@@ -498,6 +514,26 @@ class Trades(Resource):
             underlyingCurrency = data['underlyingCurrency']
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
+            if len(product) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(quantity) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(buyingParty) == 0:
+                return {'message':'buying party is empty'}, 400
+            if len(sellingParty) == 0:
+                return {'message':'selling party is empty'}, 400
+            if len(notionalValue) == 0:
+                return {'message':'notionalValue is empty'}, 400
+            if len(notionalCurrency) == 0:
+                return {'message':'notionalCurrency is empty'}, 400
+            if len(underlyingValue) == 0:
+                return {'message':'underlyingValue is empty'}, 400
+            if len(underlyingCurrency) == 0:
+                return {'message':'underlyingCurrency is empty'}, 400
+            if len(strikePrice) == 0:
+                return {'message':'strikePrice is empty'}, 400
+            if len(maturityDate) == 0:
+                return {'message':'maturityDate is empty'}, 400
             date_now = str(date_func.today())
 
             #make a query to check if the product exists
@@ -547,7 +583,26 @@ class Trades(Resource):
             underlyingCurrency = data['underlyingCurrency']
             maturityDate = data['maturityDate']
             strikePrice = data['strikePrice']
-
+            if len(product) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(quantity) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(buyingParty) == 0:
+                return {'message':'buying party is empty'}, 400
+            if len(sellingParty) == 0:
+                return {'message':'selling party is empty'}, 400
+            if len(notionalValue) == 0:
+                return {'message':'notionalValue is empty'}, 400
+            if len(notionalCurrency) == 0:
+                return {'message':'notionalCurrency is empty'}, 400
+            if len(underlyingValue) == 0:
+                return {'message':'underlyingValue is empty'}, 400
+            if len(underlyingCurrency) == 0:
+                return {'message':'underlyingCurrency is empty'}, 400
+            if len(strikePrice) == 0:
+                return {'message':'strikePrice is empty'}, 400
+            if len(maturityDate) == 0:
+                return {'message':'maturityDate is empty'}, 400
             models.DerivativeTradesModel.update_trade(trade_ID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
 
             #Logging the user action
