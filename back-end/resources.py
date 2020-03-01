@@ -143,7 +143,7 @@ class Companies(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
@@ -167,7 +167,7 @@ class Companies(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
             json_data = request.data
@@ -186,7 +186,7 @@ class Companies(Resource):
     def delete(self):
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
             date_now = str(date_func.today())
@@ -281,7 +281,7 @@ class Products(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             # get the name, value, and company ID from request
             json_data = request.data
@@ -316,7 +316,7 @@ class Products(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             product_ID = request.args.get('id')
             json_data = request.data
@@ -345,7 +345,7 @@ class Products(Resource):
     def delete(self):
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             product_ID = request.args.get('id')
             if 'id' not in request.args:
@@ -483,7 +483,7 @@ class Trades(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
@@ -532,7 +532,7 @@ class Trades(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             trade_ID = request.args.get('id')
             json_data = request.data
@@ -564,7 +564,7 @@ class Trades(Resource):
     def delete(self):
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
@@ -700,7 +700,7 @@ class CheckTrade(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
-            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+            if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
