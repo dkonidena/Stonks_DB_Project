@@ -549,8 +549,6 @@ class Trades(Resource):
             #If a the product or stock which the trade is linked to is found, then the trade
             new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
             new_tradeID = new_trade.save_to_db()
-            new_product_trade = models.ProductTradesModel(TradeID = new_tradeID, ProductID = result[0].ProductID)
-            new_product_trade.save_to_db()
 
             #Logging the user action
             userAction = "User has inserted a new record in the Trades table with the ID: " + str(new_tradeID)

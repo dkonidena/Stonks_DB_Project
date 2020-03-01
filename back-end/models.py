@@ -426,21 +426,6 @@ class ProductSellersModel(db.Model):
             raise exc.ProgrammingError("", "", 1)
 
 
-class ProductTradesModel(db.Model):
-    __tablename__ = 'ProductTrades'
-    TradeID = db.Column(db.String(120), primary_key = True, nullable = False)
-    ProductID = db.Column(db.Integer, primary_key = True,  nullable = False)
-
-    def save_to_db(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-        except exc.IntegrityError:
-            raise exc.IntegrityError("","",1)
-        except exc.InterfaceError:
-            raise exc.InterfaceError("","", 1)
-
-
 class ProductModel(db.Model):
     __tablename__ = 'Products'
     ProductID = db.Column(db.Integer, primary_key = True, nullable = False)
