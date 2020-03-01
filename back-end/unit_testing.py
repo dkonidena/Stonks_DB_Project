@@ -1,6 +1,7 @@
 import unittest
 import json 
 from run import app
+
 class MyTestClass(unittest.TestCase): 
     
     # initialization logic for the test suite declared in the test module
@@ -40,11 +41,6 @@ class MyTestClass(unittest.TestCase):
         # assert the status code of the response
         self.assertEqual(result.status_code, 200)
 
-    def test_num_currencies_returned(self):
-        date = "2019-12-01"
-        response = self.app.get('/api/currencies', query_string=dict(isDryRun = 'true', date = date))
-        data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data['noOfMatches'], 8)
 
 # runs the unit tests in the module
 if __name__ == '__main__':
