@@ -385,9 +385,9 @@ class EmployeesModel(db.Model):
             raise exc.ProgrammingError("","",1)
 
     @classmethod
-    def retrieve_by_user_id(cls):
+    def retrieve_by_user_id(cls, id):
         try:
-            return cls.query.all()
+            return cls.query.filter_by(EmployeeID = id).first()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
