@@ -627,7 +627,9 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            models.DerivativeTradesModel.delete_product(trade_ID)
+            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID) == None:
+                return {'message': 'Trade id not present'}, 400
+            models.DerivativeTradesModel.delete_trade(trade_ID)
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
             date_now = str(date_func.today())
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Trades", TypeOfAction = "Deletion", ReferenceID = trade_ID, EmployeeID = userID)
