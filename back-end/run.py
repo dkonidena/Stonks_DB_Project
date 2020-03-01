@@ -8,13 +8,12 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import datetime
+app = Flask(__name__)
 import models, resources
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 
 
-
-app = Flask(__name__)
 api = Api(app)
 CORS(app)
 

@@ -1,9 +1,12 @@
-from run import db
+from run import app
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
 import traceback
 import sys
 from datetime import date as date_func
+
+db = SQLAlchemy(app)
 
 def parse_iso_date(date_string):
     # this function takes an iso8601 string and converts it into a YYYY-MM-DD string
