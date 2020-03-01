@@ -604,7 +604,10 @@ class Trades(Resource):
             if len(maturityDate) == 0:
                 return {'message':'maturityDate is empty'}, 400
             models.DerivativeTradesModel.update_trade(trade_ID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice)
-
+            result = models.ProductSellersModel.getProductID(product, sellingParty)
+            if len(result) == 0:
+                print("Product does not exist")
+                return {'message' : 'product not found'}, 404
             #Logging the user action
             userAction = "User has updated a record in the Trades table with the ID: " + trade_ID
             dateOfEvent = str(date_func.today())
