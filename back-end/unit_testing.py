@@ -41,6 +41,41 @@ class MyTestClass(unittest.TestCase):
         # assert the status code of the response
         self.assertEqual(result.status_code, 200)
 
+class CurrencyTests(unittest.TestCase):
+    # initialization logic
+    # code that is executed before each test
+    def setUp(self):
+        # creates a test client
+        self.app = app.test_client()
+        # propagate the exceptions to the test client
+        self.app.testing = True 
+
+    # clean up logic
+    # code that is executed after each test
+    def tearDown(self):
+        pass 
+
+    # test to check the correct number of matches are found when a specific date is chosen
+    def test_num_currencies_returned(self):
+        date = "2019-12-01"
+        response = self.app.get('/api/currencies', query_string=dict(isDryRun = 'true', date = date))
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data['noOfMatches'], 8)
+    
+    # test to check if the system handles missing isDryRun data
+    def test_no_dry_run(self):
+        response = self.app.get('api/currencies', query_string=dict(date = None))
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Request malformed", data['message'])
+
+    # test to check if the system handles missing dates
+    def test_no_date(self):
+        response = self.app.get('api/currencies', query_string=dict(date = 'ababa', isDryRun = 'false'))
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Date invalid", data['message'])
+
 
 # runs the unit tests in the module
 if __name__ == '__main__':
