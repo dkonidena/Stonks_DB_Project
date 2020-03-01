@@ -142,11 +142,13 @@ class Companies(Resource):
     def post(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
-            userID = 1 # placeholder
             date_entered = str(date_func.today())
             new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = date_entered, UserIDCreatedBy = userID) # should have more parameters, user_ID
             new_company.save_to_db()
@@ -164,11 +166,13 @@ class Companies(Resource):
     def patch(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
-            userID = 1 # placeholder
             models.CompanyModel.update_company(company_ID, name)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = str(date_func.today())
@@ -181,6 +185,9 @@ class Companies(Resource):
 
     def delete(self):
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
             date_now = str(date_func.today())
             # check to see if the company exists today
@@ -195,7 +202,6 @@ class Companies(Resource):
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
             models.CompanyModel.update_date_deleted(company_ID, date_now)
-            user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Deletion", ReferenceID = company_ID, EmployeeID = user_ID)
             new_event.save_to_db()
@@ -274,13 +280,15 @@ class Products(Resource):
     def post(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             # get the name, value, and company ID from request
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
             value = data['valueInUSD']
             companyCode = data['companyID']
-            userID = 1 # placeholder
             # then create the date now
             date_now = str(date_func.today())
             # add to product table, date_now used as dateEnteredIntoSystem
@@ -307,13 +315,15 @@ class Products(Resource):
     def patch(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             product_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
             value_in_USD = data['valueInUSD']
             company_ID = data['companyID']
-            user_ID = 1 # placeholder
             date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
             models.ProductSellersModel.update_product_sellers(product_ID, company_ID)
@@ -334,12 +344,14 @@ class Products(Resource):
 
     def delete(self):
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             product_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
             date_now = str(date_func.today())
             models.ProductModel.update_date_deleted(product_ID, date_now) # instead of deletion, the dateDeleted attribute is updated
-            user_ID = 1 # placeholder
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Deletion", ReferenceID = product_ID, EmployeeID = user_ID)
             new_event.save_to_db()
@@ -470,6 +482,9 @@ class Trades(Resource):
     def post(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
             id = ''.join(choice(ascii_uppercase) for i in range(12))
@@ -484,7 +499,6 @@ class Trades(Resource):
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
             date_now = str(date_func.today())
-            userID = 1 # placeholder
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
@@ -517,6 +531,9 @@ class Trades(Resource):
     def patch(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             trade_ID = request.args.get('id')
             json_data = request.data
             data = json.loads(json_data)
@@ -536,7 +553,6 @@ class Trades(Resource):
             #Logging the user action
             userAction = "User has updated a record in the Trades table with the ID: " + trade_ID
             dateOfEvent = str(date_func.today())
-            userID = 1 # placeholder
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = dateOfEvent, Table = "Trades", TypeOfAction = "Update", ReferenceID = trade_ID, EmployeeID = userID)
             new_event.save_to_db()
 
@@ -547,11 +563,13 @@ class Trades(Resource):
 
     def delete(self):
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
             models.DerivativeTradesModel.delete_product(trade_ID)
-            userID = 1 # placeholder
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
             date_now = str(date_func.today())
             new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Trades", TypeOfAction = "Deletion", ReferenceID = trade_ID, EmployeeID = userID)
@@ -681,6 +699,9 @@ class CheckTrade(Resource):
     def post(self):
         # needs error checking
         try:
+            userID = request.headers.get('userID')
+            if (models.EmployeesModel.retrieve_by_user_id(userID)).count() == 0:
+                return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
             id = ''.join(choice(ascii_uppercase) for i in range(12))
@@ -695,7 +716,6 @@ class CheckTrade(Resource):
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
             date_now = str(date_func.today())
-            userID = 1 # TODO remove placeholder
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
