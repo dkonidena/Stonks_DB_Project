@@ -116,6 +116,20 @@ class CompanyTests(unittest.TestCase):
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("company name is empty", data['message'])
 
+    # test to see if a user ID does not exist
+    def test_no_userID_company_post(self):
+        response = self.app.post('api/companies', data=dict(name=''), headers={'userID':'9999'})
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("user not present", data['message'])
+    
+    def test_no_id_delete_company(self):
+        id = 'P'
+        response = self.app.delete('/api/companies', query_string=dict(id = id), headers = {'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Cannot delete a non-existant company", data['message'])
+
 
 class TradeTests(unittest.TestCase):
 
@@ -153,6 +167,14 @@ class TradeTests(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("user not present", data['message'])
+
+    #TODO: Edit DELETE trades to use .count() to check for any returned results
+    def test_no_id_delete_trades(self):
+        tradeID = 'P'
+        response = self.app.delete('/api/trades', query_string=dict(id = tradeID), headers = {'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Trade id not present", data['message'])
 
 class ProductTests(unittest.TestCase):
 
@@ -193,6 +215,69 @@ class ProductTests(unittest.TestCase):
         data = json.loads(response.get_data(as_text=True))
         print("Data: ", data['message'])
         self.assertEqual("product name is empty", data['message'])
+    
+    # test to see if a user ID does not exist
+    def test_no_userID_product_post(self):
+        response = self.app.post('api/products', data=dict(name='', valueInUSD=None, companyID=''), headers={'userID':'9999'})
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("user not present", data['message'])
+
+    #TODO: Check the product ID before deletion
+    def test_no_id_delete_product(self):
+        id = 0
+        response = self.app.delete('/api/products', query_string=dict(id = id), headers = {'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Cannot delete a non-existant product", data['message'])
+
+class UserTests(unittest.TestCase):
+    def setUp(self):
+        # creates a test client
+        self.app = app.test_client()
+        # propagate the exceptions to the test client
+        self.app.testing = True 
+
+    # clean up logic
+    # code that is executed after each test
+    def tearDown(self):
+        pass 
+
+    def test_num_returned_users(self):
+        TOTAL_NUM_USERS = 1
+        response = self.app.get('/api/users', query_string=dict(isDryRun = 'true'))
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data['noOfMatches'], TOTAL_NUM_USERS)
+
+class ReportTests(unittest.TestCase):
+    def setUp(self):
+        # creates a test client
+        self.app = app.test_client()
+        # propagate the exceptions to the test client
+        self.app.testing = True 
+
+    # clean up logic
+    # code that is executed after each test
+    def tearDown(self):
+        pass 
+
+    def test_no_filter_reports(self):
+        response = self.app.get('api/reports', query_string=dict(isDryRun = 'false'))
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("malformed filter", data['message']) 
+
+    def test_no_dry_run_reports(self):
+        response = self.app.get('api/products', query_string=dict(filter={}))
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("Request malformed", data['message'])
+    
+    #TODO: return the number of reports generated rather than the number of trades made
+    def test_num_returned_reports(self):
+        response = self.app.get('/api/products', query_string=dict(isDryRun = 'true', filter={}))
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data['noOfMatches'], 21)
 
 # runs the unit tests in the module
 if __name__ == '__main__':

@@ -216,7 +216,6 @@ class Companies(Resource):
 
 
 class Products(Resource):
-
     def get(self):
         message = {}
         try:
