@@ -25,12 +25,18 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
 
+CURRENCY = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
+
 # use models.date... instead of redefining date methods in here
 
 # class Machine(Resource):
 def returnCurrencySymbol(currencyCode):
-    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
-    return currencyDict[currencyCode]
+    try:
+        symbol = CURRENCY[currencyCode]
+    except KeyError:
+        symbol = "$"
+
+    return symbol
 
 def get_trade_objects():
     trades = models.DerivativeTradesModel.get_trades_all()

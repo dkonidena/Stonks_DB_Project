@@ -32,11 +32,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 executor = ThreadPoolExecutor(1)
-
-@app.route('/jobs')
-def run_jobs():
-    executor.submit(resources.run_cron_job)
-    return 'Job was launched in background!'
+executor.submit(resources.run_cron_job)
 
 @app.route('/')
 def index():
