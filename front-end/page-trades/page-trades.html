@@ -87,103 +87,107 @@
                 <div class="h4 text-muted text-center pt-5" id="tradeEditorMessage">
                     Search for an existing trade or create a new trade to get started.
                 </div>
-                <div id="tradeEditorForm" style="display:none;">
-                    <form>
 
-                        <div class="row pb-4">
-                            <label class="col-auto col-form-label-lg" for="tradeIdInput">Trade ID</label>
+                <div id="tradeEditorForm" class="row" style="display: none;">
+                    <div class="col-md-auto">
+                        <form autocomplete="off">
+
+                            <div class="row pb-4">
+                                <label class="col-auto col-form-label-lg" for="tradeIdInput">Trade ID</label>
+                                <div class="col-auto">
+                                    <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
+                                </div>
+                                <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
+                                <div class="col-3">
+                                    <div class="form-inline" id="tradeDateInput">
+                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
+                                        <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateMonthInput"/>
+                                        <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
+                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="tradeDateYearInput"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pb-3">
+                                <div class="col-3">
+                                    <label for="productInput">Product</label>
+                                    <select autocomplete="off" class="form-control select2-prod" id="productInput">
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <label for="quantityInput">Quantity</label>
+                                    <input autocomplete="off" type="text" class="form-control" id="quantityInput" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="row pb-3">
+                                <div class="col-3">
+                                    <label for="buyingPartyInput">Buyer</label>
+                                    <select autocomplete="off" class="form-control select2-comp" id="buyingPartyInput">
+                                    </select>
+                                </div>
+                                <div class="col-3">
+                                    <label for="sellingPartyInput">Seller</label>
+                                    <select autocomplete="off" class="form-control select2-comp" id="sellingPartyInput">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row pb-3">
+                                <div class="col-3">
+                                    <label for="notionalPriceInput">Notional Value and Currency</label>
+                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                        <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
+                                        <input type="text" class="form-control" id="notionalPriceInput" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <select class="custom-select select2-cur" id="notionalCurrencyInput"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <label for="underlyingPriceInput">Underlying Value and Currency</label>
+                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                        <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
+                                        <input type="text" class="form-control " id="underlyingPriceInput" placeholder="0.00">
+                                        <div class="input-group-append">
+                                            <select class="custom-select select2-cur" id="underlyingCurrencyInput"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <label for="strikePriceInput">Strike Price</label>
+                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                        <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
+                                        <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <label for="maturityDateInput">Maturity Date</label>
+                                    <div class="form-inline" id="maturityDateInput">
+                                        <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="DD" />
+                                        <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                        <input type="text" class="form-control col-md-2" id="maturityDateMonthInput" placeholder="MM" />
+                                        <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                        <input type="text" class="form-control col-md-3" id="maturityDateYearInput" placeholder="YYYY" />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                        <div class="row mt-5">
                             <div class="col-auto">
-                                <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
+                                <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Save Trade</button>
                             </div>
-                            <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
-                            <div class="col-3">
-                                <div class="form-inline" id="tradeDateInput">
-                                    <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
-                                    <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                                    <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateMonthInput"/>
-                                    <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                                    <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="tradeDateYearInput"/>
-                                </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
                             </div>
-                        </div>
-
-                        <div class="row pb-3">
-                            <div class="col-3">
-                                <label for="productInput">Product</label>
-                                <select class="form-control select2-prod" id="productInput">
-                                </select>
-                            </div>
-                            <div class="col-2">
-                                <label for="quantityInput">Quantity</label>
-                                <input type="text" class="form-control" id="quantityInput" placeholder="0">
-                            </div>
-                        </div>
-
-                        <div class="row pb-3">
-                            <div class="col-3">
-                                <label for="buyingPartyInput">Buyer</label>
-                                <select class="form-control select2-comp" id="buyingPartyInput">
-                                </select>
-                            </div>
-                            <div class="col-3">
-                                <label for="sellingPartyInput">Seller</label>
-                                <select class="form-control select2-comp" id="sellingPartyInput">
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row pb-3">
-                            <div class="col-3">
-                                <label for="notionalPriceInput">Notional Value and Currency</label>
-                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                    <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
-                                    <input type="text" class="form-control" id="notionalPriceInput" placeholder="0.00">
-                                    <div class="input-group-append">
-                                        <select class="custom-select select2-cur" id="notionalCurrencyInput"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <label for="underlyingPriceInput">Underlying Value and Currency</label>
-                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                    <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
-                                    <input type="text" class="form-control " id="underlyingPriceInput" placeholder="0.00">
-                                    <div class="input-group-append">
-                                        <select class="custom-select select2-cur" id="underlyingCurrencyInput"></select>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-3">
-                                <label for="strikePriceInput">Strike Price</label>
-                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                    <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
-                                    <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <label for="maturityDateInput">Maturity Date</label>
-                                <div class="form-inline" id="maturityDateInput">
-                                    <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="DD" />
-                                    <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                    <input type="text" class="form-control col-md-2" id="maturityDateMonthInput" placeholder="MM" />
-                                    <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                    <input type="text" class="form-control col-md-3" id="maturityDateYearInput" placeholder="YYYY" />
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
-                    <div class="row mt-5">
-                        <div class="col-auto">
-                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Save Trade</button>
-                        </div>
-                        <div class="col-auto">
-                            <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
                         </div>
                     </div>
+                    <div class="col-md-2"></div>
                 </div>
 
                 <div class="modal fade" id="confirmCancelTradeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelTradeModal" aria-hidden="true">
@@ -237,7 +241,7 @@
                             </div>
                             <div class="modal-body">
                                 Filter trades by any properties
-                                <form class="container">
+                                <form autocomplete="off" class="container">
                                     <div class="row mt-3">
                                         <div class="col-3 align-self-center">Date Created</div>
                                         <div class="col-auto align-self-center mr-n3">From</div>

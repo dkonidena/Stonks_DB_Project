@@ -38,21 +38,25 @@ function init() {
     });
 
     elements.notionalCurrencyInput.on("change", () => {
-        let selection = elements.notionalCurrencyInput.select2("data")[0]
-        let curr = currencies[selection.text];
+        try {
+            let selection = elements.notionalCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
 
-        $("#notionalCurrencySymbol").text(curr.symbol);
-        elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+            $("#notionalCurrencySymbol").text(curr.symbol);
+            elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+        } catch (e) {}
     });
 
     elements.underlyingCurrencyInput.on("change", () => {
-        let selection = elements.underlyingCurrencyInput.select2("data")[0];
-        let curr = currencies[selection.text];
+        try {
+            let selection = elements.underlyingCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
 
-        $("#underlyingCurrencySymbol").text(curr.symbol);
-        $("#strikePriceCurrencySymbol").text(curr.symbol);
-        elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
-        elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+            $("#underlyingCurrencySymbol").text(curr.symbol);
+            $("#strikePriceCurrencySymbol").text(curr.symbol);
+            elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
+            elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+        } catch (e) {}
     });
 
     elements.tradeList.on("show.bs.collapse", () => {
