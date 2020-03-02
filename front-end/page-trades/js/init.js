@@ -33,6 +33,10 @@ function init() {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
+    Object.values(elements).forEach((x) => {
+        x.on("change", checkTradeValidity);
+    });
+
     elements.notionalCurrencyInput.on("change", () => {
         let selection = elements.notionalCurrencyInput.select2("data")[0]
         let curr = currencies[selection.text];
@@ -73,14 +77,7 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        let t = tradeObjectFromForm();
-        if (t.tradeId !== "") {
-            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
-        }
-        else {
-            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
-        }
-        //TODO add visual feedback of the save to user
+        saveTrade();
     });
 
     $("#checkTradeButton").on("click", () => {

@@ -144,9 +144,9 @@ function tradeObjectFromForm() {
     trade.buyingParty = companyNameToObject(elements.buyingPartyInput.val());
     trade.sellingParty = companyNameToObject(elements.sellingPartyInput.val());
 
-    trade.tradeDate.setDate(elements.tradeDateDayInput.val());
-    trade.tradeDate.setMonth(elements.tradeDateMonthInput.val()-1);
-    trade.tradeDate.setFullYear(elements.tradeDateYearInput.val());
+    if (elements.maturityDateDayInput.val() === "" || elements.maturityDateMonthInput.val() === "" | elements.maturityDateYearInput.val() === "") {
+        throw new SyntaxError;
+    }
 
     trade.maturityDate.setDate(elements.maturityDateDayInput.val());
     trade.maturityDate.setMonth(elements.maturityDateMonthInput.val()-1);
@@ -161,6 +161,39 @@ function tradeObjectFromForm() {
     trade.strikePrice = elements.strikePriceInput.val();
 
     return trade;
+}
+
+function checkTradeValidity() {
+    $("#saveTradeButton").prop('disabled', !isValidTrade());
+}
+
+function isValidTrade() {
+    let obj;
+    try {
+        obj = tradeObjectFromForm().getAPIObject()
+    } catch (e) {
+        return false;
+    }
+
+    for (const value of Object.values(obj)) {
+        if (value === "") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function saveTrade() {
+    if (isValidTrade()) {
+        let t = tradeObjectFromForm();
+        if (t.tradeId !== "") {
+            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
+        }
+        else {
+            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
+        }
+    }
 }
 
 function filterObjectFromForm() {
