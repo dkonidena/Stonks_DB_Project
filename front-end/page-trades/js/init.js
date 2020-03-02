@@ -89,8 +89,12 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        let trade = trades[elements.tradeIdInput.val()];
-        loadTradeToForm(trade);
+        let t = new Trade();
+        t.notionalCurrency = currencies['USD'];
+        t.underlyingCurrency = currencies['USD'];
+        trades[t.tradeId] = t;
+        loadTradeToForm(t);
+        showTradeForm();
     });
 
     $("#doAdvancedSearch").on("click", () => {
