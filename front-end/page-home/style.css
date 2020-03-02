@@ -26,7 +26,15 @@ body {
     padding-top: 58px;
 }
 
+#loginModal {
+    box-shadow: 0 0 .2rem rgba(0,0,0,.1),0 .2rem .4rem rgba(0,0,0,.2);
+}
+
 #buttons {
     width: max-content;
     margin: 0 auto;
+}
+
+#buttons > * {
+    box-shadow: 0 0 .2rem rgba(0,0,0,.1),0 .2rem .4rem rgba(0,0,0,.2);
 }
