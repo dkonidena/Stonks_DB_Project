@@ -11,7 +11,7 @@ import schedule
 
 # create the function which has this Trade[] object passed to it
 def cronJob(allTrades, neigboursFromRules, noOfIterations):
-    # print("here")
+    print("Training starting...")
     trades = list()
     # get the size of the trades list
     d = len(allTrades)
@@ -50,7 +50,10 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
 	    pickle.dump(knn_quantity, output, pickle.HIGHEST_PROTOCOL)
     print("here3")
 
+    print("Training finished...")
+
 def job(allTrades, neigboursFromRules, noOfIterations):
+    print("Scheduler started")
     schedule.every().day.at("00:00").do(cronJob, allTrades, neigboursFromRules, noOfIterations)
     while True:
         # print("hi")

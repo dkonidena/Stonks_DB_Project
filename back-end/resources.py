@@ -25,12 +25,18 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
 
+CURRENCY = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
+
 # use models.date... instead of redefining date methods in here
 
 # class Machine(Resource):
 def returnCurrencySymbol(currencyCode):
-    currencyDict = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
-    return currencyDict[currencyCode]
+    try:
+        symbol = CURRENCY[currencyCode]
+    except KeyError:
+        symbol = "$"
+
+    return symbol
 
 def get_trade_objects():
     trades = models.DerivativeTradesModel.get_trades_all()
@@ -335,9 +341,9 @@ class Products(Resource):
             company_ID = data['companyID']
             if len(name) == 0:
                 return {'message':'product name is empty'}, 400
-            if len(value) == 0:
+            if len(value_in_USD) == 0:
                 return {'message':'product value is empty'}, 400
-            if len(companyCode) == 0:
+            if len(company_ID) == 0:
                 return {'message':'company code is empty'}, 400
             date_now = str(date_func.today())
             models.ProductModel.update_product(product_ID, name)
@@ -624,7 +630,7 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID) == None:
+            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID).count() == 0:
                 return {'message': 'Trade id not present'}, 400
             models.DerivativeTradesModel.delete_trade(trade_ID)
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
@@ -661,17 +667,20 @@ class Reports(Resource):
                         tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'])
                     else:
                         tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'])
+                    noOfMatches = tradeDates.count()
                 elif len(filter['dateCreated']) == 2:
                     tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'])
+                    noOfMatches = tradeDates.count()
                 else:
                     tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
+                    noOfMatches = len(tradeDates)
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
+                noOfMatches = len(tradeDates)
 
             for each in tradeDates:
                 result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
                 results.append(result)
-            noOfMatches = len(results)
 
             # contents for the pdf file
             story = [] # all relevant data for the pdf
