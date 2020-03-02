@@ -175,6 +175,11 @@ class TradeTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("Trade id not present", data['message'])
+    def test_no_product_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='99999', quantity='2', buyingParty='DDIB11', sellingParty ='UFAY59', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("product not found", data['message'])
 
 class ProductTests(unittest.TestCase):
 
