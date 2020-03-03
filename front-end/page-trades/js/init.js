@@ -81,7 +81,15 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        saveTrade();
+        if(!$("#suggestionsTable:visible").length) {
+            getFeedback();
+        } else {
+            if (allSuggestionsResolved()) {
+                saveTrade();
+                $("#suggestionsTable").hide();
+                $("#saveTradeButton").text("Check Trade");
+            }
+        }
     });
 
     $("#checkTradeButton").on("click", () => {

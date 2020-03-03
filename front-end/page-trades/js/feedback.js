@@ -117,4 +117,8 @@ function addSuggestion(field, currentValue, suggestedValue) {
 function removeSuggestion(field) {
     delete suggestions[field];
     $(`#suggestions #${field}-suggestion`).remove();
+
+    if (allSuggestionsResolved()) {
+        $("#saveTradeButton").text("Save Trade");
+    }
 }
