@@ -287,12 +287,14 @@ class Report {
     constructor() {
         this.date = new Date();
         this.content = "";
+        this.pdfFile = "";
     }
 
     populateFromServerJSON(o) {
         try {
             this.date = new Date(o.date);
             this.content = o.content;
+            this.pdfFile = o.pdfFile;
             return this;
         }
         catch {
