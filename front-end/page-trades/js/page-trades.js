@@ -126,6 +126,14 @@ function companyNameToObject(name) {
     return Object.values(companies).filter(x => x.name === name)[0];
 }
 
+function companyIDToName(id) {
+    return Object.values(companies).filter(x => x.id === id)[0].name;
+}
+
+function productIDToName(id) {
+    return Object.values(products).filter(x => x.id === id)[0].name;
+}
+
 function productNameToObject(name) {
     return Object.values(products).filter(x => x.name === name)[0];
 }

@@ -106,6 +106,9 @@ function init() {
         });
     });
 
+    $("#acceptAll").click(acceptAll);
+    $("#ignoreAll").click(ignoreAll);
+
     getCompanyList(null, 'mostBoughtFrom', (companies) => {
         companies.forEach(addCompanyToUI);
 
