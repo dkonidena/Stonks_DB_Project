@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/select2-bootstrap4.min.css">
+    <link href="style.css" rel="stylesheet">
     <title>CS261 GROUP32</title>
 </head>
 <body>
@@ -88,17 +89,16 @@
                     Search for an existing trade or create a new trade to get started.
                 </div>
 
-                <div id="tradeEditorForm" class="row" style="display: none;">
-                    <div class="col-md-10">
+                <div id="tradeEditorForm" class="row pt-3" style="display: none;">
+                    <div class="col-md-6">
                         <form autocomplete="off">
-
-                            <div class="row pb-4">
+                            <div class="row">
                                 <label class="col-auto col-form-label-lg" for="tradeIdInput">Trade ID</label>
                                 <div class="col-auto">
                                     <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
                                 </div>
                                 <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div class="form-inline" id="tradeDateInput">
                                         <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
                                         <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
@@ -109,33 +109,33 @@
                                 </div>
                             </div>
 
-                            <div class="row pb-3">
-                                <div class="col-3">
+                            <div class="row mt-3">
+                                <div class="col-5">
                                     <label for="productInput">Product</label>
                                     <select autocomplete="off" class="form-control select2-prod" id="productInput">
                                     </select>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-5">
                                     <label for="quantityInput">Quantity</label>
                                     <input autocomplete="off" type="text" class="form-control" id="quantityInput" placeholder="">
                                 </div>
                             </div>
 
-                            <div class="row pb-3">
-                                <div class="col-3">
+                            <div class="row mt-3">
+                                <div class="col-5">
                                     <label for="buyingPartyInput">Buyer</label>
                                     <select autocomplete="off" class="form-control select2-comp" id="buyingPartyInput">
                                     </select>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-5">
                                     <label for="sellingPartyInput">Seller</label>
                                     <select autocomplete="off" class="form-control select2-comp" id="sellingPartyInput">
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="row pb-3">
-                                <div class="col-3">
+                            <div class="row mt-3">
+                                <div class="col-5">
                                     <label for="notionalPriceInput">Notional Value and Currency</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
@@ -145,7 +145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-5">
                                     <label for="underlyingPriceInput">Underlying Value and Currency</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
@@ -157,15 +157,15 @@
                                 </div>
 
                             </div>
-                            <div class="row">
-                                <div class="col-3">
+                            <div class="row mt-3">
+                                <div class="col-5">
                                     <label for="strikePriceInput">Strike Price</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
                                         <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-5">
                                     <label for="maturityDateInput">Maturity Date</label>
                                     <div class="form-inline" id="maturityDateInput">
                                         <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="DD" />
@@ -178,7 +178,7 @@
                             </div>
 
                         </form>
-                        <div class="row mt-5">
+                        <div class="row mt-5 justify-content-md-center">
                             <div class="col-auto">
                                 <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Save Trade</button>
                             </div>
@@ -187,7 +187,67 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2"></div>
+                    <div class="col-md-5">
+                        <table class="table table-hover">
+                          <thead class="thead-dark">
+                            <tr>
+                              <th colspan="2" scope="col" style="text-align:center;">Suggestions</th>
+                              <th scope="col">Accept</th>
+                              <th scope="col">Ignore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Seller</td>
+                              <td>'A' -> 'B'</td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-success mr-1">done</i>
+                                  </button>
+                              </td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-fail mr-1">close</i>
+                                  </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Quantity</td>
+                              <td>1 -> 2</td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-success mr-1">done</i>
+                                  </button>
+                              </td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-fail mr-1">close</i>
+                                  </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Notional Value</td>
+                              <td>3 -> 4</td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-success mr-1">done</i>
+                                  </button>
+                              </td>
+                              <td>
+                                  <button type="button" class="btn btn-sm btn-outline-dark">
+                                    <i style="font-size:26px;" class="material-icons text-fail mr-1">close</i>
+                                  </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button type="button" class="btn btn-outline-dark">
+                            <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-success mr-1">done</i><a>Accept All</a>
+                        </button>
+                        <button type="button" class="btn btn-outline-dark">
+                            <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-fail mr-1">close</i><a>Ignore All</a>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="modal fade" id="confirmCancelTradeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelTradeModal" aria-hidden="true">
@@ -436,6 +496,7 @@
     <script src="../js/util.js"></script>
     <script src="../js/user.js"></script>
     <script src="../js/api.js"></script>
+    <script src="./js/feedback.js"></script>
     <script src="./js/page-trades.js"></script>
     <script src="./js/init.js"></script>
 </body>
