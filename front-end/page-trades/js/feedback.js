@@ -19,6 +19,8 @@ function getFeedback() {
 }
 
 function handleFeedback(response, current) {
+    $("#suggestions").empty();
+    
     let suggested = new Trade();
     suggested.populateFromServerJSON(response);
     suggested = suggested.getAPIObject();

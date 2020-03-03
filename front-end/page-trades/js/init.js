@@ -88,6 +88,8 @@ function init() {
                 saveTrade();
                 $("#suggestionsTable").hide();
                 $("#saveTradeButton").text("Check Trade");
+            } else {
+                getFeedback();
             }
         }
     });
