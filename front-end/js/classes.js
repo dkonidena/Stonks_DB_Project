@@ -13,7 +13,7 @@ class Trade {
         this.product = null; //new Product();
         this.buyingParty = null; //new Company();
         this.sellingParty = null; //new Company();
-        this.quantity = 0;
+        this.quantity = "";
         this.notionalPrice = "";
         this.notionalCurrency = null; //new Currency();
         this.underlyingPrice = ""

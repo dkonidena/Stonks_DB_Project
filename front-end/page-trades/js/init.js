@@ -33,22 +33,30 @@ function init() {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
-    elements.notionalCurrencyInput.on("change", () => {
-        let selection = elements.notionalCurrencyInput.select2("data")[0]
-        let curr = currencies[selection.text];
+    Object.values(elements).forEach((x) => {
+        x.on("change", checkTradeValidity);
+    });
 
-        $("#notionalCurrencySymbol").text(curr.symbol);
-        elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+    elements.notionalCurrencyInput.on("change", () => {
+        try {
+            let selection = elements.notionalCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
+
+            $("#notionalCurrencySymbol").text(curr.symbol);
+            elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+        } catch (e) {}
     });
 
     elements.underlyingCurrencyInput.on("change", () => {
-        let selection = elements.underlyingCurrencyInput.select2("data")[0];
-        let curr = currencies[selection.text];
+        try {
+            let selection = elements.underlyingCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
 
-        $("#underlyingCurrencySymbol").text(curr.symbol);
-        $("#strikePriceCurrencySymbol").text(curr.symbol);
-        elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
-        elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+            $("#underlyingCurrencySymbol").text(curr.symbol);
+            $("#strikePriceCurrencySymbol").text(curr.symbol);
+            elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
+            elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+        } catch (e) {}
     });
 
     elements.tradeList.on("show.bs.collapse", () => {
@@ -73,14 +81,17 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        let t = tradeObjectFromForm();
-        if (t.tradeId !== "") {
-            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
+        if(!$("#suggestionsTable:visible").length) {
+            getFeedback();
+        } else {
+            if (allSuggestionsResolved()) {
+                saveTrade();
+                $("#suggestionsTable").hide();
+                $("#saveTradeButton").text("Check Trade");
+            } else {
+                getFeedback();
+            }
         }
-        else {
-            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
-        }
-        //TODO add visual feedback of the save to user
     });
 
     $("#checkTradeButton").on("click", () => {
@@ -89,8 +100,12 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        let trade = trades[elements.tradeIdInput.val()];
-        loadTradeToForm(trade);
+        let t = new Trade();
+        t.notionalCurrency = currencies['USD'];
+        t.underlyingCurrency = currencies['USD'];
+        trades[t.tradeId] = t;
+        loadTradeToForm(t);
+        showTradeForm();
     });
 
     $("#doAdvancedSearch").on("click", () => {
@@ -100,6 +115,9 @@ function init() {
             trades.forEach(addTradeToUI);
         });
     });
+
+    $("#acceptAll").click(acceptAll);
+    $("#ignoreAll").click(ignoreAll);
 
     getCompanyList(null, 'mostBoughtFrom', (companies) => {
         companies.forEach(addCompanyToUI);

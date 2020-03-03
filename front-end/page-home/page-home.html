@@ -4,179 +4,63 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <title>CS261 GROUP32</title>
 </head>
 <body>
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand pr-2" href="../page-home/page-home.html">
-            <i style="font-size:36px;" class="border border-warning rounded-pill bg-light text-warning d-inline-block material-icons align-top px-1 mr-1">trending_up</i>
-            <strong style="font-size:24px;">Stonks</strong>
+    <div class="container-fluid" style="padding-top:54px;padding-bottom:36px;">
+
+        <a class="navbar-brand d-flex justify-content-center">
+            <i style="font-size:72px;" class="border border-warning rounded-pill bg-light text-warning d-inline-block material-icons align-top px-1 mr-1">trending_up</i>
+            <strong style="font-size:48px;">Stonks</strong>
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="../page-home/page-home.html">Home<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../page-trades/page-trades.html">Trades</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../page-companies/page-companies.html">Companies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../page-products/page-products.html">Products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../page-reports/page-reports.html">Daily Reports</a>
-                </li>
-            </ul>
-            <div class="nav-item dropdown mr-3">
-                <button type="button" class="btn nav-link dropdown-toggle" style="color:rgb(255,255,255,0.7)" data-toggle="dropdown" id="userButton" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons align-bottom" id="userIcon" style="">account_box</i>
-                    <span id="userLabel">User<span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" id="userDropdown" aria-labelledby="userDropdown">
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid" style="padding-top:54px;">
-
-        <div class="modal-dialog" role="document" id="loginModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Please log in to use this site</h5>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
-                            <div class="col-sm pb-4">
-                                <input class="form-control" id="loginModalUserID" type="text">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
-                </div>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-            Confirm Modal Mockup
-        </button>
-
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Automated Changes Made</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        The Buying Party field has been automatically edited:</br>
-                        <b>Example Compan 1</b> changed to <b>Example Company 1</b></br>
-                        </br>
-                        This change was made for the following reason:</br>
-                        <i>Close match to existing item in database.</i></br>
-                        </br>
-                        Would you like to keep or discard this change?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Keep</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Discard</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">User Login</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="row">
-                                <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
-                                <div class="col-sm pb-4">
-                                    <input class="form-control" id="loginModalUserID" type="text">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Logout</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            Are you sure you want to log out?
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" id="logoutModalLogoutButton">Logout</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal modal-fade" id="apiErrorModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
-                        <h5 class="modal-title text-danger">Error</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="h5 pb-2">
-                            An error has occured.
-                        </div>
-                        <div class="pb-3" id="errorShort"></div>
-                        <button class="btn btn-sm btn-block btn-light" type="button" data-toggle="collapse" data-target="#errorDetail">
-                            View Full Error
-                        </button>
-                        <div class="collapse" id="errorDetail">
-                            <pre class="card card-body" id="errorDetailContent" style="font-size:75%;padding:0.5rem;"></pre>
-                        </div>
-                    <div class="modal-footer mt-3">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
+        <div class="slideContainer">
+            <div id="slide1" class="slide">
+                <div class="modal-dialog" role="document" id="loginModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Please log in to use this site</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="row">
+                                    <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
+                                    <div class="col-sm pb-4">
+                                        <input class="form-control" id="loginModalUserID" type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slide2" class="slide">
+                <div id="buttons">
+                    <button id="trades" type="button" class="btn btn-primary btn-lg">
+                        Trades
+                    </button>
+                    <button id="products" type="button" class="btn btn-primary btn-lg">
+                        Products
+                    </button>
+                    <button id="companies" type="button" class="btn btn-primary btn-lg">
+                        Companies
+                    </button>
+                    <button id="reports" type="button" class="btn btn-primary btn-lg">
+                        Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="../js/util.js"></script>

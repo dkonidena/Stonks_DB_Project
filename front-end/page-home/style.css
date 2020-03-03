@@ -1,0 +1,40 @@
+.slideContainer {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+    height: 300px;
+}
+
+body {
+    padding: 0;
+}
+
+.slide {
+    position: absolute;
+    width: 50%;
+    left: 150%;
+    margin-left: -25%;
+}
+
+#slide1 {
+    left: 50%;
+}
+
+#slide2 {
+    padding-top: 58px;
+}
+
+#loginModal {
+    box-shadow: 0 0 .2rem rgba(0,0,0,.1),0 .2rem .4rem rgba(0,0,0,.2);
+}
+
+#buttons {
+    width: max-content;
+    margin: 0 auto;
+}
+
+#buttons > * {
+    box-shadow: 0 0 .2rem rgba(0,0,0,.1),0 .2rem .4rem rgba(0,0,0,.2);
+}
