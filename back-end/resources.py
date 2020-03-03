@@ -674,10 +674,10 @@ class Reports(Resource):
                     noOfMatches = tradeDates.count()
                 else:
                     tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                    noOfMatches = len(tradeDates)
+                    noOfMatches = tradeDates.count()
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                noOfMatches = len(tradeDates)
+                noOfMatches = tradeDates.count()
 
             for each in tradeDates:
                 result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
