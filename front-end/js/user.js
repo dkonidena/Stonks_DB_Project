@@ -82,8 +82,9 @@ function init() {
     tryLogIn();
     $("#loginModalLoginButton").on("click", () => {
         //TODO: check id with server
+        if ($("#loginModalUserID").val() === "") { return }
         userLogIn($("#loginModalUserID").val());
-        $("#loginModal").modal("hide");
+        slide();
     });
     $("#logoutModalLogoutButton").on("click", () => {
         userLogOut();

@@ -13,7 +13,7 @@ class Trade {
         this.product = null; //new Product();
         this.buyingParty = null; //new Company();
         this.sellingParty = null; //new Company();
-        this.quantity = 0;
+        this.quantity = "";
         this.notionalPrice = "";
         this.notionalCurrency = null; //new Currency();
         this.underlyingPrice = ""
@@ -287,12 +287,14 @@ class Report {
     constructor() {
         this.date = new Date();
         this.content = "";
+        this.pdfFile = "";
     }
 
     populateFromServerJSON(o) {
         try {
             this.date = new Date(o.date);
             this.content = o.content;
+            this.pdfFile = o.pdfFile;
             return this;
         }
         catch {
