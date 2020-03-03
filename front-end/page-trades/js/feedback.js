@@ -13,6 +13,34 @@ const NAMES = {
 
 var suggestions = {};
 
+function getFeedback() {
+    let trade = tradeObjectFromForm().getAPIObject();
+    api.post.check_trade(trade, (res) => handleFeedback(res, trade), showError);
+}
+
+function handleFeedback(response, current) {
+    let suggested = new Trade();
+    suggested.populateFromServerJSON(response);
+    suggested = suggested.getAPIObject();
+
+    for (const field in NAMES) {
+        let suggestedValue = suggested[field];
+        let currentValue = current[field];
+
+        if (field === "maturityDate") {
+            // only compare day & month of date and not the time
+            currentValue = currentValue.substring(0,10);
+            suggestedValue = suggestedValue.substring(0,10);
+        }
+
+        if (currentValue !== suggestedValue)  {
+            addSuggestion(field, currentValue, suggestedValue);
+        }
+    }
+
+    $("#suggestionsTable").show();
+}
+
 function allSuggestionsResolved() {
     return Object.keys(suggestions).length == 0;
 }
@@ -65,12 +93,12 @@ function acceptSuggestion(field) {
     removeSuggestion(field);
 }
 
-function addSuggestion(field, oldValue, suggestedValue) {
+function addSuggestion(field, currentValue, suggestedValue) {
     suggestions[field] = suggestedValue;
     $(`#suggestions`).append(`
     <tr id="${field}-suggestion">
         <td>${NAMES[field]}</td>
-        <td>${oldValue} -> ${suggestedValue}</td>
+        <td>${currentValue} -> ${suggestedValue}</td>
         <td>
             <button id="${field}-accept" type="button" class="btn btn-sm btn-outline-dark">
                 <i style="font-size:26px;" class="material-icons text-success mr-1">done</i>
