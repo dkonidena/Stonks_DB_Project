@@ -72,12 +72,14 @@ class Currencies(Resource):
             if 'isDryRun' not in request.args:
                 return {'message': 'Request malformed'}, 400
             isDryRun = request.args.get('isDryRun')
+            if date is None:
+                result = models.CurrencyTypesModel.retrieve_all_currencies()
+            else:
+                result = models.CurrencyValuationsModel.retrieve_currency(date)
             if isDryRun == "true":
-                results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message['noOfMatches'] = len(results)
+                message['noOfMatches'] = result.count()
                 return message, 200
             elif isDryRun == "false":
-                result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
                 res = []
                 for row in result:
@@ -86,7 +88,7 @@ class Currencies(Resource):
                     # brokem until all currencies added
                     dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
-                    dicto['valueInUSD'] = str(row.ValueInUSD)
+                    dicto['valueInUSD'] = str(row.ValueInUSD) if hasattr(row, 'ValueInUSD') else ''
                     res.append(dicto)
                 message['matches'] = res
                 return message, 200
@@ -132,7 +134,6 @@ class Companies(Resource):
                     dicto['id'] = row.CompanyCode
                     dicto['name'] = row.CompanyName
                     dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                    # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                 message['matches'] = res
                 return message, 200
@@ -232,22 +233,20 @@ class Products(Resource):
                 if 'isDryRun' not in request.args:
                     return {'message': 'Request malformed'}, 400
                 if isDryRun == "true":
+                    result = models.ProductModel.retrieve_all_products()
                     # need error handling to deal with ValueError raised
-                    result = models.ProductModel.retrieve_products()
-                    message = {"noOfMatches" : result.count()}
+                    message = {"noOfMatches" : len(result)}
                     return message, 201
                 elif isDryRun == "false":
-                    result = models.ProductModel.retrieve_products()
-                    i = 1
+                    result = models.ProductModel.retrieve_all_product_company_info()
                     res = []
                     for row in result:
                         dicto = {}
                         dicto['id'] = str(row.ProductID)
                         dicto['name'] = row.ProductName
                         dicto['companyID'] = row.CompanyCode
-                        dicto['valueInUSD'] = str(row.ProductPrice)
+                        dicto['valueInUSD'] = str(row.ProductPrice) if hasattr(row, 'ProductPrice') else ''
                         dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                         res.append(dicto)
                     message['matches'] = res
                     return message, 201
@@ -273,7 +272,6 @@ class Products(Resource):
                         dicto['companyID'] = row.CompanyCode
                         dicto['valueInUSD'] = str(row.ProductPrice)
                         dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                         res.append(dicto)
                     message['matches'] = res
                     return message, 201
@@ -651,7 +649,11 @@ class Reports(Resource):
                 filter = json.loads(request.args.get('filter'))
             except json.JSONDecodeError:
                 return {'message': 'malformed filter'}, 400
+            except:
+                return {'message': 'filter not present'}, 400
 
+            if filter == None:
+                return {'message' : 'filter not present'}, 400
             # this needs error checking
             isDryRun = request.args.get('isDryRun')
 
@@ -676,7 +678,7 @@ class Reports(Resource):
                     noOfMatches = len(tradeDates)
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                noOfMatches = len(tradeDates)
+                noOfMatches = tradeDates.count()
 
             for each in tradeDates:
                 result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
@@ -782,6 +784,26 @@ class CheckTrade(Resource):
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
             date_now = str(date_func.today())
+            if len(product) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(quantity) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(buyingParty) == 0:
+                return {'message':'buying party is empty'}, 400
+            if len(sellingParty) == 0:
+                return {'message':'selling party is empty'}, 400
+            if len(notionalValue) == 0:
+                return {'message':'notionalValue is empty'}, 400
+            if len(notionalCurrency) == 0:
+                return {'message':'notionalCurrency is empty'}, 400
+            if len(underlyingValue) == 0:
+                return {'message':'underlyingValue is empty'}, 400
+            if len(underlyingCurrency) == 0:
+                return {'message':'underlyingCurrency is empty'}, 400
+            if len(strikePrice) == 0:
+                return {'message':'strikePrice is empty'}, 400
+            if len(maturityDate) == 0:
+                return {'message':'maturityDate is empty'}, 400
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)

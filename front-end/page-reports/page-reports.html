@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/select2-bootstrap4.min.css">
-    <link rel="stylesheet" href="css/dataTables.bootstrap.css">
-    <link rel="stylesheet" href="css/shim.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../css/shim.css">
     <title>CS261 GROUP32</title>
 </head>
 <body>
@@ -134,33 +134,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">User Login</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="row">
-                            <label class="col-auto col-form-label-lg" for="loginModalUserID">User ID</label>
-                            <div class="col-sm pb-4">
-                                <input class="form-control" id="loginModalUserID" type="text">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="loginModalLoginButton">Login</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -219,13 +192,13 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-csv@1.0.8/src/jquery.csv.min.js" integrity="sha256-zGo0JbZ5Sn6wU76MyVL0TrUZUq5GLXaFnMQCe/hSwVI=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/datatables@1.10.18/media/js/jquery.dataTables.min.js" integrity="sha256-3aHVku6TxTRUkkiibvwTz5k8wc7xuEr1QqTB+Oo5Q7I=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
 
     <script src="../js/classes.js"></script>
     <script src="../js/util.js"></script>
     <script src="../js/user.js"></script>
     <script src="../js/api.js"></script>
-    <script src="js/dataTables.bootstrap.js"></script>
-    <script src="js/csv_to_html_table.js"></script>
+    <script src="../js/csv_to_html_table.js"></script>
     <script src="js/page-reports.js"></script>
     <script src="js/init.js"></script>
 </body>

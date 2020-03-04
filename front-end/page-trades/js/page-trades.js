@@ -1,15 +1,11 @@
 //search for elements needed only once to improve performance
 const elements = {
     trades: $("#trades"),
-    tradeList: $("#tradeList"),
-    tradeListCollapseSymbol: $("#tradeListCollapseSymbol"),
-    tradeIdInput: $("#tradeIdInput"),
+    tradeId: $("#tradeId"),
+    tradeDate: $("#tradeDate"),
     productInput: $("#productInput"),
     buyingPartyInput: $("#buyingPartyInput"),
     sellingPartyInput: $("#sellingPartyInput"),
-    tradeDateDayInput: $("#tradeDateDayInput"),
-    tradeDateMonthInput: $("#tradeDateMonthInput"),
-    tradeDateYearInput: $("#tradeDateYearInput"),
     maturityDateDayInput: $("#maturityDateDayInput"),
     maturityDateMonthInput: $("#maturityDateMonthInput"),
     maturityDateYearInput: $("#maturityDateYearInput"),
@@ -31,32 +27,7 @@ const elements = {
     filterCreationDateLowerMonthInput: $("#filter-creationDateLowerMonthInput"),
     filterCreationDateUpperMonthInput: $("#filter-creationDateUpperMonthInput"),
     filterCreationDateLowerDayInput: $("#filter-creationDateLowerDayInput"),
-    filterCreationDateUpperDayInput: $("#filter-creationDateUpperDayInput"),
-    tradeListEmptyMessage: $("#tradeListEmptyMessage"),
-}
-
-function addTradeToUI(trade) {
-    let s = "<button class=\"btn trade-button d-block text-muted py-0 my-n1\"></button>";
-    let b = $(s).text("Trade "+trade.tradeId).data("trade", trade);
-    b.on("click", () => {
-        loadTradeToForm(trade);
-        showTradeForm();
-    })
-    let li = $("<li class=\"nav-item\"></li>").html(b);
-    elements.trades.append(li);
-
-    let o = "<option></option>";
-    let t = $(o).text(trade.tradeId);
-    elements.filterTradeIdInput.append(t);
-};
-
-function clearTradeList() {
-    elements.trades.html("");
-    elements.filterTradeIdInput.html("");
-}
-
-function isTradeListEmpty() {
-    return elements.trades.html().isBlank();
+    filterCreationDateUpperDayInput: $("#filter-creationDateUpperDayInput")
 }
 
 function addCurrencyToUI(cur) {
@@ -83,29 +54,35 @@ function addUserToUI(p) {
 function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
-    $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
+    $("#buyingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
 }
 
-function showTradeForm() {
-    if(!$("#tradeEditorForm:visible").length) {
-        $("#tradeEditorMessage").hide();
-        $("#tradeEditorForm").show();
+function populateSellerSelection() {
+    let product = productNameToObject(elements.productInput.val());
+    if (product) {
+        $("#sellingPartyInput").empty();
+        let o = "<option></option>";
+        let d = $(o).text(product.company.name);
+        $("#sellingPartyInput").append(d);
     }
 }
 
+function showTradeForm() {
+    $("#startButtons").hide();
+    $("#tradeEditorForm").show();
+}
+
 function loadTradeToForm(trade) {
+    showTradeForm();
+
     if (trade === null) {
         showError("Tried to load null trade to form");
         return;
     }
     const fields = [
-        [elements.tradeIdInput, trade.tradeId],
         [elements.productInput, nullMemberAccess(trade.product, "name")],
         [elements.buyingPartyInput, nullMemberAccess(trade.buyingParty, "name")],
         [elements.sellingPartyInput, nullMemberAccess(trade.sellingParty, "name")],
-        [elements.tradeDateDayInput, trade.tradeDate.getDate()],
-        [elements.tradeDateMonthInput, trade.tradeDate.getMonth()+1],
-        [elements.tradeDateYearInput, trade.tradeDate.getFullYear()],
         [elements.maturityDateDayInput, trade.maturityDate.getDate()],
         [elements.maturityDateMonthInput, trade.maturityDate.getMonth()+1],
         [elements.maturityDateYearInput, trade.maturityDate.getFullYear()],
@@ -120,10 +97,21 @@ function loadTradeToForm(trade) {
     fields.forEach((x) => {
         $(x[0]).val(x[1]).trigger("change");
     });
+
+    elements.tradeId.text(trade.tradeId);
+    elements.tradeDate.text(trade.tradeDate.toISOString().substring(0,10));
 }
 
 function companyNameToObject(name) {
     return Object.values(companies).filter(x => x.name === name)[0];
+}
+
+function companyIDToName(id) {
+    return Object.values(companies).filter(x => x.id === id)[0].name;
+}
+
+function productIDToName(id) {
+    return Object.values(products).filter(x => x.id === id)[0].name;
 }
 
 function productNameToObject(name) {
@@ -138,15 +126,15 @@ function tradeObjectFromForm() {
     // TODO whole function needs error handling
     let trade = new Trade();
 
-    trade.tradeId = elements.tradeIdInput.val();
+    trade.tradeId = elements.tradeId.text();
 
     trade.product = productNameToObject(elements.productInput.val());
     trade.buyingParty = companyNameToObject(elements.buyingPartyInput.val());
     trade.sellingParty = companyNameToObject(elements.sellingPartyInput.val());
 
-    trade.tradeDate.setDate(elements.tradeDateDayInput.val());
-    trade.tradeDate.setMonth(elements.tradeDateMonthInput.val()-1);
-    trade.tradeDate.setFullYear(elements.tradeDateYearInput.val());
+    if (elements.maturityDateDayInput.val() === "" || elements.maturityDateMonthInput.val() === "" | elements.maturityDateYearInput.val() === "") {
+        throw new SyntaxError;
+    }
 
     trade.maturityDate.setDate(elements.maturityDateDayInput.val());
     trade.maturityDate.setMonth(elements.maturityDateMonthInput.val()-1);
@@ -161,6 +149,45 @@ function tradeObjectFromForm() {
     trade.strikePrice = elements.strikePriceInput.val();
 
     return trade;
+}
+
+function checkTradeValidity() {
+    $("#saveTradeButton").prop('disabled', !isValidTrade());
+}
+
+function isValidTrade() {
+    let obj;
+    try {
+        obj = tradeObjectFromForm().getAPIObject()
+    } catch (e) {
+        return false;
+    }
+
+    for (const value of Object.values(obj)) {
+        if (value === "") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function saveTrade() {
+    if (isValidTrade()) {
+        let t = tradeObjectFromForm();
+        if (t.tradeId !== "") {
+            api.patch.trades(t.tradeId, t.getAPIObject(), () => {
+                showSuccess('Trade updated.');
+                resetState();
+            }, showError);
+        }
+        else {
+            api.post.trades(t.getAPIObject(), () => {
+                showSuccess('Trade saved.');
+                resetState();
+            }, showError);
+        }
+    }
 }
 
 function filterObjectFromForm() {
@@ -235,10 +262,87 @@ function filterObjectFromForm() {
     let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
     if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
 
-    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
-    if (userIDCreatedBy.length > 0) {
-        filter.userIDCreatedBy = userIDCreatedBy.map((entry) => { return userNameToObject(entry.text).id });
+    let userIDcreatedBy = $("#filter-userIDInput").select2('data');
+    if (userIDcreatedBy.length > 0) {
+        filter.userIDcreatedBy = userIDcreatedBy.map((entry) => { return userNameToObject(entry.text).id });
     }
 
     return filter;
+}
+
+function showResults(trades) {
+    $("#resultsStatus").show();
+    $("#table-container").empty();
+    $("#resultsModal").modal("show");
+    $('#resultsModal').on('shown.bs.modal', () => {
+        renderTable(tradesToCSV(trades));
+    });
+}
+
+function resetState() {
+    $("#tradeEditorForm").hide();
+    $("#startButtons").show();
+}
+
+function renderTable(csv) {
+    const blob = new Blob([csv], { type: "text/plain" });
+    CsvToHtmlTable.init({
+        csv_path: URL.createObjectURL(blob),
+        element: "table-container",
+        allow_download: false,
+        csv_options: {"separator": ",", "delimiter": "\""},
+        datatables_options: {
+            "scrollY": "60vh",
+            "paging": true,
+            "scrollX": true,
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "render": ( data, type, row, meta ) =>  {
+                        return `<a id="trade-${data}" href="#" data-dismiss="modal">${data}</a>`
+                    }
+                }
+            ]
+        },
+        onComplete: () => {
+            $("#table-container tbody").on("click", "a", function () {
+                let id = this.id.substring(6);
+                loadTradeToForm(trades[id]);
+                showTradeForm();
+            });
+            $("#resultsStatus").hide();
+        }
+    });
+}
+
+function tradesToCSV(trades) {
+    let csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
+    for (const trade of trades) {
+        let fields = [
+            trade.tradeId,
+            trade.tradeDate.toISOString().substring(0,10),
+            trade.product.name,
+            trade.buyingParty.name,
+            trade.sellingParty.name,
+            trade.notionalPrice,
+            trade.notionalCurrency.code,
+            trade.quantity,
+            trade.maturityDate.toISOString().substring(0,10),
+            trade.underlyingPrice,
+            trade.underlyingCurrency.code,
+            trade.strikePrice
+        ];
+
+
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (i === fields.length - 1) {
+                csv += `${field}\n`;
+            } else {
+                csv += `${field},`;
+            }
+        }
+    }
+
+    return csv;
 }

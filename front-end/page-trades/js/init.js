@@ -1,14 +1,10 @@
 function init() {
 
     const filters = [
-        [elements.tradeIdInput, /^[0-9A-Z]{0,16}$/],
         [elements.quantityInput, /^\d*$/],
         [elements.notionalPriceInput, /^\d*\.?\d*$/],
         [elements.underlyingPriceInput, /^\d*\.?\d*$/],
         [elements.strikePriceInput, /^\d*\.?\d*$/],
-        [elements.tradeDateDayInput, /^\d{0,2}$/],
-        [elements.tradeDateMonthInput, /^\d{0,2}$/],
-        [elements.tradeDateYearInput, /^\d{0,4}$/],
         [elements.maturityDateDayInput, /^\d{0,2}$/],
         [elements.maturityDateMonthInput, /^\d{0,2}$/],
         [elements.maturityDateYearInput, /^\d{0,4}$/],
@@ -26,41 +22,34 @@ function init() {
         [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
     ];
 
-    elements.tradeListEmptyMessage.hide();
-    elements.tradeListEmptyMessage.removeClass("d-none");
-
     filters.forEach((x) => {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
-    elements.notionalCurrencyInput.on("change", () => {
-        let selection = elements.notionalCurrencyInput.select2("data")[0]
-        let curr = currencies[selection.text];
+    Object.values(elements).forEach((x) => {
+        x.on("change", checkTradeValidity);
+    });
 
-        $("#notionalCurrencySymbol").text(curr.symbol);
-        elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+    elements.notionalCurrencyInput.on("change", () => {
+        try {
+            let selection = elements.notionalCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
+
+            $("#notionalCurrencySymbol").text(curr.symbol);
+            elements.notionalPriceInput.prop("placeholder", curr.getPlaceholder());
+        } catch (e) {}
     });
 
     elements.underlyingCurrencyInput.on("change", () => {
-        let selection = elements.underlyingCurrencyInput.select2("data")[0];
-        let curr = currencies[selection.text];
+        try {
+            let selection = elements.underlyingCurrencyInput.select2("data")[0];
+            let curr = currencies[selection.text];
 
-        $("#underlyingCurrencySymbol").text(curr.symbol);
-        $("#strikePriceCurrencySymbol").text(curr.symbol);
-        elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
-        elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
-    });
-
-    elements.tradeList.on("show.bs.collapse", () => {
-        elements.tradeListCollapseSymbol.text("expand_less");
-        if (isTradeListEmpty()) {
-            elements.tradeListEmptyMessage.show();
-        }
-    });
-
-    elements.tradeList.on("hide.bs.collapse", () => {
-        elements.tradeListCollapseSymbol.text("expand_more");
-        elements.tradeListEmptyMessage.hide();
+            $("#underlyingCurrencySymbol").text(curr.symbol);
+            $("#strikePriceCurrencySymbol").text(curr.symbol);
+            elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
+            elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
+        } catch (e) {}
     });
 
     $("#addTradeButton").on("click", () => {
@@ -73,14 +62,17 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        let t = tradeObjectFromForm();
-        if (t.tradeId !== "") {
-            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
+        if(!$("#suggestionsTable:visible").length) {
+            getFeedback();
+        } else {
+            if (allSuggestionsResolved()) {
+                saveTrade();
+                $("#suggestionsTable").hide();
+                $("#saveTradeButton").text("Check Trade");
+            } else {
+                getFeedback();
+            }
         }
-        else {
-            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
-        }
-        //TODO add visual feedback of the save to user
     });
 
     $("#checkTradeButton").on("click", () => {
@@ -89,17 +81,31 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        let trade = trades[elements.tradeIdInput.val()];
-        loadTradeToForm(trade);
+        let t = new Trade();
+        t.notionalCurrency = currencies['USD'];
+        t.underlyingCurrency = currencies['USD'];
+        trades[t.tradeId] = t;
+        loadTradeToForm(t);
+        resetState();
     });
 
     $("#doAdvancedSearch").on("click", () => {
         let filter = filterObjectFromForm();
-        clearTradeList();
         getTradeList(filter, (trades) => {
-            trades.forEach(addTradeToUI);
+            showResults(trades);
         });
     });
+
+    $("#searchTradesButton,#searchAgain").click(() => {
+        $("#advancedSearch").modal("show");
+    });
+
+    $("#productInput").on("change", () => {
+        populateSellerSelection();
+    });
+
+    $("#acceptAll").click(acceptAll);
+    $("#ignoreAll").click(ignoreAll);
 
     getCompanyList(null, 'mostBoughtFrom', (companies) => {
         companies.forEach(addCompanyToUI);

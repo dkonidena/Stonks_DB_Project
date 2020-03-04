@@ -1,0 +1,22 @@
+button > a {
+    position: relative;
+    top: -6px;
+}
+
+#resultsStatus {
+    text-align: center;
+}
+
+
+#tradeId, #tradeDate {
+    font-weight: bold;
+    margin-left: 1em;
+}
+
+#editor {
+    max-width: 45vw;
+}
+
+#suggestionsTable {
+    max-width: 45vw;
+}

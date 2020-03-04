@@ -106,6 +106,10 @@ class CurrencyTypesModel(db.Model):
         except:
             print("Unknown Error occurred")
 
+    @classmethod
+    def retrieve_all_currencies(cls):
+        return cls.query.all()
+
 
 class CurrencyValuationsModel(db.Model):
     __tablename__ = 'CurrencyValuations'
@@ -131,7 +135,7 @@ class CurrencyValuationsModel(db.Model):
     @classmethod
     def retrieve_currency(cls, date):
         try:
-            return cls.query.join(CurrencyTypesModel, cls.CurrencyCode == CurrencyTypesModel.CurrencyCode).filter(cls.DateOfValuation == "2019-12-30").all()
+            return cls.query.filter(func.DATE(cls.DateOfValuation) <= parse_iso_date(date)).with_entities(cls.CurrencyCode, func.max(cls.DateOfValuation).label('MaxDate'), cls.ValueInUSD).group_by(cls.CurrencyCode)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
@@ -308,7 +312,7 @@ class DerivativeTradesModel(db.Model):
     @classmethod
     def update_trade(cls, tradeID, product, buyingParty, sellingParty, notionalValue, notionalCurrency, quantity, maturityDate, underlyingValue, underlyingCurrency, strikePrice):
         try:
-            row = cls.query.filter_by(TradeID = tradeID)
+            row = cls.query.filter_by(TradeID = tradeID).first()
             row.ProductID = product
             row.BuyingParty = buyingParty
             row.SellingParty = sellingParty
@@ -477,9 +481,10 @@ class ProductModel(db.Model):
     def retrieve_products_on_date(cls, date):
         try:
             return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) < func.DATE(cls.DateDeleted), cls.DateDeleted == None)).\
-            with_entities(ProductModel.ProductID, ProductModel.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, ProductModel.DateEnteredInSystem)
+            with_entities(cls.ProductID, cls.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, cls.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def retrieve_products(cls):
         try:
@@ -488,6 +493,20 @@ class ProductModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
+    @classmethod
+    def retrieve_all_products(cls):
+        try:
+            return cls.query.all()
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+    
+    @classmethod
+    def retrieve_all_product_company_info(cls):
+        try:
+            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID).\
+            with_entities(cls.ProductID, ProductSellersModel.CompanyCode, cls.ProductName, cls.DateEnteredInSystem)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
 
 class ProductValuationsModel(db.Model):
     __tablename__ = 'ProductValuations'
