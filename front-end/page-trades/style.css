@@ -2,3 +2,7 @@ button > a {
     position: relative;
     top: -6px;
 }
+
+#resultsStatus {
+    text-align: center;
+}

@@ -26,9 +26,6 @@ function init() {
         [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
     ];
 
-    elements.tradeListEmptyMessage.hide();
-    elements.tradeListEmptyMessage.removeClass("d-none");
-
     filters.forEach((x) => {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
@@ -57,18 +54,6 @@ function init() {
             elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
             elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
         } catch (e) {}
-    });
-
-    elements.tradeList.on("show.bs.collapse", () => {
-        elements.tradeListCollapseSymbol.text("expand_less");
-        if (isTradeListEmpty()) {
-            elements.tradeListEmptyMessage.show();
-        }
-    });
-
-    elements.tradeList.on("hide.bs.collapse", () => {
-        elements.tradeListCollapseSymbol.text("expand_more");
-        elements.tradeListEmptyMessage.hide();
     });
 
     $("#addTradeButton").on("click", () => {
@@ -110,14 +95,14 @@ function init() {
 
     $("#doAdvancedSearch").on("click", () => {
         let filter = filterObjectFromForm();
-        clearTradeList();
         getTradeList(filter, (trades) => {
-            trades.forEach(addTradeToUI);
+            showResults(trades);
         });
     });
 
-    $("#searchTradesButton").click(() => {
+    $("#searchTradesButton,#searchAgain").click(() => {
         $("#startButtons").hide();
+        $("#advancedSearch").modal("show");
     });
 
     $("#acceptAll").click(acceptAll);
