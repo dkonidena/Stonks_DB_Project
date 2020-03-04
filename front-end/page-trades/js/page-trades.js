@@ -1,13 +1,11 @@
 //search for elements needed only once to improve performance
 const elements = {
     trades: $("#trades"),
-    tradeIdInput: $("#tradeIdInput"),
+    tradeId: $("#tradeId"),
+    tradeDate: $("#tradeDate"),
     productInput: $("#productInput"),
     buyingPartyInput: $("#buyingPartyInput"),
     sellingPartyInput: $("#sellingPartyInput"),
-    tradeDateDayInput: $("#tradeDateDayInput"),
-    tradeDateMonthInput: $("#tradeDateMonthInput"),
-    tradeDateYearInput: $("#tradeDateYearInput"),
     maturityDateDayInput: $("#maturityDateDayInput"),
     maturityDateMonthInput: $("#maturityDateMonthInput"),
     maturityDateYearInput: $("#maturityDateYearInput"),
@@ -70,13 +68,9 @@ function loadTradeToForm(trade) {
         return;
     }
     const fields = [
-        [elements.tradeIdInput, trade.tradeId],
         [elements.productInput, nullMemberAccess(trade.product, "name")],
         [elements.buyingPartyInput, nullMemberAccess(trade.buyingParty, "name")],
         [elements.sellingPartyInput, nullMemberAccess(trade.sellingParty, "name")],
-        [elements.tradeDateDayInput, trade.tradeDate.getDate()],
-        [elements.tradeDateMonthInput, trade.tradeDate.getMonth()+1],
-        [elements.tradeDateYearInput, trade.tradeDate.getFullYear()],
         [elements.maturityDateDayInput, trade.maturityDate.getDate()],
         [elements.maturityDateMonthInput, trade.maturityDate.getMonth()+1],
         [elements.maturityDateYearInput, trade.maturityDate.getFullYear()],
@@ -91,6 +85,9 @@ function loadTradeToForm(trade) {
     fields.forEach((x) => {
         $(x[0]).val(x[1]).trigger("change");
     });
+
+    elements.tradeId.text(trade.tradeId);
+    elements.tradeDate.text(trade.tradeDate.toISOString().substring(0,10));
 }
 
 function companyNameToObject(name) {
@@ -117,7 +114,7 @@ function tradeObjectFromForm() {
     // TODO whole function needs error handling
     let trade = new Trade();
 
-    trade.tradeId = elements.tradeIdInput.val();
+    trade.tradeId = elements.tradeId.text();
 
     trade.product = productNameToObject(elements.productInput.val());
     trade.buyingParty = companyNameToObject(elements.buyingPartyInput.val());

@@ -6,3 +6,13 @@ button > a {
 #resultsStatus {
     text-align: center;
 }
+
+
+#tradeId, #tradeDate {
+    font-weight: bold;
+    margin-left: 1em;
+}
+
+#editor {
+    width: 45vw;
+}

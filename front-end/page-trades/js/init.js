@@ -1,14 +1,10 @@
 function init() {
 
     const filters = [
-        [elements.tradeIdInput, /^[0-9A-Z]{0,16}$/],
         [elements.quantityInput, /^\d*$/],
         [elements.notionalPriceInput, /^\d*\.?\d*$/],
         [elements.underlyingPriceInput, /^\d*\.?\d*$/],
         [elements.strikePriceInput, /^\d*\.?\d*$/],
-        [elements.tradeDateDayInput, /^\d{0,2}$/],
-        [elements.tradeDateMonthInput, /^\d{0,2}$/],
-        [elements.tradeDateYearInput, /^\d{0,4}$/],
         [elements.maturityDateDayInput, /^\d{0,2}$/],
         [elements.maturityDateMonthInput, /^\d{0,2}$/],
         [elements.maturityDateYearInput, /^\d{0,4}$/],

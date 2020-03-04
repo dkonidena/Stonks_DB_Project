@@ -65,45 +65,38 @@
                 </button>
             </div>
         <div class="row">
-                <div id="tradeEditorForm" class="row pt-3 justify-content-center" style="display: none;">
-                    <div class="col-6">
+                <div id="tradeEditorForm" class="row pt-5 justify-content-center" style="display: none;">
+                    <div id="editor" class="col">
                         <form autocomplete="off">
-                            <div class="row">
-                                <label class="col-auto col-form-label-lg" for="tradeIdInput">Trade ID</label>
-                                <div class="col-auto">
-                                    <input type="text" readonly class="form-control-lg form-control-plaintext" id="tradeIdInput">
-                                </div>
-                                <label class="col-auto col-form-label-lg" for="tradeDateInput">Trade Date</label>
-                                <div class="col-4">
-                                    <div class="form-inline" id="tradeDateInput">
-                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateDayInput"/>
-                                        <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-2" id="tradeDateMonthInput"/>
-                                        <span class="form-control-lg form-control-plaintext text-center col-md-1 mx-n3">-</span>
-                                        <input type="text" readonly class="form-control-lg form-control-plaintext text-center col-md-3" id="tradeDateYearInput"/>
-                                    </div>
+                            <div class="row" style="font-size:20px;">
+                                <div class="col" style="display: inherit;">
+                                    <div>Trade ID</div>
+                                    <div id="tradeId"></div>
+                                </div><div class="col" style="display: inherit">
+                                    <div>Trade Date</div>
+                                    <div id="tradeDate"></div>
                                 </div>
                             </div>
 
                             <div class="row mt-3">
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="productInput">Product</label>
                                     <select autocomplete="off" class="form-control select2-prod" id="productInput">
                                     </select>
                                 </div>
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="quantityInput">Quantity</label>
                                     <input autocomplete="off" type="text" class="form-control" id="quantityInput" placeholder="">
                                 </div>
                             </div>
 
                             <div class="row mt-3">
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="buyingPartyInput">Buyer</label>
                                     <select autocomplete="off" class="form-control select2-comp" id="buyingPartyInput">
                                     </select>
                                 </div>
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="sellingPartyInput">Seller</label>
                                     <select autocomplete="off" class="form-control select2-comp" id="sellingPartyInput">
                                     </select>
@@ -111,7 +104,7 @@
                             </div>
 
                             <div class="row mt-3">
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="notionalPriceInput">Notional Value and Currency</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
@@ -121,7 +114,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="underlyingPriceInput">Underlying Value and Currency</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
@@ -134,21 +127,21 @@
 
                             </div>
                             <div class="row mt-3">
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="strikePriceInput">Strike Price</label>
                                     <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                         <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
                                         <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
                                     </div>
                                 </div>
-                                <div class="col-5">
+                                <div class="col">
                                     <label for="maturityDateInput">Maturity Date</label>
                                     <div class="form-inline" id="maturityDateInput">
-                                        <input type="text" class="form-control col-md-2" id="maturityDateDayInput" placeholder="DD" />
+                                        <input type="text" class="form-control col-md-3" id="maturityDateDayInput" placeholder="DD" />
                                         <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                        <input type="text" class="form-control col-md-2" id="maturityDateMonthInput" placeholder="MM" />
+                                        <input type="text" class="form-control col-md-3" id="maturityDateMonthInput" placeholder="MM" />
                                         <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                        <input type="text" class="form-control col-md-3" id="maturityDateYearInput" placeholder="YYYY" />
+                                        <input type="text" class="form-control col-md-4" id="maturityDateYearInput" placeholder="YYYY" />
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +156,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="suggestionsTable" class="col-5 text-center" style="display: none;">
+                    <div id="suggestionsTable" class="col text-center" style="display: none;">
                         <table class="table table-hover">
                           <thead class="thead-dark">
                             <tr>
