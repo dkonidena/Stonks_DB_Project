@@ -64,99 +64,98 @@
                     </div>
                 </button>
             </div>
-        <div class="row">
-                <div id="tradeEditorForm" class="row pt-5 justify-content-center" style="display: none;">
-                    <div id="editor" class="col">
-                        <form autocomplete="off">
-                            <div class="row" style="font-size:20px;">
-                                <div class="col" style="display: inherit;">
-                                    <div>Trade ID</div>
-                                    <div id="tradeId"></div>
-                                </div><div class="col" style="display: inherit">
-                                    <div>Trade Date</div>
-                                    <div id="tradeDate"></div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="productInput">Product</label>
-                                    <select autocomplete="off" class="form-control select2-prod" id="productInput">
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <label for="quantityInput">Quantity</label>
-                                    <input autocomplete="off" type="text" class="form-control" id="quantityInput" placeholder="">
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="buyingPartyInput">Buyer</label>
-                                    <select autocomplete="off" class="form-control select2-comp" id="buyingPartyInput">
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <label for="sellingPartyInput">Seller</label>
-                                    <select autocomplete="off" class="form-control select2-comp" id="sellingPartyInput">
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="notionalPriceInput">Notional Value and Currency</label>
-                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                        <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
-                                        <input type="text" class="form-control" id="notionalPriceInput" placeholder="0.00">
-                                        <div class="input-group-append">
-                                            <select class="custom-select select2-cur" id="notionalCurrencyInput"></select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <label for="underlyingPriceInput">Underlying Value and Currency</label>
-                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                        <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
-                                        <input type="text" class="form-control " id="underlyingPriceInput" placeholder="0.00">
-                                        <div class="input-group-append">
-                                            <select class="custom-select select2-cur" id="underlyingCurrencyInput"></select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="strikePriceInput">Strike Price</label>
-                                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                        <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
-                                        <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <label for="maturityDateInput">Maturity Date</label>
-                                    <div class="form-inline" id="maturityDateInput">
-                                        <input type="text" class="form-control col-md-3" id="maturityDateDayInput" placeholder="DD" />
-                                        <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                        <input type="text" class="form-control col-md-3" id="maturityDateMonthInput" placeholder="MM" />
-                                        <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
-                                        <input type="text" class="form-control col-md-4" id="maturityDateYearInput" placeholder="YYYY" />
-                                    </div>
-                                </div>
-                            </div>
-
-                        </form>
-                        <div class="row mt-5 justify-content-md-center">
-                            <div class="col-auto">
-                                <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Check Trade</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
+            <div id="tradeEditorForm" class="row pt-5 justify-content-center" style="display: none;">
+                <div id="editor" class="col">
+                    <form autocomplete="off">
+                        <div class="row" style="font-size:20px;">
+                            <div class="col" style="display: inherit;">
+                                <div>Trade ID</div>
+                                <div id="tradeId"></div>
+                            </div><div class="col" style="display: inherit">
+                                <div>Trade Date</div>
+                                <div id="tradeDate"></div>
                             </div>
                         </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="productInput">Product</label>
+                                <select autocomplete="off" class="form-control select2-prod" id="productInput">
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="quantityInput">Quantity</label>
+                                <input autocomplete="off" type="text" class="form-control" id="quantityInput" placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="buyingPartyInput">Buyer</label>
+                                <select autocomplete="off" class="form-control select2-comp" id="buyingPartyInput">
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="sellingPartyInput">Seller</label>
+                                <select autocomplete="off" class="form-control select2-comp" id="sellingPartyInput">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="notionalPriceInput">Notional Value and Currency</label>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-prepend input-group-text" id="notionalCurrencySymbol">$</div>
+                                    <input type="text" class="form-control" id="notionalPriceInput" placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <select class="custom-select select2-cur" id="notionalCurrencyInput"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="underlyingPriceInput">Underlying Value and Currency</label>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-prepend input-group-text" id="underlyingCurrencySymbol">$</div>
+                                    <input type="text" class="form-control " id="underlyingPriceInput" placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <select class="custom-select select2-cur" id="underlyingCurrencyInput"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="strikePriceInput">Strike Price</label>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-prepend input-group-text" id="strikePriceCurrencySymbol">$</div>
+                                    <input type="text" class="form-control " id="strikePriceInput" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="maturityDateInput">Maturity Date</label>
+                                <div class="form-inline" id="maturityDateInput">
+                                    <input type="text" class="form-control col-md-3" id="maturityDateDayInput" placeholder="DD" />
+                                    <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                    <input type="text" class="form-control col-md-3" id="maturityDateMonthInput" placeholder="MM" />
+                                    <span class="form-control-plaintext text-center col-md-1 mx-n1">-</span>
+                                    <input type="text" class="form-control col-md-4" id="maturityDateYearInput" placeholder="YYYY" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                    <div class="row mt-5 justify-content-md-center">
+                        <div class="col-auto">
+                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Check Trade</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Discard Changes</button>
+                        </div>
                     </div>
-                    <div id="suggestionsTable" class="col text-center" style="display: none;">
+                </div>
+                <div id="suggestionsTable" class="col text-center" style="display: none;">
                         <table class="table table-hover">
                           <thead class="thead-dark">
                             <tr>
@@ -175,7 +174,7 @@
                             <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-fail mr-1">close</i><a>Ignore All</a>
                         </button>
                     </div>
-                </div>
+            </div>
 
                 <div class="modal fade" id="confirmCancelTradeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelTradeModal" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -395,9 +394,6 @@
                 <div class="row mb-3"></div>
 
             </div>
-
-
-        </div>
     </div>
     </div>
 

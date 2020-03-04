@@ -14,5 +14,9 @@ button > a {
 }
 
 #editor {
-    width: 45vw;
+    max-width: 45vw;
+}
+
+#suggestionsTable {
+    max-width: 45vw;
 }
