@@ -62,22 +62,19 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        if(!$("#suggestionsTable:visible").length) {
-            getFeedback();
-        } else {
+        if (isValidTrade()) {
             if (allSuggestionsResolved()) {
                 saveTrade();
-                $("#suggestionsTable").hide();
-                $("#saveTradeButton").text("Check Trade");
             } else {
-                getFeedback();
+                $("#mustAcceptWarning").modal("show");
             }
         }
     });
 
     $("#checkTradeButton").on("click", () => {
-        api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showError);
-        //TODO add visual feedback of the checks
+        if (isValidTrade()) {
+            getFeedback();
+        }
     });
 
     $("#discardChangesButton").on("click", () => {

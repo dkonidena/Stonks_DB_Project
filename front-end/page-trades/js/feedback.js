@@ -40,10 +40,9 @@ function handleFeedback(response, current) {
         }
     }
 
-    if (allSuggestionsResolved()) {
-        $("#saveTradeButton").text("Save Trade");
-    }
     $("#suggestionsTable").show(500);
+    $("#saveTradeButton").show(500);
+    checkTradeValidity();
 }
 
 function allSuggestionsResolved() {
@@ -123,7 +122,5 @@ function removeSuggestion(field) {
     delete suggestions[field];
     $(`#suggestions #${field}-suggestion`).remove();
 
-    if (allSuggestionsResolved()) {
-        $("#saveTradeButton").text("Save Trade");
-    }
+    checkTradeValidity();
 }

@@ -152,6 +152,7 @@ function tradeObjectFromForm() {
 }
 
 function checkTradeValidity() {
+    $("#checkTradeButton").prop('disabled', !isValidTrade());
     $("#saveTradeButton").prop('disabled', !isValidTrade());
 }
 
@@ -281,6 +282,8 @@ function showResults(trades) {
 
 function resetState() {
     $("#tradeEditorForm").hide();
+    $("#saveTradeButton").hide();
+    $("#suggestionsTable").hide();
     $("#startButtons").show();
 }
 

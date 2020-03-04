@@ -148,7 +148,10 @@
                     </form>
                     <div class="row mt-5 justify-content-md-center">
                         <div class="col-auto">
-                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Check Trade</button>
+                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" style="display:none;" disabled>Save Trade</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-lg btn-block btn-info" id="checkTradeButton" disabled>Check Trade</button>
                         </div>
                         <div class="col-auto">
                             <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Cancel</button>
@@ -191,6 +194,26 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" id="discardChangesButton" data-dismiss="modal">Discard Changes</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Return to Editor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="mustAcceptWarning" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Information</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                You must accept or ignore all of the suggestions to continue.<br><br>
+                                <div style="color:grey">note: to dismiss all suggestions, press the "Ignore All" button.</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" id="discardChangesButton" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
