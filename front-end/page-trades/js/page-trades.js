@@ -87,10 +87,8 @@ function addCompanyToUI(c) {
 }
 
 function showTradeForm() {
-    if(!$("#tradeEditorForm:visible").length) {
-        $("#tradeEditorMessage").hide();
-        $("#tradeEditorForm").show();
-    }
+    $("#startButtons").hide();
+    $("#tradeEditorForm").show();
 }
 
 function loadTradeToForm(trade) {
@@ -282,4 +280,39 @@ function filterObjectFromForm() {
     }
 
     return filter;
+}
+
+function showResults() {
+    $("#resultsModal").modal("show");
+    renderTable(`Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price
+2019-12-01,PRAHGHUD44334854,74,DDIB11,UFAY59,287749.0,USD,700,2024-07-13,411.07,USD,408.02
+2019-12-01,UWRDSKTF42789997,43,RJUD59,YWMD69,6300.0,USD,100,2023-05-24,63.0,USD,72.02
+2019-12-01,CGKFXLKD21336618,84,IZLM67,SXHU74,48735.0,USD,500,2021-09-10,97.47,USD,85.74
+2019-12-01,VYZDXMDK00087572,69,WIZJ73,QLCE04,837900.0,USD,6000,2021-01-31,139.65,USD,134.81
+2019-12-01,TFOLQEZN94334607,59,SXTM39,TFLS35,243430.0,USD,1000,2023-07-02,243.43,USD,221.49
+2019-12-01,LLCVFARQ49216174,79,GGLV00,GBEZ65,142120.0,USD,2000,2023-09-18,71.06,USD,77.63
+2019-12-01,JMQFWWIA92526877,89,RJUD59,HPTP65,803000.0,USD,20000,2021-04-12,40.15,USD,41.92
+2019-12-01,TBDAUGJG58817614,5,NGBA40,DVVB31,418260.0,USD,2000,2023-09-12,209.13,USD,249.73
+2019-12-01,GZALOIUG74439111,38,FORM54,HWHS51,7166.0,USD,100,2023-03-07,71.66,USD,66.69
+2019-12-01,UUAFJXRX98147604,14,JVHD93,EIWJ22,178116.0,USD,600,2023-10-10,296.86,USD,236.75
+2019-12-01,FANTXEWA98082344,85,QWOA67,DOGG07,80991900.0,USD,90000,2023-08-04,899.91,USD,802.44
+2019-12-01,WUYJVCNE52292075,87,LIIS96,DOGG07,7441.0,USD,100,2020-12-20,74.41,USD,67.21
+2019-12-01,TJDJETLI33632148,80,CAVR54,GBEZ65,1418400.0,USD,40000,2024-04-03,35.46,USD,29.58`)
+}
+
+function renderTable(csv) {
+    $("#resultsStatus").show();
+    const blob = new Blob([csv], { type: "text/plain" });
+
+    CsvToHtmlTable.init({
+        csv_path: URL.createObjectURL(blob),
+        element: "table-container",
+        allow_download: false,
+        csv_options: {separator: ",", delimiter: "\""},
+        datatables_options: {
+            "paging": true,
+            "scrollX": true
+        },
+        onComplete: () => { $("#resultsStatus").hide() }
+    });
 }

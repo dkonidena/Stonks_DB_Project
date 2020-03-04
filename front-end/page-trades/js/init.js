@@ -116,6 +116,10 @@ function init() {
         });
     });
 
+    $("#searchTradesButton").click(() => {
+        $("#startButtons").hide();
+    });
+
     $("#acceptAll").click(acceptAll);
     $("#ignoreAll").click(ignoreAll);
 
