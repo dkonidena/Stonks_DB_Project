@@ -13,6 +13,8 @@ import models, resources
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 
+FULL_DATABASE = 'sqlite:///D:\\rohan\\Documents\\CS261 Coursework\\database_cs261_full.db'
+PARTIAL_DATABASE = 'sqlite:///database_cs261_2.0/db'
 
 api = Api(app)
 CORS(app)
@@ -25,13 +27,13 @@ api.add_resource(resources.CheckTrade, '/api/check_trade')
 api.add_resource(resources.Reports, '/api/reports')
 api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///D:\\rohan\\Documents\\CS261 Coursework\\database_cs261_full.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = PARTIAL_DATABASE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-executor = ThreadPoolExecutor(1)
-executor.submit(resources.run_cron_job)
+#executor = ThreadPoolExecutor(1)
+#executor.submit(resources.run_cron_job)
 
 @app.route('/')
 def index():

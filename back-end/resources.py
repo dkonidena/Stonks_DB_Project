@@ -369,6 +369,8 @@ class Products(Resource):
             product_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
+            if models.ProductModel.retrieve_product_by_id(product_ID).count() == 0:
+                return {'message' : 'Cannot delete a non-existant product'}, 400
             date_now = str(date_func.today())
             models.ProductModel.update_date_deleted(product_ID, date_now) # instead of deletion, the dateDeleted attribute is updated
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID

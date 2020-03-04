@@ -159,7 +159,7 @@ class TradeTests(unittest.TestCase):
     def test_num_returned_trades(self):
         response = self.app.get('/api/trades', query_string=dict(isDryRun = 'true', filter = {}))
         data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data['noOfMatches'], 2907) 
+        self.assertEqual(data['noOfMatches'], 2908) 
 
     # test to see if a user ID does not exist
     def test_no_userID_trades_post(self):
@@ -209,10 +209,10 @@ class ProductTests(unittest.TestCase):
 
     #TODO: Need to return products that existed on or after the date, whilst also returning the most recent valuation.
     def test_num_returned_products(self):
-        date = "2020-01-01"
-        response = self.app.get('/api/products', query_string=dict(isDryRun = 'true', date = date))
+        TOTAL_PRODUCTS_IN_DB = 303
+        response = self.app.get('/api/products', query_string=dict(isDryRun = 'true'))
         data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data['noOfMatches'], 302)
+        self.assertEqual(data['noOfMatches'], TOTAL_PRODUCTS_IN_DB)
 
     # tests whether a product name is blank when inserting a new product
     def test_product_name_empty_post(self):
@@ -250,7 +250,7 @@ class UserTests(unittest.TestCase):
         pass 
 
     def test_num_returned_users(self):
-        TOTAL_NUM_USERS = 1
+        TOTAL_NUM_USERS = 4
         response = self.app.get('/api/users', query_string=dict(isDryRun = 'true'))
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual(data['noOfMatches'], TOTAL_NUM_USERS)
@@ -282,7 +282,7 @@ class ReportTests(unittest.TestCase):
     def test_num_returned_reports(self):
         response = self.app.get('/api/reports', query_string=dict(isDryRun = 'true', filter={}))
         data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(data['noOfMatches'], 21)
+        self.assertEqual(data['noOfMatches'], 22)
 
 # runs the unit tests in the module
 if __name__ == '__main__':
