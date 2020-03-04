@@ -262,9 +262,9 @@ function filterObjectFromForm() {
     let underlyingCurrency = $("#filter-underlyingCurrencyInput").select2('data');
     if (underlyingCurrency.length > 0) { filter.underlyingCurrency = underlyingCurrency.map(labelExtractor); }
 
-    let userIDCreatedBy = $("#filter-userIDInput").select2('data');
-    if (userIDCreatedBy.length > 0) {
-        filter.userIDCreatedBy = userIDCreatedBy.map((entry) => { return userNameToObject(entry.text).id });
+    let userIDcreatedBy = $("#filter-userIDInput").select2('data');
+    if (userIDcreatedBy.length > 0) {
+        filter.userIDcreatedBy = userIDcreatedBy.map((entry) => { return userNameToObject(entry.text).id });
     }
 
     return filter;

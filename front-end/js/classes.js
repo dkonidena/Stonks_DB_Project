@@ -283,7 +283,7 @@ class TradeFilter extends Filter {
         this.product = null;
         this.notionalCurrency = null;
         this.underlyingCurrency = null;
-        this.userIDCreatedBy = null;
+        this.userIDcreatedBy = null;
     }
 }
 
