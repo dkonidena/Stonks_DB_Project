@@ -72,12 +72,14 @@ class Currencies(Resource):
             if 'isDryRun' not in request.args:
                 return {'message': 'Request malformed'}, 400
             isDryRun = request.args.get('isDryRun')
+            if date is None:
+                result = models.CurrencyTypesModel.retrieve_all_currencies()
+            else:
+                result = models.CurrencyValuationsModel.retrieve_currency(date)
             if isDryRun == "true":
-                results = models.CurrencyValuationsModel.retrieve_currency(date)
-                message['noOfMatches'] = len(results)
+                message['noOfMatches'] = result.count()
                 return message, 200
             elif isDryRun == "false":
-                result = models.CurrencyValuationsModel.retrieve_currency(date)
                 i = 1
                 res = []
                 for row in result:
@@ -86,7 +88,7 @@ class Currencies(Resource):
                     # brokem until all currencies added
                     dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
-                    dicto['valueInUSD'] = str(row.ValueInUSD)
+                    dicto['valueInUSD'] = str(row.ValueInUSD) if hasattr(row, 'ValueInUSD') else ''
                     res.append(dicto)
                 message['matches'] = res
                 return message, 200
@@ -178,8 +180,6 @@ class Companies(Resource):
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
-            if len(company_ID) == 0:
-                return {'message': 'company id not present'}, 400
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
@@ -201,8 +201,6 @@ class Companies(Resource):
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
-            if len(company_ID) == 0:
-                return {'message': 'company id not present'}, 400
             date_now = str(date_func.today())
             # check to see if the company exists today
             # return the tuple of the company wanting to be deleted
@@ -226,7 +224,6 @@ class Companies(Resource):
 
 
 class Products(Resource):
-
     def get(self):
         message = {}
         try:
@@ -237,20 +234,19 @@ class Products(Resource):
                 if 'isDryRun' not in request.args:
                     return {'message': 'Request malformed'}, 400
                 if isDryRun == "true":
+                    result = models.ProductModel.retrieve_all_products()
                     # need error handling to deal with ValueError raised
-                    result = models.ProductModel.retrieve_products()
-                    message = {"noOfMatches" : result.count()}
+                    message = {"noOfMatches" : len(result)}
                     return message, 201
                 elif isDryRun == "false":
-                    result = models.ProductModel.retrieve_products()
-                    i = 1
+                    result = models.ProductModel.retrieve_all_product_company_info()
                     res = []
                     for row in result:
                         dicto = {}
                         dicto['id'] = str(row.ProductID)
                         dicto['name'] = row.ProductName
                         dicto['companyID'] = row.CompanyCode
-                        dicto['valueInUSD'] = str(row.ProductPrice)
+                        dicto['valueInUSD'] = str(row.ProductPrice) if hasattr(row, 'ProductPrice') else ''
                         dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
                         # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                         res.append(dicto)
@@ -656,7 +652,11 @@ class Reports(Resource):
                 filter = json.loads(request.args.get('filter'))
             except json.JSONDecodeError:
                 return {'message': 'malformed filter'}, 400
+            except:
+                return {'message': 'filter not present'}, 400
 
+            if filter == None:
+                return {'message' : 'filter not present'}, 400
             # this needs error checking
             isDryRun = request.args.get('isDryRun')
 
@@ -678,7 +678,7 @@ class Reports(Resource):
                     noOfMatches = tradeDates.count()
                 else:
                     tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                    noOfMatches = tradeDates.count()
+                    noOfMatches = len(tradeDates)
             else:
                 tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
                 noOfMatches = tradeDates.count()
