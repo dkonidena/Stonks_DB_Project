@@ -216,15 +216,78 @@ class ProductTests(unittest.TestCase):
 
     # tests whether a product name is blank when inserting a new product
     def test_product_name_empty_post(self):
-        response = self.app.post('api/products', data=json.dumps(dict(name='', companyID='', valueInUSD='')), headers={'userID':'1'})
+        response = self.app.post('api/products', data=json.dumps(dict(name='', companyID='C', valueInUSD='0')), headers={'userID':'1'})
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.get_data(as_text=True))
         print("Data: ", data['message'])
         self.assertEqual("product name is empty", data['message'])
+
+    # tests whether a product name is blank when inserting a new product
+    def test_product_company_empty_post(self):
+        response = self.app.post('api/products', data=json.dumps(dict(name='P', companyID='', valueInUSD='0')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("company code is empty", data['message'])
+
+    # tests whether a product name is blank when inserting a new product
+    def test_product_value_empty_post(self):
+        response = self.app.post('api/products', data=json.dumps(dict(name='P', companyID='C', valueInUSD=None)), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("product value is empty", data['message'])
     
     # test to see if a user ID does not exist
     def test_no_userID_product_post(self):
         response = self.app.post('api/products', data=dict(name='', valueInUSD=None, companyID=''), headers={'userID':'9999'})
+        self.assertEqual(response.status_code, 401)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("user not present", data['message'])
+
+    # tests whether the product ID attribute is added to a PATCH request to Products
+    def test_product_id_empty_patch(self):
+        response = self.app.patch('api/products', data=json.dumps(dict(name='', companyID='C', valueInUSD='0')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("Request malformed", data['message'])
+
+    # tests whether the product ID is correct when calling a PATCH request to Products
+    def test_product_id_wrong_patch(self):
+        response = self.app.patch('api/products', query_string={'id':0}, data=json.dumps(dict(name='', companyID='C', valueInUSD='0')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("Cannot update a non-existant product", data['message'])
+
+    # tests whether a product name is blank when updating a product
+    def test_product_name_empty_patch(self):
+        response = self.app.patch('api/products', query_string={'id':1}, data=json.dumps(dict(name='', companyID='C', valueInUSD='0')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("product name is empty", data['message'])
+
+    # tests whether a product name is blank when updating a product
+    def test_product_company_empty_patch(self):
+        response = self.app.patch('api/products', query_string={'id':1}, data=json.dumps(dict(id = 1, name='P', companyID='', valueInUSD='0')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("company code is empty", data['message'])
+
+    # tests whether a product name is blank when updating a product
+    def test_product_value_empty_patch(self):
+        response = self.app.patch('api/products', query_string={'id':1}, data=json.dumps(dict(id = 1, name='P', companyID='C', valueInUSD=None)), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        print("Data: ", data['message'])
+        self.assertEqual("product value is empty", data['message'])
+    
+    # test to see if a user ID does not exist when updating a product
+    def test_no_userID_product_patch(self):
+        response = self.app.patch('api/products', query_string={'id':1}, data=dict(id = 1, name='', valueInUSD=None, companyID=''), headers={'userID':'9999'})
         self.assertEqual(response.status_code, 401)
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("user not present", data['message'])
