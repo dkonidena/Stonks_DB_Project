@@ -178,6 +178,8 @@ class Companies(Resource):
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
+            if len(company_ID) == 0:
+                return {'message': 'company id not present'}, 400
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
@@ -199,6 +201,8 @@ class Companies(Resource):
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             company_ID = request.args.get('id')
+            if len(company_ID) == 0:
+                return {'message': 'company id not present'}, 400
             date_now = str(date_func.today())
             # check to see if the company exists today
             # return the tuple of the company wanting to be deleted
@@ -783,6 +787,26 @@ class CheckTrade(Resource):
             strikePrice = data['strikePrice']
             maturityDate = models.parse_iso_date(str(data['maturityDate']))
             date_now = str(date_func.today())
+            if len(product) == 0:
+                return {'message':'product name is empty'}, 400
+            if len(quantity) == 0:
+                return {'message':'product value is empty'}, 400
+            if len(buyingParty) == 0:
+                return {'message':'buying party is empty'}, 400
+            if len(sellingParty) == 0:
+                return {'message':'selling party is empty'}, 400
+            if len(notionalValue) == 0:
+                return {'message':'notionalValue is empty'}, 400
+            if len(notionalCurrency) == 0:
+                return {'message':'notionalCurrency is empty'}, 400
+            if len(underlyingValue) == 0:
+                return {'message':'underlyingValue is empty'}, 400
+            if len(underlyingCurrency) == 0:
+                return {'message':'underlyingCurrency is empty'}, 400
+            if len(strikePrice) == 0:
+                return {'message':'strikePrice is empty'}, 400
+            if len(maturityDate) == 0:
+                return {'message':'maturityDate is empty'}, 400
 
             #make a query to check if the product exists
             result = models.ProductSellersModel.getProductID(product, sellingParty)
