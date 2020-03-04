@@ -63,6 +63,8 @@ function showTradeForm() {
 }
 
 function loadTradeToForm(trade) {
+    showTradeForm();
+
     if (trade === null) {
         showError("Tried to load null trade to form");
         return;
@@ -164,10 +166,16 @@ function saveTrade() {
     if (isValidTrade()) {
         let t = tradeObjectFromForm();
         if (t.tradeId !== "") {
-            api.patch.trades(t.tradeId, t.getAPIObject(), () => showSuccess('Trade updated.'), showError);
+            api.patch.trades(t.tradeId, t.getAPIObject(), () => {
+                showSuccess('Trade updated.');
+                resetState();
+            }, showError);
         }
         else {
-            api.post.trades(t.getAPIObject(), () => showSuccess('Trade saved.'), showError);
+            api.post.trades(t.getAPIObject(), () => {
+                showSuccess('Trade saved.');
+                resetState();
+            }, showError);
         }
     }
 }
@@ -259,6 +267,11 @@ function showResults(trades) {
     $('#resultsModal').on('shown.bs.modal', () => {
         renderTable(tradesToCSV(trades));
     });
+}
+
+function resetState() {
+    $("#tradeEditorForm").hide();
+    $("#startButtons").show();
 }
 
 function renderTable(csv) {

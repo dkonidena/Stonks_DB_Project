@@ -86,7 +86,7 @@ function init() {
         t.underlyingCurrency = currencies['USD'];
         trades[t.tradeId] = t;
         loadTradeToForm(t);
-        showTradeForm();
+        resetState();
     });
 
     $("#doAdvancedSearch").on("click", () => {
@@ -97,7 +97,6 @@ function init() {
     });
 
     $("#searchTradesButton,#searchAgain").click(() => {
-        $("#startButtons").hide();
         $("#advancedSearch").modal("show");
     });
 
