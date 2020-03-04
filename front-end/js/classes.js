@@ -84,6 +84,7 @@ function getTradeList(filter, res) {
             return;
         }
 
+        trades = {};
         for (let json of response.matches) {
             let trade = new Trade();
             trade.populateFromServerJSON(json);  // TODO error handling
@@ -144,6 +145,7 @@ function getProductList(date, res) {
             return;
         }
 
+        products = {};
         for (let json of response.matches) {
             let product = new Product();
             product.populateFromServerJSON(json);
@@ -187,6 +189,7 @@ function getCurrencyList(date, res) {
             return;
         }
 
+        currencies = {}
         for (let json of response.matches) {
             let currency = new Currency();
             currency.populateFromServerJSON(json);
@@ -238,6 +241,7 @@ function getCompanyList(date, order, res) {
             return;
         }
 
+        companies = {};
         for (let json of response.matches) {
             let company = new Company();
             company.populateFromServerJSON(json);
@@ -345,6 +349,7 @@ function getUserList(res, err) {
             return;
         }
 
+        users = {};
         for (let json of response.matches) {
             let user = new User();
             user.populateFromServerJSON(json);
