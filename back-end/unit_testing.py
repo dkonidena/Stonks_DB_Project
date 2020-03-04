@@ -175,6 +175,7 @@ class TradeTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("Trade id not present", data['message'])
+        
     def test_no_product_trades_post(self):
         response = self.app.post('api/trades', data=json.dumps(dict(product='99999', quantity='2', buyingParty='DDIB11', sellingParty ='UFAY59', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
         self.assertEqual(response.status_code, 404)
@@ -270,7 +271,7 @@ class ReportTests(unittest.TestCase):
         response = self.app.get('api/reports', query_string=dict(isDryRun = 'false'))
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.get_data(as_text=True))
-        self.assertEqual("malformed filter", data['message']) 
+        self.assertEqual("filter not present", data['message']) 
 
     def test_no_dry_run_reports(self):
         response = self.app.get('api/products', query_string=dict(filter={}))
@@ -278,12 +279,11 @@ class ReportTests(unittest.TestCase):
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("Request malformed", data['message'])
     
-    #TODO: return the number of reports generated rather than the number of trades made
     def test_num_returned_reports(self):
-        response = self.app.get('/api/products', query_string=dict(isDryRun = 'true', filter={}))
+        response = self.app.get('/api/reports', query_string=dict(isDryRun = 'true', filter={}))
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual(data['noOfMatches'], 21)
 
 # runs the unit tests in the module
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()
