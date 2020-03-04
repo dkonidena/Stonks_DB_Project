@@ -70,7 +70,7 @@ function init() {
         }
     });
 
-    $("#filter-creationDateLowerYearInput, #filter-creationDateUpperYearInput, #filter-modificationDateLowerYearInput, #filter-modificationDateUpperYearInput, #maturityDateYearInput").on("change", function () {
+    $("#maturityDateYearInput").on("change", function () {
         const year = parseInt($(this).val());
         if (year < (new Date()).getFullYear()) {
             $(this).addClass("is-invalid");
