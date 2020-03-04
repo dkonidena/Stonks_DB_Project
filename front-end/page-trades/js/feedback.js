@@ -43,7 +43,7 @@ function handleFeedback(response, current) {
     if (allSuggestionsResolved()) {
         $("#saveTradeButton").text("Save Trade");
     }
-    $("#suggestionsTable").show();
+    $("#suggestionsTable").show(500);
 }
 
 function allSuggestionsResolved() {
