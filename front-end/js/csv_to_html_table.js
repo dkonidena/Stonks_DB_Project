@@ -56,8 +56,8 @@ CsvToHtmlTable = {
                 $table.DataTable(datatables_options);
 
                 if (allow_download) {
-                    $containerElement.append("<p><a class='btn btn-info' href='" + csv_path + "' download='" + downloadName + ".csv'><i class='glyphicon glyphicon-download'></i> Download as CSV</a></p>");
-                    $containerElement.append("<p><a class='btn btn-info' href='" + pdf_path + "' download='" + downloadName + ".pdf'><i class='glyphicon glyphicon-download'></i> Download as PDF</a></p>");
+                    $containerElement.append("<a class='btn btn-info' href='" + csv_path + "' download='" + downloadName + ".csv'><i class='glyphicon glyphicon-download'></i> Download as CSV</a>");
+                    $containerElement.append("<a class='btn btn-info' href='" + pdf_path + "' download='" + downloadName + ".pdf'><i class='glyphicon glyphicon-download'></i> Download as PDF</a>");
                 }
 
                 onComplete();
