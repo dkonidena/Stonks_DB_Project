@@ -3,6 +3,8 @@ $(document).ready(() => {
     $("#companies").click(() => window.location = "../page-companies/page-companies.html");
     $("#products").click(() => window.location = "../page-products/page-products.html");
     $("#reports").click(() => window.location = "../page-reports/page-reports.html");
+
+    getUserList();
 });
 
 function slide() {
