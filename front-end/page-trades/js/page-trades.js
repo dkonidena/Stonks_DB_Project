@@ -54,7 +54,17 @@ function addUserToUI(p) {
 function addCompanyToUI(c) {
     let o = "<option></option>";
     let d = $(o).text(c.name);
-    $("#buyingPartyInput, #sellingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
+    $("#buyingPartyInput, #filter-buyerInput, #filter-sellerInput").append(d);
+}
+
+function populateSellerSelection() {
+    let product = productNameToObject(elements.productInput.val());
+    if (product) {
+        $("#sellingPartyInput").empty();
+        let o = "<option></option>";
+        let d = $(o).text(product.company.name);
+        $("#sellingPartyInput").append(d);
+    }
 }
 
 function showTradeForm() {

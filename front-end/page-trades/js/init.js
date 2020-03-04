@@ -100,6 +100,10 @@ function init() {
         $("#advancedSearch").modal("show");
     });
 
+    $("#productInput").on("change", () => {
+        populateSellerSelection();
+    });
+
     $("#acceptAll").click(acceptAll);
     $("#ignoreAll").click(ignoreAll);
 
