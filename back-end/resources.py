@@ -134,7 +134,6 @@ class Companies(Resource):
                     dicto['id'] = row.CompanyCode
                     dicto['name'] = row.CompanyName
                     dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                    # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                     res.append(dicto)
                 message['matches'] = res
                 return message, 200
@@ -248,7 +247,6 @@ class Products(Resource):
                         dicto['companyID'] = row.CompanyCode
                         dicto['valueInUSD'] = str(row.ProductPrice) if hasattr(row, 'ProductPrice') else ''
                         dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                         res.append(dicto)
                     message['matches'] = res
                     return message, 201
@@ -274,7 +272,6 @@ class Products(Resource):
                         dicto['companyID'] = row.CompanyCode
                         dicto['valueInUSD'] = str(row.ProductPrice)
                         dicto['dateEnteredIntoSystem'] = row.DateEnteredInSystem
-                        # dicto['userIDcreatedBy'] = row.UserIDCreatedBy
                         res.append(dicto)
                     message['matches'] = res
                     return message, 201
