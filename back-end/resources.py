@@ -847,7 +847,7 @@ class Events(Resource):
     def get(self):
         try:
             userID = request.args['id']
-            actions = models.EventLogModel.get_user_actions(userID)
+            actions = models.EventLogModel.get_actions_by_user(userID)
             matches = []
             for action in actions:
                 matches.append({
