@@ -1,6 +1,6 @@
 import unittest
 import json 
-from run import app
+from run import app, db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_2.0.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -181,6 +181,13 @@ class TradeTests(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("product not found", data['message'])
+    
+    # test to see if an error is sent when no attributes are sent
+    def test_no_attributes_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict()), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("attribute(s) missing", data['message'])
 
 class ProductTests(unittest.TestCase):
 

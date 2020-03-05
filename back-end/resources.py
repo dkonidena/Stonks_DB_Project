@@ -509,21 +509,26 @@ class Trades(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
+            if userID is None:
+                return {'message':'user ID not sent'}, 400
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             json_data = request.data
             data = json.loads(json_data)
             id = ''.join(choice(ascii_uppercase) for i in range(12))
-            product = data['product']
-            quantity = data['quantity']
-            buyingParty = data['buyingParty']
-            sellingParty = data['sellingParty']
-            notionalValue = data['notionalPrice']
-            notionalCurrency = data['notionalCurrency']
-            underlyingValue = data['underlyingPrice']
-            underlyingCurrency = data['underlyingCurrency']
-            strikePrice = data['strikePrice']
-            maturityDate = models.parse_iso_date(str(data['maturityDate']))
+            try:
+                product = data['product']
+                quantity = data['quantity']
+                buyingParty = data['buyingParty']
+                sellingParty = data['sellingParty']
+                notionalValue = data['notionalPrice']
+                notionalCurrency = data['notionalCurrency']
+                underlyingValue = data['underlyingPrice']
+                underlyingCurrency = data['underlyingCurrency']
+                strikePrice = data['strikePrice']
+                maturityDate = models.parse_iso_date(str(data['maturityDate']))
+            except KeyError:
+                return {'message':'attribute(s) missing'}, 400
             if len(product) == 0:
                 return {'message':'product name is empty'}, 400
             if len(quantity) == 0:
