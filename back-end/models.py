@@ -360,7 +360,13 @@ class EventLogModel(db.Model):
             return cls.query.filter(cls.DateOfEvent <= date).with_entities(EventLogModel.DateOfEvent, EventLogModel.UserAction)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-
+    
+    @classmethod
+    def get_actions_by_user(cls, id):
+        try:
+            return cls.query.filter(cls.EmployeeID == id)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
 
 class EmployeesModel(db.Model):
     __tablename__ = 'Employees'

@@ -842,3 +842,28 @@ class CheckTrade(Resource):
         except exc.InterfaceError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
+
+class Events(Resource):
+    def get(self):
+        try:
+            userID = request.args['id']
+            actions = models.EventLogModel.get_user_actions(userID)
+            matches = []
+            for action in actions:
+                matches.append({
+                "eventID": str(action.EventID),
+                "eventDescription": str(action.EventDescription),
+                "dateOfEvent": str(action.DateOfEvent),
+                "table": str(action.Table),
+                "typeOfAction": str(action.TypeOfAction),
+                "referenceID": str(action.ReferenceID),
+                "employeeID": str(action.EmployeeID)
+            })
+            return matches, 200
+
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
+        except exc.InterfaceError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
