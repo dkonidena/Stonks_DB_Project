@@ -18,7 +18,7 @@ function init() {
     elemProductListEmptyMessage.hide();
     elemProductListEmptyMessage.removeClass("d-none");
 
-    $("#productIdInput,#productInpu,#valueInUSDInput,#companyInput").on("change", checkProductValidity);
+    $("#productInput,#valueInUSDInput,#companyInput").on("change", checkProductValidity);
 
     $("#productList").on("show.bs.collapse", () => {
         $("#productListCollapseSymbol").text("expand_less");
@@ -55,6 +55,16 @@ function init() {
     });
 
     $("#discardChangesButton").click(clearForm);
+
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#productIdInput").val();
+        if (id !== "") {
+            api.delete.products(id, () => {
+                showSuccess('Product deleted');
+                resetState();
+            },showError)
+        }
+    });
 
     $("#doAdvancedSearch").click( () => {
         clearProductList();

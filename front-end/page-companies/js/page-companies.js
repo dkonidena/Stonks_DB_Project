@@ -53,6 +53,12 @@ function companyObjectFromForm() {
 
 function checkCompanyValidity() {
     $("#saveCompanyButton").prop('disabled', !isValidCompany());
+
+    if ($("#companyIdInput").val() === "") {
+        $("#deleteObject").hide();
+    } else {
+        $("#deleteObject").show();
+    }
 }
 
 function isValidCompany() {
@@ -76,6 +82,8 @@ function loadCompanyToForm(company) {
     fields.forEach((x) => {
             $(x[0]).val(x[1]).trigger("change");
     });
+
+    checkCompanyValidity();
 }
 
 function clearForm() {

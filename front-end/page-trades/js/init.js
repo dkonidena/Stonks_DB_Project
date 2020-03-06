@@ -104,6 +104,16 @@ function init() {
         }
     });
 
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#tradeId").text();
+        if (id !== "") {
+            api.delete.trades(id, () => {
+                showSuccess('Trade deleted');
+                resetState();
+            },showError)
+        }
+    });
+
     $("#discardChangesButton").on("click", () => {
         let t = new Trade();
         t.notionalCurrency = currencies['USD'];

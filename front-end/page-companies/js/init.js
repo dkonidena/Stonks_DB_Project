@@ -53,6 +53,16 @@ function init() {
 
     $("#discardChangesButton").click(clearForm);
 
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#companyIdInput").val();
+        if (id !== "") {
+            api.delete.companies(id, () => {
+                showSuccess('Trade deleted');
+                resetState();
+            },showError)
+        }
+    });
+
     $("#doAdvancedSearch").click( () => {
         clearCompanyList();
         getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {

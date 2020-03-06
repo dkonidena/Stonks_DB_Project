@@ -62,6 +62,12 @@ function productObjectFromForm() {
 
 function checkProductValidity() {
     $("#saveProductButton").prop('disabled', !isValidProduct());
+
+    if ($("#productIdInput").val() === "") {
+        $("#deleteObject").hide();
+    } else {
+        $("#deleteObject").show();
+    }
 }
 
 function isValidProduct() {
@@ -106,6 +112,8 @@ function loadProductToForm(product) {
         }
 
     });
+
+    checkProductValidity();
 }
 
 function companyNameToObject(name) {
