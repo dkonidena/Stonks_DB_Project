@@ -27,6 +27,7 @@ api.add_resource(resources.Reports, '/api/reports')
 api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
 api.add_resource(resources.Events, '/api/events')
+api.add_resource(resources.Config, '/api/config')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_2.0.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

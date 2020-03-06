@@ -10,6 +10,7 @@ import tempfile
 import os
 from sqlalchemy import exc
 import sys
+import datetime
 from datetime import date as date_func
 from random import choice
 from string import ascii_uppercase
@@ -74,10 +75,12 @@ class Currencies(Resource):
             isDryRun = request.args.get('isDryRun')
             if date is None:
                 result = models.CurrencyTypesModel.retrieve_all_currencies()
+                noOfMatches = len(result)
             else:
                 result = models.CurrencyValuationsModel.retrieve_currency(date)
+                noOfMatches = result.count()
             if isDryRun == "true":
-                message['noOfMatches'] = result.count()
+                message['noOfMatches'] = noOfMatches
                 return message, 200
             elif isDryRun == "false":
                 i = 1
@@ -158,6 +161,8 @@ class Companies(Resource):
             name = data['name']
             if name is None or len(name) == 0:
                 return {'message':'company name is empty'}, 400
+            if models.CompanyModel.retrieve_company_by_name(name).count() != 0:
+                return {'message':'company name already exists'}, 405
             date_entered = str(date_func.today())
             new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = date_entered, UserIDCreatedBy = userID) # should have more parameters, user_ID
             new_company.save_to_db()
@@ -188,6 +193,8 @@ class Companies(Resource):
             name = data['name']
             if name is None or len(name) == 0:
                 return {'message':'company name is empty'}, 400
+            if models.CompanyModel.retrieve_company_by_name(name).count() != 0:
+                return {'message':'company name already exists'}, 405
             models.CompanyModel.update_company(company_ID, name)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
             date_now = str(date_func.today())
@@ -512,6 +519,8 @@ class Trades(Resource):
         # needs error checking
         try:
             userID = request.headers.get('userID')
+            if userID is None:
+                return {'message':'user ID not sent'}, 400
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
             json_data = request.data
@@ -584,7 +593,24 @@ class Trades(Resource):
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
+
+            # Checking the editing period to see if the edit is legal
             trade_ID = request.args.get('id')
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID).DateOfTrade
+            print(trade_date)
+            # converting the date to datetime.date object
+            formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
+            # today's date
+            date_now = datetime.date.today()
+            editing_period = datetime.timedelta(days = 30) #placeholder
+            # buffer of 6 weeks 
+            buffer = datetime.timedelta(weeks = 6)
+            if formatted_trade_date > date_now or date_now > formatted_trade_date + editing_period + buffer:
+                return {'message' : 'trade is beyond the editing period'}, 405
+            else:
+                print("Valid")
+                exit(0)
+
             json_data = request.data
             data = json.loads(json_data)
             product = data['product']
@@ -643,6 +669,24 @@ class Trades(Resource):
                 return {'message': 'Request malformed'}, 400
             if models.DerivativeTradesModel.get_trade_with_ID(trade_ID).count() == 0:
                 return {'message': 'Trade id not present'}, 400
+
+            # Checking the editing period to see if the edit is legal
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID).DateOfTrade
+            print(trade_date)
+            # converting the date to datetime.date object
+            formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
+            # today's date
+            date_now = datetime.date.today()
+            print(Config.days)
+            editing_period = datetime.timedelta(Config.days) #placeholder
+            # buffer of 6 weeks 
+            buffer = datetime.timedelta(weeks = 6)
+            if formatted_trade_date > date_now or date_now > formatted_trade_date + buffer + editing_period:
+                return {'message' : 'trade is beyond the editing period'}, 405
+            else:
+                print("Valid")
+                exit(0)
+
             models.DerivativeTradesModel.delete_trade(trade_ID)
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
             date_now = str(date_func.today())
@@ -857,7 +901,7 @@ class CheckTrade(Resource):
 class Events(Resource):
     def get(self):
         try:
-            userID = request.args['id']
+            userID = request.headers.get('userID')
             actions = models.EventLogModel.get_actions_by_user(userID)
             matches = []
             for action in actions:
@@ -878,3 +922,21 @@ class Events(Resource):
         except exc.InterfaceError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
+
+class Config(Resource):
+
+    days = 30 ##(356/12) * 3 #3 Months is the preset period (Financial Quarter)
+    neighboursFromRules = 7
+    noOfIterations = 100
+
+    ###NEEDS ERROR CHECKING###
+    def get(self):
+        return {'days': self.days, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 200
+
+    def patch(self):
+        json_data = request.data
+        data = json.loads(json_data)
+        self.days = data['days']
+        self.neighboursFromRules = data['neighboursFromRules']
+        self.noOfIterations = data['noOfIterations']
+        return 'success', 200
