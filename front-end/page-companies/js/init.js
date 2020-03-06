@@ -28,6 +28,8 @@ function init() {
         setInputFilter($(x[0]), (v) => { return x[1].test(v) });
     });
 
+    $("#companyInput").on("change", checkCompanyValidity);
+
     $("#addCompanyButton").click( () => {
         let company = new Company();
         company.if = `NEW${newCompCount++}`;
