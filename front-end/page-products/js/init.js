@@ -33,10 +33,6 @@ function init() {
     });
 
     $("#addProductButton").click( () => {
-        getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
-            companies.forEach(addCompanyToUI);
-        });
-
         let product = new Product();
         product.if = `NEW${newProdCount++}`;
         addProductToUI(product);
@@ -69,6 +65,10 @@ function init() {
                 products.forEach(addProductToUI);
             })
         });
+    });
+
+    getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
+        companies.forEach(addCompanyToUI);
     });
 
     $('.select2-comp').select2({
