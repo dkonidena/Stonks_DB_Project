@@ -33,28 +33,28 @@ function init() {
     });
 
     $("#addProductButton").click( () => {
-        let product = new Product();
-        product.if = `NEW${newProdCount++}`;
-        addProductToUI(product);
-        loadProductToForm(product);
+        clearForm();
         showProductForm();
     });
 
     $("#saveProductButton").click( () => {
         let product = productObjectFromForm();
         if (product.id != "") {
-            api.patch.products(product.id, product.getAPIObject(), () => showSuccess('Product updated.'), showError);
+            api.patch.products(product.id, product.getAPIObject(), () => {
+                showSuccess('Product updated.');
+                clearForm();
+            }, showError);
         }
         else {
-            api.post.products(product.getAPIObject(), () => showSuccess('Product saved.'), showError);
+            api.post.products(product.getAPIObject(), () => {
+                showSuccess('Product saved.');
+                clearForm();
+            }, showError);
         }
         //TODO add visual feedback of the save to user
     });
 
-    $("#discardChangesButton").click( () => {
-        let product = new Product();
-        loadProductToForm(product);
-    });
+    $("#discardChangesButton").click(clearForm);
 
     $("#doAdvancedSearch").click( () => {
         clearProductList();

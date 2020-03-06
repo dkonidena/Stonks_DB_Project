@@ -31,26 +31,27 @@ function init() {
     $("#companyInput").on("change", checkCompanyValidity);
 
     $("#addCompanyButton").click( () => {
-        let company = new Company();
-        loadCompanyToForm(company);
+        clearForm();
         showCompanyForm();
     });
 
     $("#saveCompanyButton").click( () => {
         let company = companyObjectFromForm();
         if (company.id != "") {
-            api.patch.companies(company.id, company.getAPIObject(), () => showSuccess('Company updated.'), showError);
+            api.patch.companies(company.id, company.getAPIObject(), () => {
+                showSuccess('Company updated.');
+                clearForm();
+            }, showError);
         }
         else {
-            api.post.companies(company.getAPIObject(), () => showSuccess('Company saved.'), showError);
+            api.post.companies(company.getAPIObject(), () => {
+                showSuccess('Company saved.');
+                clearForm();
+            }, showError);
         }
-        //TODO add visual feedback of the save to user
     });
 
-    $("#discardChangesButton").click(() => {
-        let company = new Company();
-        loadCompanyToForm(company);
-    });
+    $("#discardChangesButton").click(clearForm);
 
     $("#doAdvancedSearch").click( () => {
         clearCompanyList();

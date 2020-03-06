@@ -111,3 +111,8 @@ function loadProductToForm(product) {
 function companyNameToObject(name) {
     return Object.values(companies).filter(x => x.name === name)[0];
 }
+
+function clearForm() {
+    let product = new Product();
+    loadProductToForm(product);
+}

@@ -77,3 +77,8 @@ function loadCompanyToForm(company) {
             $(x[0]).val(x[1]).trigger("change");
     });
 }
+
+function clearForm() {
+    let company = new Company();
+    loadCompanyToForm(company);
+}
