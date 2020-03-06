@@ -32,8 +32,6 @@ function init() {
 
     $("#addCompanyButton").click( () => {
         let company = new Company();
-        company.if = `NEW${newCompCount++}`;
-        addCompanyToUI(company);
         loadCompanyToForm(company);
         showCompanyForm();
     });
@@ -47,6 +45,11 @@ function init() {
             api.post.companies(company.getAPIObject(), () => showSuccess('Company saved.'), showError);
         }
         //TODO add visual feedback of the save to user
+    });
+
+    $("#discardChangesButton").click(() => {
+        let company = new Company();
+        loadCompanyToForm(company);
     });
 
     $("#doAdvancedSearch").click( () => {
