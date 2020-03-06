@@ -225,7 +225,7 @@ class Companies(Resource):
                 return {'message': 'Request malformed'}, 400
             models.CompanyModel.update_date_deleted(company_ID, date_now)
             userAction = "User has deleted a record in the Companies table with the ID: " + company_ID
-            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Deletion", ReferenceID = company_ID, EmployeeID = user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Companies", TypeOfAction = "Deletion", ReferenceID = company_ID, EmployeeID = userID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -363,13 +363,13 @@ class Products(Resource):
             models.ProductSellersModel.update_product_sellers(product_ID, company_ID)
             models.ProductValuationsModel.update_product_valuations(product_ID, value_in_USD, date_now)
             userAction = "User has updated a record in the Products table with the ID: " + product_ID
-            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = userID)
             new_event.save_to_db()
             userAction = "A product update has cascaded to the ProductSellers table with the ID: " + product_ID
-            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductSellers", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductSellers", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = userID)
             new_event.save_to_db()
             userAction = "A product update has cascaded to the ProductValuations table with the ID: " + product_ID
-            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductValuations", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "ProductValuations", TypeOfAction = "Update", ReferenceID = product_ID, EmployeeID = userID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
@@ -389,7 +389,7 @@ class Products(Resource):
             date_now = str(date_func.today())
             models.ProductModel.update_date_deleted(product_ID, date_now) # instead of deletion, the dateDeleted attribute is updated
             userAction = "User has deleted a record in the Products table with the ID: " + product_ID
-            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Deletion", ReferenceID = product_ID, EmployeeID = user_ID)
+            new_event = models.EventLogModel(EventDescription = userAction, DateOfEvent = date_now, Table = "Products", TypeOfAction = "Deletion", ReferenceID = product_ID, EmployeeID = userID)
             new_event.save_to_db()
             return "success", 200
         except exc.IntegrityError:
