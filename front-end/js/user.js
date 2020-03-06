@@ -20,37 +20,34 @@ function setCurrentUserID(id) {
     }
 };
 
-function tryLogIn() {
-    let u = getCurrentUserID();
+function tryLogIn(u) {
     if (u === undefined) {
         userLogOut();
         return false;
     }
     else {
-        userLogIn(u);
-        return true;
+        if (u in users) {
+            userLogIn(u);
+            setCurrentUserID(u);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
 function userLogIn(id) {
-    if (!(id in users)) {
-        return false;
-    }
-
+    if (id === undefined) { return; }
     const colours = ["#007bff", "#6610f2", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745", "#20c997", "#17a2b8", "#fff", "#343a40"];
     const userLoggedInHTML = "<a class=\"dropdown-item\" id=\"userActivityLogButton\">Activity Log</a> <a class=\"dropdown-item\" id=\"userLogoutButton\">Logout</a>";
 
-    //TODO: check id against database
     userElements.label.text(id);
-    setCurrentUserID(id);
     userElements.dropdown.html(userLoggedInHTML);
     $("#userActivityLogButton").on("click", () => {
         showError("NotImplementedError");
     });
     $("#userLogoutButton").on("click", showLogoutModal);
     userElements.icon.css("color", colours[id.hashCode()%colours.length]);
-
-    return true;
 }
 
 function userLogOut() {
@@ -85,21 +82,23 @@ function init() {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
-    tryLogIn();
+    // tryLogIn();
     $("#loginModalLoginButton").on("click", () => {
         //TODO: check id with server
-        if ($("#loginModalUserID").val() === "") { return }
-        if (userLogIn($("#loginModalUserID").val())) {
+        if (tryLogIn($("#loginModalUserID").val())) {
             $("#loginModalUserID").removeClass("is-invalid");
             slide();
         } else {
             $("#loginModalUserID").toggleClass("is-invalid");
         }
     });
+
     $("#logoutModalLogoutButton").on("click", () => {
         userLogOut();
         $("#logoutModal").modal("hide");
     });
+
+    userLogIn(getCurrentUserID());
 };
 
 $(document).ready(init);

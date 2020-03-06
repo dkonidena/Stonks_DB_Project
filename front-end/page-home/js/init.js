@@ -5,7 +5,7 @@ $(document).ready(() => {
     $("#reports").click(() => window.location = "../page-reports/page-reports.html");
 
     getUserList(() => {
-        if (tryLogIn()) {
+        if (tryLogIn(getCurrentUserID())) {
             slide();
         }
     });
