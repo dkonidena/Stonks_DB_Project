@@ -58,7 +58,7 @@ function init() {
         if (id !== "") {
             api.delete.companies(id, () => {
                 showSuccess('Trade deleted');
-                resetState();
+                clearForm();
             },showError)
         }
     });
