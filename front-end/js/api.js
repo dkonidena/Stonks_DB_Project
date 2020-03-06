@@ -2,7 +2,7 @@ const TIMEOUT = 10000;
 const API_ENDPOINT = "http://localhost:8002/api";
 
 const api = {
-    getUserID: getCurrentUserID,
+    getUserID: () => { return getCurrentUserID() },
     get: {
         users: (dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/users?&isDryRun=${dryRun}`, res, err);
