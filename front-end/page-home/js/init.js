@@ -4,7 +4,7 @@ $(document).ready(() => {
     $("#products").click(() => window.location = "../page-products/page-products.html");
     $("#reports").click(() => window.location = "../page-reports/page-reports.html");
 
-    getUserList();
+    getUserList(() => {});
 });
 
 function slide() {
