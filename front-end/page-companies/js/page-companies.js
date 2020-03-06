@@ -51,6 +51,20 @@ function companyObjectFromForm() {
     return company;
 }
 
+function checkCompanyValidity() {
+    $("#saveCompanyButton").prop('disabled', !isValidCompany());
+
+    if ($("#companyIdInput").val() === "") {
+        $("#deleteObject").hide();
+    } else {
+        $("#deleteObject").show();
+    }
+}
+
+function isValidCompany() {
+    return $("#companyInput").val() !== "";
+}
+
 function loadCompanyToForm(company) {
     if (company === null) {
         showError("Tried to load null company to form");
@@ -68,4 +82,11 @@ function loadCompanyToForm(company) {
     fields.forEach((x) => {
             $(x[0]).val(x[1]).trigger("change");
     });
+
+    checkCompanyValidity();
+}
+
+function clearForm() {
+    let company = new Company();
+    loadCompanyToForm(company);
 }

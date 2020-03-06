@@ -33,6 +33,10 @@ function tryLogIn() {
 }
 
 function userLogIn(id) {
+    if (!(id in users)) {
+        return false;
+    }
+
     const colours = ["#007bff", "#6610f2", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745", "#20c997", "#17a2b8", "#fff", "#343a40"];
     const userLoggedInHTML = "<a class=\"dropdown-item\" id=\"userActivityLogButton\">Activity Log</a> <a class=\"dropdown-item\" id=\"userLogoutButton\">Logout</a>";
 
@@ -45,6 +49,8 @@ function userLogIn(id) {
     });
     $("#userLogoutButton").on("click", showLogoutModal);
     userElements.icon.css("color", colours[id.hashCode()%colours.length]);
+
+    return true;
 }
 
 function userLogOut() {
@@ -83,8 +89,12 @@ function init() {
     $("#loginModalLoginButton").on("click", () => {
         //TODO: check id with server
         if ($("#loginModalUserID").val() === "") { return }
-        userLogIn($("#loginModalUserID").val());
-        slide();
+        if (userLogIn($("#loginModalUserID").val())) {
+            $("#loginModalUserID").removeClass("is-invalid");
+            slide();
+        } else {
+            $("#loginModalUserID").toggleClass("is-invalid");
+        }
     });
     $("#logoutModalLogoutButton").on("click", () => {
         userLogOut();

@@ -148,10 +148,16 @@
                     </form>
                     <div class="row mt-5 justify-content-md-center">
                         <div class="col-auto">
-                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" disabled>Check Trade</button>
+                            <button class="btn btn-lg btn-block btn-primary" id="saveTradeButton" style="display:none;" disabled>Save Trade</button>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Cancel</button>
+                            <button class="btn btn-lg btn-block btn-info" id="checkTradeButton" disabled>Check Trade</button>
+                        </div>
+                        <div class="col-auto" id="deleteObject" style="display: none;">
+                            <button type="button" class="btn btn-lg btn-block btn-danger" data-toggle="modal" data-target="#deleteConfirmModal">Delete</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-lg btn-block btn-light" data-toggle="modal" data-target="#confirmCancelTradeModal" id="cancelTradeButton">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -191,6 +197,48 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" id="discardChangesButton" data-dismiss="modal">Discard Changes</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Return to Editor</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
+                                <h5 class="modal-title">Confirm Delete Operation</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this trade?
+                                <div style="color:grey">note: this action cannot be undone</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" id="deleteObjectConfirmed" data-dismiss="modal">Delete Trade</button>
+                                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="mustAcceptWarning" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Information</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                You must accept or ignore all of the suggestions to continue.<br><br>
+                                <div style="color:grey">note: to dismiss all suggestions, press the "Ignore All" button.</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" id="discardChangesButton" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -363,32 +411,33 @@
                 </div>
 
                 <div class="modal modal-fade" id="apiErrorModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
-                                <h5 class="modal-title text-danger">Error</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <i style="font-size:26px;margin-top: 0.2rem;" class="material-icons text-danger mr-1">error_outline</i>
+                          <h5 class="modal-title text-danger">Error</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
 
-                                <div class="h5 pb-2">
-                                    An error has occured.
-                                </div>
-                                <div class="pb-3" id="errorShort"></div>
-                                <button class="btn btn-sm btn-block btn-light" type="button" data-toggle="collapse" data-target="#errorDetail">
-                                    View Full Error
-                                </button>
-                                <div class="collapse" id="errorDetail">
-                                    <pre class="card card-body" id="errorDetailContent" style="font-size:75%;padding:0.5rem;"></pre>
-                                </div>
-                            <div class="modal-footer mt-3">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
+                          <div class="h5 pb-2">
+                              An error has occured.
+                          </div>
+                          <div class="pb-3" id="errorShort"></div>
+                          <button class="btn btn-sm btn-block btn-light" type="button" data-toggle="collapse" data-target="#errorDetail">
+                              View Full Error
+                          </button>
+                          <div class="collapse" id="errorDetail">
+                              <pre class="card card-body" id="errorDetailContent" style="font-size:75%;padding:0.5rem;"></pre>
+                          </div>
+                      </div>
+                      <div class="modal-footer mt-3">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
                     </div>
+                  </div>
                 </div>
 
                 <div class="row mb-3"></div>

@@ -100,6 +100,7 @@ function loadTradeToForm(trade) {
 
     elements.tradeId.text(trade.tradeId);
     elements.tradeDate.text(trade.tradeDate.toISOString().substring(0,10));
+    checkTradeValidity();
 }
 
 function companyNameToObject(name) {
@@ -152,7 +153,14 @@ function tradeObjectFromForm() {
 }
 
 function checkTradeValidity() {
+    $("#checkTradeButton").prop('disabled', !isValidTrade());
     $("#saveTradeButton").prop('disabled', !isValidTrade());
+
+    if ($("#tradeId").text() === "") {
+        $("#deleteObject").hide();
+    } else {
+        $("#deleteObject").show();
+    }
 }
 
 function isValidTrade() {
@@ -281,6 +289,8 @@ function showResults(trades) {
 
 function resetState() {
     $("#tradeEditorForm").hide();
+    $("#saveTradeButton").hide();
+    $("#suggestionsTable").hide();
     $("#startButtons").show();
 }
 

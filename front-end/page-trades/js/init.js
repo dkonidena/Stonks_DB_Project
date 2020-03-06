@@ -52,6 +52,33 @@ function init() {
         } catch (e) {}
     });
 
+    $("#filter-creationDateLowerDayInput, #filter-creationDateUpperDayInput, #filter-modificationDateLowerDayInput, #filter-modificationDateUpperDayInput, #maturityDateDayInput").on("change", function () {
+        const day = parseInt($(this).val());
+        if (day > 31 || day < 1) {
+            $(this).addClass("is-invalid");
+        } else {
+            $(this).removeClass("is-invalid");
+        }
+    });
+
+    $("#filter-creationDateLowerMonthInput, #filter-creationDateUpperMonthInput, #filter-modificationDateLowerMonthInput, #filter-modificationDateUpperMonthInput, #maturityDateMonthInput").on("change", function () {
+        const month = parseInt($(this).val());
+        if (month > 12 || month < 1) {
+            $(this).addClass("is-invalid");
+        } else {
+            $(this).removeClass("is-invalid");
+        }
+    });
+
+    $("#maturityDateYearInput").on("change", function () {
+        const year = parseInt($(this).val());
+        if (year < (new Date()).getFullYear()) {
+            $(this).addClass("is-invalid");
+        } else {
+            $(this).removeClass("is-invalid");
+        }
+    });
+
     $("#addTradeButton").on("click", () => {
         let t = new Trade();
         t.notionalCurrency = currencies['USD'];
@@ -62,22 +89,29 @@ function init() {
     });
 
     $("#saveTradeButton").on("click", () => {
-        if(!$("#suggestionsTable:visible").length) {
-            getFeedback();
-        } else {
+        if (isValidTrade()) {
             if (allSuggestionsResolved()) {
                 saveTrade();
-                $("#suggestionsTable").hide();
-                $("#saveTradeButton").text("Check Trade");
             } else {
-                getFeedback();
+                $("#mustAcceptWarning").modal("show");
             }
         }
     });
 
     $("#checkTradeButton").on("click", () => {
-        api.post.check_trade(tradeObjectFromForm().getAPIObject(), console.log, showError);
-        //TODO add visual feedback of the checks
+        if (isValidTrade()) {
+            getFeedback();
+        }
+    });
+
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#tradeId").text();
+        if (id !== "") {
+            api.delete.trades(id, () => {
+                showSuccess('Trade deleted');
+                resetState();
+            },showError)
+        }
     });
 
     $("#discardChangesButton").on("click", () => {

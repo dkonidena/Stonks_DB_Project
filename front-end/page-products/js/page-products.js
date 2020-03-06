@@ -60,6 +60,33 @@ function productObjectFromForm() {
     return product;
 }
 
+function checkProductValidity() {
+    $("#saveProductButton").prop('disabled', !isValidProduct());
+
+    if ($("#productIdInput").val() === "") {
+        $("#deleteObject").hide();
+    } else {
+        $("#deleteObject").show();
+    }
+}
+
+function isValidProduct() {
+    let obj;
+    try {
+        obj = productObjectFromForm().getAPIObject()
+    } catch (e) {
+        return false;
+    }
+
+    for (const value of Object.values(obj)) {
+        if (value === "") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function loadProductToForm(product) {
     if (product === null) {
         showError("Tried to load null product to form");
@@ -85,8 +112,15 @@ function loadProductToForm(product) {
         }
 
     });
+
+    checkProductValidity();
 }
 
 function companyNameToObject(name) {
     return Object.values(companies).filter(x => x.name === name)[0];
+}
+
+function clearForm() {
+    let product = new Product();
+    loadProductToForm(product);
 }

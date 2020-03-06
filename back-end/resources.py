@@ -156,7 +156,7 @@ class Companies(Resource):
             data = json.loads(json_data)
             code = ''.join(choice(ascii_uppercase) for i in range(12))
             name = data['name']
-            if len(name) == 0:
+            if name is None or len(name) == 0:
                 return {'message':'company name is empty'}, 400
             date_entered = str(date_func.today())
             new_company = models.CompanyModel(CompanyCode = code, CompanyName = name, DateEnteredInSystem = date_entered, UserIDCreatedBy = userID) # should have more parameters, user_ID
@@ -178,11 +178,15 @@ class Companies(Resource):
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
+            if 'id' not in request.args:
+                return {'message':'company code not present'}, 400
             company_ID = request.args.get('id')
+            if models.CompanyModel.retrieve_company_by_code(company_ID).count() == 0:
+                return {'message':'company does not exist'}, 400
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
-            if len(name) == 0:
+            if name is None or len(name) == 0:
                 return {'message':'company name is empty'}, 400
             models.CompanyModel.update_company(company_ID, name)
             userAction = "User has updated a record in the Companies table with the ID: " + company_ID
@@ -331,17 +335,16 @@ class Products(Resource):
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
-            product_ID = request.args.get('id')
             if 'id' not in request.args:
-                return {'message': 'Request malformed'}, 400
+                return {'message' : 'Request malformed'}, 400
+            product_ID = request.args.get('id')
             if models.ProductModel.retrieve_product_by_id(product_ID).count() == 0:
-                return {'message' : 'Cannot update a non-existant product'}, 400
+                return{'message' : 'Cannot update a non-existant product'}, 400
             json_data = request.data
             data = json.loads(json_data)
             name = data['name']
             value_in_USD = data['valueInUSD']
             company_ID = data['companyID']
-            print("VALUE: ", company_ID)
             if name is None or len(name) == 0:
                 return {'message':'product name is empty'}, 400
             if value_in_USD is None or len(value_in_USD) == 0:
@@ -371,9 +374,9 @@ class Products(Resource):
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
                 return {'message':'user not present'}, 401
-            product_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
+            product_ID = request.args.get('id')
             if models.ProductModel.retrieve_product_by_id(product_ID).count() == 0:
                 return {'message' : 'Cannot delete a non-existant product'}, 400
             date_now = str(date_func.today())
@@ -845,6 +848,31 @@ class CheckTrade(Resource):
                 'tradeDate': date_now,
                 'userIDcreatedBy': userID
                 }, 200
+
+        except exc.IntegrityError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
+        except exc.InterfaceError:
+            traceback.print_exc(file=sys.stdout)
+            return {'message' : 'error occurred'}, 500
+
+class Events(Resource):
+    def get(self):
+        try:
+            userID = request.args['id']
+            actions = models.EventLogModel.get_actions_by_user(userID)
+            matches = []
+            for action in actions:
+                matches.append({
+                "eventID": str(action.EventID),
+                "eventDescription": str(action.EventDescription),
+                "dateOfEvent": str(action.DateOfEvent),
+                "table": str(action.Table),
+                "typeOfAction": str(action.TypeOfAction),
+                "referenceID": str(action.ReferenceID),
+                "employeeID": str(action.EmployeeID)
+            })
+            return matches, 200
 
         except exc.IntegrityError:
             traceback.print_exc(file=sys.stdout)

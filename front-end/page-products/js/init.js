@@ -18,6 +18,8 @@ function init() {
     elemProductListEmptyMessage.hide();
     elemProductListEmptyMessage.removeClass("d-none");
 
+    $("#productInput,#valueInUSDInput,#companyInput").on("change", checkProductValidity);
+
     $("#productList").on("show.bs.collapse", () => {
         $("#productListCollapseSymbol").text("expand_less");
         if (isProductListEmpty()) {
@@ -31,31 +33,37 @@ function init() {
     });
 
     $("#addProductButton").click( () => {
-        getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
-            companies.forEach(addCompanyToUI);
-        });
-
-        let product = new Product();
-        product.if = `NEW${newProdCount++}`;
-        addProductToUI(product);
-        loadProductToForm(product);
+        clearForm();
         showProductForm();
     });
 
     $("#saveProductButton").click( () => {
         let product = productObjectFromForm();
         if (product.id != "") {
-            api.patch.products(product.id, product.getAPIObject(), () => showSuccess('Product updated.'), showError);
+            api.patch.products(product.id, product.getAPIObject(), () => {
+                showSuccess('Product updated.');
+                clearForm();
+            }, showError);
         }
         else {
-            api.post.products(product.getAPIObject(), () => showSuccess('Product saved.'), showError);
+            api.post.products(product.getAPIObject(), () => {
+                showSuccess('Product saved.');
+                clearForm();
+            }, showError);
         }
         //TODO add visual feedback of the save to user
     });
 
-    $("#discardChangesButton").click( () => {
-        var product = Object.values(products).filter(t => t.id == $("#productIdInput").val())[0];
-        loadProductToForm(product);
+    $("#discardChangesButton").click(clearForm);
+
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#productIdInput").val();
+        if (id !== "") {
+            api.delete.products(id, () => {
+                showSuccess('Product deleted');
+                resetState();
+            },showError)
+        }
     });
 
     $("#doAdvancedSearch").click( () => {
@@ -67,6 +75,10 @@ function init() {
                 products.forEach(addProductToUI);
             })
         });
+    });
+
+    getCompanyList(new Date(), 'mostBoughtFrom', (companies) => {
+        companies.forEach(addCompanyToUI);
     });
 
     $('.select2-comp').select2({

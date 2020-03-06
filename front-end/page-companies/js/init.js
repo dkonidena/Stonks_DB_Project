@@ -28,23 +28,39 @@ function init() {
         setInputFilter($(x[0]), (v) => { return x[1].test(v) });
     });
 
+    $("#companyInput").on("change", checkCompanyValidity);
+
     $("#addCompanyButton").click( () => {
-        let company = new Company();
-        company.if = `NEW${newCompCount++}`;
-        addCompanyToUI(company);
-        loadCompanyToForm(company);
+        clearForm();
         showCompanyForm();
     });
 
     $("#saveCompanyButton").click( () => {
         let company = companyObjectFromForm();
         if (company.id != "") {
-            api.patch.companies(company.id, company.getAPIObject(), () => showSuccess('Company updated.'), showError);
+            api.patch.companies(company.id, company.getAPIObject(), () => {
+                showSuccess('Company updated.');
+                clearForm();
+            }, showError);
         }
         else {
-            api.post.companies(company.getAPIObject(), () => showSuccess('Company saved.'), showError);
+            api.post.companies(company.getAPIObject(), () => {
+                showSuccess('Company saved.');
+                clearForm();
+            }, showError);
         }
-        //TODO add visual feedback of the save to user
+    });
+
+    $("#discardChangesButton").click(clearForm);
+
+    $("#deleteObjectConfirmed").click(() => {
+        let id = $("#companyIdInput").val();
+        if (id !== "") {
+            api.delete.companies(id, () => {
+                showSuccess('Trade deleted');
+                resetState();
+            },showError)
+        }
     });
 
     $("#doAdvancedSearch").click( () => {
