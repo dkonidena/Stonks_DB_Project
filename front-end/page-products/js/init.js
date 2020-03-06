@@ -18,6 +18,8 @@ function init() {
     elemProductListEmptyMessage.hide();
     elemProductListEmptyMessage.removeClass("d-none");
 
+    $("#productIdInput,#productInpu,#valueInUSDInput,#companyInput").on("change", checkProductValidity);
+
     $("#productList").on("show.bs.collapse", () => {
         $("#productListCollapseSymbol").text("expand_less");
         if (isProductListEmpty()) {

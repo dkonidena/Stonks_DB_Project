@@ -60,6 +60,27 @@ function productObjectFromForm() {
     return product;
 }
 
+function checkProductValidity() {
+    $("#saveProductButton").prop('disabled', !isValidProduct());
+}
+
+function isValidProduct() {
+    let obj;
+    try {
+        obj = productObjectFromForm().getAPIObject()
+    } catch (e) {
+        return false;
+    }
+
+    for (const value of Object.values(obj)) {
+        if (value === "") {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function loadProductToForm(product) {
     if (product === null) {
         showError("Tried to load null product to form");
