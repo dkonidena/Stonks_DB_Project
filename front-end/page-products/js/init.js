@@ -52,7 +52,7 @@ function init() {
     });
 
     $("#discardChangesButton").click( () => {
-        var product = Object.values(products).filter(t => t.id == $("#productIdInput").val())[0];
+        let product = new Product();
         loadProductToForm(product);
     });
 
