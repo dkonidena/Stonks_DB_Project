@@ -3,7 +3,7 @@ import sys
 import uuid
 import json
 import zipfile
-from flask import Flask, request, abort, jsonify, send_from_directory, render_template
+from flask import Flask, request, abort, jsonify, send_from_directory, render_template, redirect
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -36,8 +36,12 @@ db = SQLAlchemy(app)
 executor = ThreadPoolExecutor(1)
 executor.submit(resources.run_cron_job)
 
+@app.route('/')
+def index():
+    return redirect("/page-home/page-home.html", code=302)
+
 if __name__=="__main__":
     port = 8002
     host = '0.0.0.0'
-    print(f"\n\n > Address http://{host}:{port}/page-home/page-home.html <\n\n")
+    print(f"\n\n > Address http://{host}:{port} <\n\n")
     app.run(debug=True,port=port,host=host)
