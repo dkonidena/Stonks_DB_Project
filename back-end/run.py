@@ -14,7 +14,7 @@ from time import sleep
 
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='../front-end')
 api = Api(app)
 CORS(app)
 
@@ -36,9 +36,8 @@ db = SQLAlchemy(app)
 executor = ThreadPoolExecutor(1)
 executor.submit(resources.run_cron_job)
 
-@app.route('/')
-def index():
-    return jsonify({'message':'Welcome to Deustche Bank'})
-
 if __name__=="__main__":
-    app.run(debug=True,port=8002,host = '0.0.0.0')
+    port = 8002
+    host = '0.0.0.0'
+    print(f"\n\n > Address http://{host}:{port}/page-home/page-home.html <\n\n")
+    app.run(debug=True,port=port,host=host)
