@@ -35,6 +35,13 @@ body {
     margin: 0 auto;
 }
 
-#buttons > * {
+#buttons > button {
     box-shadow: 0 0 .2rem rgba(0,0,0,.1),0 .2rem .4rem rgba(0,0,0,.2);
+    font-size: 2em;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#buttons > button:hover {
+    font-size: 3em;
 }
