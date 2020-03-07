@@ -75,7 +75,7 @@ function showLogoutModal() {
 
 function init() {
     const filters = [
-        [$("#loginModalUserID"), /^[0-9a-zA-Z]*$/],
+        [$("#loginModalUserID"), /^\d*$/],
     ]
 
     filters.forEach((x) => {
