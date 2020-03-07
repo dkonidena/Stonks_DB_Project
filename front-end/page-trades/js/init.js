@@ -149,7 +149,7 @@ function init() {
         });
     });
 
-    getCurrencyList(new Date(), (currencies) => {
+    getCurrencyList(null, (currencies) => {
         currencies.forEach(addCurrencyToUI);
     });
 

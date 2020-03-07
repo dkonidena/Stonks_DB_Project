@@ -8,7 +8,11 @@ const api = {
             request("GET", `${API_ENDPOINT}/users?&isDryRun=${dryRun}`, res, err);
         },
         currencies: (date, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
+            let options = `isDryRun=${dryRun}`;
+            if (date !== null) {
+                options += `&date=${date.toISOString()}`
+            }
+            request("GET", `${API_ENDPOINT}/currencies?${options}`, res, err);
         },
         companies: (date, order, dryRun, res, err) => {
             let options = `isDryRun=${dryRun}&order=${order}`;
