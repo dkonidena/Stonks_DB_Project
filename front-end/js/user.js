@@ -5,7 +5,7 @@ const userElements = {
     icon: $("#userIcon"),
 };
 
-const modal = `
+const configModal = `
 <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -35,6 +35,23 @@ const modal = `
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="saveConfigButton" data-dismiss="modal">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>`
+
+const eventsModal = `
+<div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Event Log</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="events-table"></div>
             </div>
         </div>
     </div>
@@ -121,6 +138,47 @@ function showLogoutModal() {
     $("#logoutModal").modal("show");
 }
 
+function renderEventsTable(csv) {
+    const blob = new Blob([csv], { type: "text/plain" });
+    CsvToHtmlTable.init({
+        csv_path: URL.createObjectURL(blob),
+        element: "events-table",
+        allow_download: false,
+        csv_options: {"separator": ",", "delimiter": "\""},
+        datatables_options: {
+            "scrollY": "60vh",
+            "paging": true
+        },
+        onComplete: () => {}
+    });
+}
+
+function eventsToCSV(events) {
+    let csv = "Date, UserID, Event Description, EventID, ReferenceID, Table Name, Type\n";
+    for (const obj of events) {
+        let fields = [
+            obj["dateOfEvent"],
+            obj["employeeID"],
+            obj["eventDescription"],
+            obj["eventID"],
+            obj["referenceID"],
+            obj["table"],
+            obj["typeOfAction"]
+        ];
+
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (i === fields.length - 1) {
+                csv += `${field}\n`;
+            } else {
+                csv += `${field},`;
+            }
+        }
+    }
+
+    return csv;
+}
+
 function init() {
     const filters = [
         [$("#loginModalUserID"), /^\d*$/],
@@ -130,7 +188,15 @@ function init() {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
-    $("body").append(modal);
+    $("body").append(configModal);
+    $("body").append(eventsModal);
+
+    $('#activityLogModal').on('shown.bs.modal', () => {
+        api.get.events((events) => {
+            renderEventsTable(eventsToCSV(events));
+        }, showError);
+    });
+
     $("#saveConfigButton").click(() => {
         let config = {
             days: $("#config-numberOfDays").val(),

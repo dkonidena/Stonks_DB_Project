@@ -37,6 +37,9 @@ const api = {
         config: (res, err) => {
             request("GET", `${API_ENDPOINT}/config`, res, err);
         },
+        events: (res, err) => {
+            request("GET", `${API_ENDPOINT}/events`, res, err);
+        }
     },
     post: {
         // need to add nonce to all of these
