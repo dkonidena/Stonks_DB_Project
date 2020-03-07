@@ -78,7 +78,7 @@ class APITrade {
 }
 
 function getTradeList(filter, res) {
-    api.get.trades(filter.getAPIObject(), false, (response) => {
+    api.get.trades(filter.getAPIObject(), 0, false, (response) => {
         if (response['matches'] === undefined) {
             showError("Malformed server reponse", "trade matches field not present", false);
             return;
