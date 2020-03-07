@@ -125,8 +125,11 @@ function init() {
 
     $("#doAdvancedSearch").on("click", () => {
         let filter = filterObjectFromForm();
+        $("#resultsStatus").show();
+        $("#table-container").empty();
+        $("#resultsModal").modal("show");
         getTradeList(filter, (trades) => {
-            showResults(trades);
+            renderTable(tradesToCSV(trades));
         });
     });
 
