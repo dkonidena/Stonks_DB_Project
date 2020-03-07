@@ -925,18 +925,30 @@ class Events(Resource):
 
 class Config(Resource):
 
-    days = 30 ##(356/12) * 3 #3 Months is the preset period (Financial Quarter)
+    editingPeriod = int((356/12) * 3) #3 Months is the preset period (Financial Quarter)
     neighboursFromRules = 7
     noOfIterations = 100
 
+    @classmethod
+    def setNeighbours(self, neigbours):
+        self.neighboursFromRules = neigbours
+    
+    @classmethod
+    def setPeriod(self, days):
+        self.editingPeriod = days
+
+    @classmethod
+    def setIterations(self, iterations):
+        self.noOfIterations = iterations
+
     ###NEEDS ERROR CHECKING###
     def get(self):
-        return {'days': self.days, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 200
+        return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 200
 
     def patch(self):
         json_data = request.data
         data = json.loads(json_data)
-        self.days = data['days']
-        self.neighboursFromRules = data['neighboursFromRules']
-        self.noOfIterations = data['noOfIterations']
+        Config.setPeriod(data['days'])
+        Config.setNeighbours(data['neighboursFromRules'])
+        Config.setIterations(data['noOfIterations'])
         return 'success', 200
