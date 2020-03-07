@@ -935,12 +935,12 @@ class Config(Resource):
 
     ###NEEDS ERROR CHECKING###
     def get(self):
-        return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 200
+        return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 201
 
     def patch(self):
         json_data = request.data
         data = json.loads(json_data)
-        Config.setPeriod(data['days'])
-        Config.setNeighbours(data['neighboursFromRules'])
-        Config.setIterations(data['noOfIterations'])
-        return 'success', 200
+        Config.setPeriod(int(data['days']))
+        Config.setNeighbours(int(data['neighboursFromRules']))
+        Config.setIterations(int(data['noOfIterations']))
+        return 'success', 201
