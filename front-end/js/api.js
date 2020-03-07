@@ -30,9 +30,9 @@ const api = {
         reports: (filter, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/reports?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
         },
-        rules: (filter, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/rules?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
-        }
+        config: (res, err) => {
+            request("GET", `${API_ENDPOINT}/config`, res, err);
+        },
     },
     post: {
         // need to add nonce to all of these
@@ -64,6 +64,9 @@ const api = {
         },
         products: (id, product, res, err) => {
             request("PATCH", `${API_ENDPOINT}/products?id=${id}`, res, err, product);
+        },
+        config: (config, res, err) => {
+            request("PATCH", `${API_ENDPOINT}/config`, res, err, config);
         }
     },
     delete: {

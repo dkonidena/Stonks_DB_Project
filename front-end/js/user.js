@@ -5,6 +5,41 @@ const userElements = {
     icon: $("#userIcon"),
 };
 
+const modal = `
+<div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">System Configuration</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form>
+                        <div class="row">
+                            <div class="col"><label for="config-numberOfDays">Editing time window (days)</label></div>
+                            <div class="col"><input class="form-control" min="1" id="config-numberOfDays" type="number"></input>
+                            </div>
+                        </div><div class="row">
+                            <div class="col"><label for="config-neigboursFromRules">KNN Neigbour Count</label></div>
+                            <div class="col"><input class="form-control" min="1" id="config-neigboursFromRules" type="number"></input></div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><label for="config-noOfIterations">KNN Iterations</label></div>
+                            <div class="col"><input class="form-control" min="1" id="config-noOfIterations" type="number"></input></div>
+                        </div>
+                    </form>
+                <div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveConfigButton" data-dismiss="modal">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>`
+
 //returns undefined if cookie not present
 function getCurrentUserID() {
     return Cookies.get("userID");
@@ -39,15 +74,28 @@ function tryLogIn(u) {
 function userLogIn(id) {
     if (id === undefined) { return; }
     const colours = ["#007bff", "#6610f2", "#6f42c1", "#e83e8c", "#dc3545", "#fd7e14", "#ffc107", "#28a745", "#20c997", "#17a2b8", "#fff", "#343a40"];
-    const userLoggedInHTML = "<a class=\"dropdown-item\" id=\"userActivityLogButton\">Activity Log</a> <a class=\"dropdown-item\" id=\"userLogoutButton\">Logout</a>";
+    const userLoggedInHTML = `
+    <a class="dropdown-item" id="userActivityLogButton" data-toggle="modal" data-target="#activityLogModal">Activity Log</a>
+    <a class="dropdown-item" id="userLogoutButton" data-toggle="modal" data-target="#logoutModal">Logout</a>`;
+
+    const configPage = `<a class="dropdown-item" id="userConfigPageButton" data-toggle="modal" data-target="#configModal">Config Page</a>`;
 
     userElements.label.text(id);
-    userElements.dropdown.html(userLoggedInHTML);
-    $("#userActivityLogButton").on("click", () => {
-        showError("NotImplementedError");
-    });
-    $("#userLogoutButton").on("click", showLogoutModal);
+    if (id === "1870") {
+        userElements.dropdown.html(configPage);
+    }
+    userElements.dropdown.append(userLoggedInHTML);
     userElements.icon.css("color", colours[id.hashCode()%colours.length]);
+
+    const filters = [
+        ["#config-numberOfDays", /^\d*$/],
+        ["#config-neigboursFromRules", /^\d*$/],
+        ["#config-noOfIterations", /^\d*$/]
+    ];
+
+    filters.forEach((x) => {
+        setInputFilter($(x[0]), (v) => { return x[1].test(v) });
+    });
 }
 
 function userLogOut() {
@@ -82,6 +130,17 @@ function init() {
         setInputFilter(x[0], (v) => { return x[1].test(v) });
     });
 
+    $("body").append(modal);
+    $("#saveConfigButton").click(() => {
+        let config = {
+            days: $("#config-numberOfDays").val(),
+            neighboursFromRules: $("#config-neigboursFromRules").val(),
+            noOfIterations: $("#config-noOfIterations").val()
+        };
+
+        api.patch.config(config, console.log, showError);
+    });
+
     // tryLogIn();
     $("#loginModalLoginButton").on("click", () => {
         //TODO: check id with server
@@ -99,6 +158,12 @@ function init() {
     });
 
     userLogIn(getCurrentUserID());
+
+    api.get.config((res) => {
+        $("#config-numberOfDays").val(res.days);
+        $("#config-neigboursFromRules").val(res.neighboursFromRules);
+        $("#config-noOfIterations").val(res.noOfIterations);
+    }, showError);
 };
 
 $(document).ready(init);
