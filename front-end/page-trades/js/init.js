@@ -124,13 +124,15 @@ function init() {
     });
 
     $("#doAdvancedSearch").on("click", () => {
-        let filter = filterObjectFromForm();
+        currentFilter = filterObjectFromForm();
         $("#resultsStatus").show();
         $("#table-container").empty();
         $("#resultsModal").modal("show");
-        getTradeList(filter, (trades) => {
-            renderTable(tradesToCSV(trades));
-        });
+        getNextTradeBlock();
+    });
+
+    $("#resultsModal").on("hidden.bs.modal", () => {
+        $("#table-container").DataTable().destroy();
     });
 
     $("#searchTradesButton,#searchAgain").click(() => {

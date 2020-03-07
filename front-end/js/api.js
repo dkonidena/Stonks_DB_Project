@@ -28,7 +28,7 @@ const api = {
             }
             request("GET", `${API_ENDPOINT}/products?${options}`, res, err);
         },
-        trades: (filter, offset, dryRun, res, err) => {
+        trades: (filter, dryRun, res, err, offset) => {
             request("GET", `${API_ENDPOINT}/trades?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}&offset=${offset}`, res, err);
         },
         reports: (filter, dryRun, res, err) => {

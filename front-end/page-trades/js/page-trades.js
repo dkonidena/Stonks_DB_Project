@@ -1,3 +1,7 @@
+var currentTrades = "";
+var currentTradesNum = 0;
+var currentFilter = new TradeFilter();
+
 //search for elements needed only once to improve performance
 const elements = {
     trades: $("#trades"),
@@ -285,6 +289,15 @@ function resetState() {
     $("#startButtons").show();
 }
 
+//gets the next 1000 trades
+function getNextTradeBlock() {
+    getTradeList(currentFilter, (trades) => {
+        currentTrades = currentTrades.concat(tradesToCSV(trades));
+        renderTable(currentTrades);
+        currentTradesNum += trades.length;
+    }, currentTradesNum);
+}
+
 function renderTable(csv) {
     const blob = new Blob([csv], { type: "text/plain" });
     CsvToHtmlTable.init({
@@ -312,12 +325,20 @@ function renderTable(csv) {
                 showTradeForm();
             });
             $("#resultsStatus").hide();
+            //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
+            //if so, need to load the next block of trades
+            $(".page-link[data-dt-idx='7'], .page-link[data-dt-idx='8']").parent().on("click", () => {
+                if ($(".page-link[data-dt-idx='7']").parent().hasClass("active"))
+                    getNextTradeBlock();
+            })
         }
     });
 }
 
-function tradesToCSV(trades) {
-    let csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
+function tradesToCSV(trades, header = true) {
+    let csv;
+    if (header)
+        csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
     for (const trade of trades) {
         let fields = [
             trade.tradeId,
