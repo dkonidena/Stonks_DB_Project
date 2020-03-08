@@ -1,6 +1,4 @@
-var currentTrades = "";
 var currentTradesNum = 0;
-var currentFilter = new TradeFilter();
 
 //search for elements needed only once to improve performance
 const elements = {
@@ -293,10 +291,10 @@ function resetState() {
 function getNextTradeBlock(first) {
     getTradeList(currentFilter, (trades) => {
         if (first) {
+            currentTradesNum = 0;
             renderTable(tradesToCSV(trades, true));
         } else {
             let csv = tradesToCSV(trades, false);
-            console.log("csv ready")
             CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
         }
         currentTradesNum += trades.length;
@@ -326,9 +324,7 @@ function renderTable(csv) {
                 //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
                 //if so, need to load the next block of trades
                 $(".page-link[data-dt-idx='7'], .page-link[data-dt-idx='8']").parent().on("click", () => {
-                    console.log("here1");
                     if ($(".page-link[data-dt-idx='7']").parent().hasClass("active")) {
-                        console.log("here")
                         getNextTradeBlock(false);
                     }
                 });
