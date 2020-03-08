@@ -35,8 +35,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-executor = ThreadPoolExecutor(1)
-executor.submit(resources.run_cron_job)
+# executor = ThreadPoolExecutor(1)
+# executor.submit(resources.run_cron_job)
 
 @app.route('/')
 def index():
