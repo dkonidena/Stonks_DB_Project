@@ -438,7 +438,7 @@ class Trades(Resource):
                     if 'dateCreated' in filter:
                         if len(filter['dateCreated']) == 1:
                             if 'after' in filter['dateCreated']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after'], offset, limitFlag, limit, limit))
+                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after'], offset, limitFlag, limit))
                             else:
                                 results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before'], offset, limitFlag, limit))
                         else:
@@ -674,7 +674,7 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0, False, 0).count() == 0:
+            if models.DerivativeTradesModel.get_trade_with_ID([trade_ID], 0, False, None).count() == 0:
                 return {'message': 'Trade id not present'}, 400
 
             models.DerivativeTradesModel.delete_trade(trade_ID)
