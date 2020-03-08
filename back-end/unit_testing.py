@@ -168,6 +168,42 @@ class TradeTests(unittest.TestCase):
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual("user not present", data['message'])
 
+    def test_empty_product_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='', quantity='2', buyingParty='DDIB11', sellingParty ='UFAY59', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("product name is empty", data['message'])
+
+    def test_empty_quantity_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='1', quantity='', buyingParty='DDIB11', sellingParty ='UFAY59', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("product value is empty", data['message'])
+
+    def test_empty_buying_party_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='1', quantity='2', buyingParty='', sellingParty ='UFAY59', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("buying party is empty", data['message'])
+
+    def test_empty_selling_party_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='1', quantity='2', buyingParty='DDIB11', sellingParty ='', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("selling party is empty", data['message'])
+    
+    def test_empty_notional_price_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='1', quantity='2', buyingParty='DDIB11', sellingParty ='', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("selling party is empty", data['message'])
+
+    def test_empty_notional_currency_trades_post(self):
+        response = self.app.post('api/trades', data=json.dumps(dict(product='1', quantity='2', buyingParty='DDIB11', sellingParty ='', notionalPrice ='1', notionalCurrency ='USD', underlyingPrice = '2', underlyingCurrency = 'USD', strikePrice = '3', maturityDate='2024-07-13')), headers={'userID':'1'})
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual("selling party is empty", data['message'])
+
     #TODO: Edit DELETE trades to use .count() to check for any returned results
     def test_no_id_delete_trades(self):
         tradeID = 'P'
@@ -320,7 +356,7 @@ class UserTests(unittest.TestCase):
         pass 
 
     def test_num_returned_users(self):
-        TOTAL_NUM_USERS = 4
+        TOTAL_NUM_USERS = 5
         response = self.app.get('/api/users', query_string=dict(isDryRun = 'true'))
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual(data['noOfMatches'], TOTAL_NUM_USERS)
