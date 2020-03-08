@@ -1,6 +1,7 @@
 from run import db
 from datetime import datetime
 from sqlalchemy import ForeignKey, join, func, or_, Date, cast, exc
+from sqlalchemy.orm import sessionmaker
 import traceback
 import sys
 from datetime import date as date_func
@@ -553,9 +554,16 @@ class ProductModel(db.Model):
     # serves the product get request for a certain date
     @classmethod
     def retrieve_products_on_date(cls, date):
+        Session = sessionmaker(bind=db.engine)
+        session = Session()
         try:
-            return cls.query.filter(cls.ProductID == ProductSellersModel.ProductID, ProductSellersModel.ProductID == ProductValuationsModel.ProductID, func.DATE(cls.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) < func.DATE(cls.DateDeleted), cls.DateDeleted == None)).\
-            with_entities(cls.ProductID, cls.ProductName, ProductSellersModel.CompanyCode, ProductValuationsModel.ProductPrice, cls.DateEnteredInSystem)
+            query1 = ProductValuationsModel.query.filter(func.DATE(ProductValuationsModel.DateOfValuation) <= parse_iso_date(date)).with_entities(ProductValuationsModel.ProductID, func.max(ProductValuationsModel.DateOfValuation).label("MaxDate"), ProductValuationsModel.ProductPrice).group_by(ProductValuationsModel.ProductID)
+            statement1 = query1.cte("query_1") #SELECT statement
+            query2 = cls.query.filter(func.DATE(cls.DateEnteredInSystem) <= parse_iso_date(date), or_(parse_iso_date(date) <= func.DATE(cls.DateDeleted), cls.DateDeleted == None), cls.ProductID == ProductSellersModel.ProductID).\
+                with_entities(cls.ProductID, cls.ProductName, cls.DateEnteredInSystem, ProductSellersModel.CompanyCode)
+            statement2 = query2.cte("query_2") #SELECT statement
+            query3 = session.query(statement2).filter(statement1.c.ProductID == statement2.c.ProductID).with_entities(statement2.c.ProductID, statement2.c.ProductName, statement2.c.DateEnteredInSystem, statement2.c.CompanyCode, statement1.c.ProductPrice)
+            return query3
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
