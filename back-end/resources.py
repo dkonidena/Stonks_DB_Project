@@ -18,6 +18,7 @@ import ML.main as ml
 from ML.tradeObj import trade
 import ML.cron
 import schedule
+from concurrent.futures import ThreadPoolExecutor
 
 #for PDF report generation
 from reportlab.pdfgen import canvas
@@ -25,6 +26,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
+
+ex = ThreadPoolExecutor(4)
 
 CURRENCY = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
 
@@ -40,7 +43,7 @@ def returnCurrencySymbol(currencyCode):
     return symbol
 
 def get_trade_objects():
-    trades = models.DerivativeTradesModel.get_trades_all()
+    trades = models.DerivativeTradesModel.get_trades_all(0, False, 0)
     trade_object_list = []
     for t in trades:
         trade0 = trade(t.OriginalNotionalValue, t.NotionalValue, t.OriginalQuantity, t.Quantity)
@@ -402,15 +405,26 @@ class Trades(Resource):
         try:
             try:
                 if 'filter' not in request.args:
+                    print("1")
                     return {'message': 'malformed filter'}, 400
                 filter = json.loads(request.args.get('filter'))
             except json.JSONDecodeError:
+                print("2")
                 return {'message': 'malformed filter'}, 400
 
             if 'isDryRun' not in request.args:
+                print("2")
+                return {'message': 'malformed filter'}, 400
+            if 'offset' not in request.args:
+                print("3")
                 return {'message': 'malformed filter'}, 400
             isDryRun = request.args.get('isDryRun')
-
+            offset = request.args.get('offset')
+            if len(filter) > 1:
+                limitFlag = False
+            else:
+                limitFlag = True
+            limit = 1000
             results = list() # stores results for each query/filter that is applied by the user
 
             # TODO add dateModified filter
@@ -418,53 +432,46 @@ class Trades(Resource):
 
             # if the filter is empty then return all the trades
             if filter == {}:
-                results.append(models.DerivativeTradesModel.get_trades_all())
+                results.append(models.DerivativeTradesModel.get_trades_all(offset, limitFlag, limit))
             else:
                 try:
                     if 'dateCreated' in filter:
                         if len(filter['dateCreated']) == 1:
                             if 'after' in filter['dateCreated']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after']))
+                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after'], offset, limitFlag, limit))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before']))
+                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before'], offset, limitFlag, limit))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before']))
+                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before'], offset, limitFlag, limit))
                     if 'dateModified' in filter:
                         if len(filter['dateModified']) == 1:
                             if 'after' in filter['dateModified']:
-                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after'], offset, limitFlag, limit))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before']))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before'], offset, limitFlag, limit))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before']))
+                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before'], offset, limitFlag, limit))
 
                     if 'tradeID' in filter:
-                        for id in filter['tradeID']:
-                            results.append(models.DerivativeTradesModel.get_trade_with_ID(id))
+                        results.append(models.DerivativeTradesModel.get_trade_with_ID(filter['tradeID'], offset, limitFlag, limit))
 
                     if 'buyingParty' in filter:
-                        for id in filter['buyingParty']:
-                            results.append(models.DerivativeTradesModel.get_trades_bought_by(id))
+                        results.append(models.DerivativeTradesModel.get_trades_bought_by(filter['buyingParty'], offset, limitFlag, limit))
 
                     if 'sellingParty' in filter:
-                        for id in filter['sellingParty']:
-                            results.append(models.DerivativeTradesModel.get_trades_sold_by(id))
+                        results.append(models.DerivativeTradesModel.get_trades_sold_by(filter['sellingParty'], offset, limitFlag, limit))
 
                     if 'product' in filter:
-                        for id in filter['product']:
-                            results.append(models.DerivativeTradesModel.get_trade_by_product(id))
+                        results.append(models.DerivativeTradesModel.get_trade_by_product(filter['product'], offset, limitFlag, limit))
 
                     if 'notionalCurrency' in filter:
-                        for id in filter['notionalCurrency']:
-                            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id))
+                        results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(filter['notionalCurrency'], offset, limitFlag, limit))
 
                     if 'underlyingCurrency' in filter:
-                        for id in filter['underlyingCurrency']:
-                            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id))
+                        results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(filter['underlyingCurrency'], offset, limitFlag, limit))
 
                     if 'userIDcreatedBy' in filter:
-                        for id in filter['userIDcreatedBy']:
-                            results.append(models.DerivativeTradesModel.get_trades_by_user(id))
+                        results.append(models.DerivativeTradesModel.get_trades_by_user(filter['userIDcreatedBy'], offset, limitFlag, limit))
                 except:
                     return {'message': 'malformed filter'}, 400
 
@@ -473,9 +480,9 @@ class Trades(Resource):
 
             for each in results:
                 if final_results is None:
-                    final_results = each
+                    final_results = set(each)
                 else:
-                    final_results = final_results.intersect(each)
+                    final_results = final_results.intersection(set(each))
 
             if isDryRun == "true":
                 if filter == {}:
@@ -596,14 +603,14 @@ class Trades(Resource):
 
             # Checking the editing period to see if the edit is legal
             trade_ID = request.args.get('id')
-            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID).DateOfTrade
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False, 0).DateOfTrade
             print(trade_date)
             # converting the date to datetime.date object
             formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
             # today's date
             date_now = datetime.date.today()
             editing_period = datetime.timedelta(Config.editingPeriod)
-            # buffer of 6 weeks 
+            # buffer of 6 weeks
             buffer = datetime.timedelta(weeks = 6)
             if formatted_trade_date > date_now or date_now > formatted_trade_date + editing_period + buffer:
                 return {'message' : 'trade is beyond the editing period'}, 405
@@ -664,7 +671,7 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID).count() == 0:
+            if models.DerivativeTradesModel.get_trade_with_ID([trade_ID], 0, False, None).count() == 0:
                 return {'message': 'Trade id not present'}, 400
 
             models.DerivativeTradesModel.delete_trade(trade_ID)
@@ -682,88 +689,113 @@ class Reports(Resource):
 
     def get(self):
         try:
-            try:
-                filter = json.loads(request.args.get('filter'))
-            except json.JSONDecodeError:
-                return {'message': 'malformed filter'}, 400
-            except:
-                return {'message': 'filter not present'}, 400
-
-            if filter == None:
-                return {'message' : 'filter not present'}, 400
+            #try:
+            #    filter = json.loads(request.args.get('filter'))
+            #except json.JSONDecodeError:
+            #    return {'message': 'malformed filter'}, 400
+            #except:
+            #    return {'message': 'filter not present'}, 400
+#
+            #if filter == None:
+            #    return {'message' : 'filter not present'}, 400
             # this needs error checking
             isDryRun = request.args.get('isDryRun')
-
+            if 'offset' not in request.args:
+                return {'message': 'malformed filter'}, 400
+            offset = int(request.args.get('offset'))
+            limitFlag = True
+            limit = 500
             # TODO add dateModified filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
-            results = list()
+            date = request.args.get("date")
+            results = models.DerivativeTradesModel.get_trades_between(date, date, offset, limitFlag, limit)
+            message = dict()
 
-            # either dateCreated will be passed or nothing will be passed
-            if 'dateCreated' in filter:
-                if len(filter['dateCreated']) == 1:
-                    if 'after' in filter['dateCreated']:
-                        tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'])
-                    else:
-                        tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'])
-                    noOfMatches = tradeDates.count()
-                elif len(filter['dateCreated']) == 2:
-                    tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'])
-                    noOfMatches = tradeDates.count()
-                else:
-                    tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                    noOfMatches = len(tradeDates)
-            else:
-                tradeDates = models.DerivativeTradesModel.get_all_trade_dates()
-                noOfMatches = tradeDates.count()
-
-            for each in tradeDates:
-                result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade)
-                results.append(result)
-
-            # contents for the pdf file
-            story = [] # all relevant data for the pdf
-            styles = getSampleStyleSheet() # defining the styles/text style for the trades table in the pdf
-            styleB = styles['BodyText']
-            styleB.fontSize = 8
-            styleB.wordWrap = 'CJK' # adding text wrapping for the table cells in the pdf
-
-            if isDryRun == 'true':
-                return {'noOfMatches' : noOfMatches}
-            elif isDryRun == 'false':
-                message = {'matches' : []}
-                i = 0
-                while i < len(results):
-                    handle, fn = tempfile.mkstemp(suffix='.csv')
-                    with os.fdopen(handle, "w", encoding='utf8', newline='') as f:
-                        report = {'date': None, 'content': None}
-                        # data that will be contained in the pdf table
-                        tableData = [['Date Of Trade', 'Trade ID', 'Product', 'Buying Party', 'Selling Party', 'Notional Value', 'Notional Currency', 'Quantity', 'Maturity Date', 'Underlying Value', Paragraph('Underlying Currency', styleB), 'Strike Price']]
-                        content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
-                        for row in results[i]:
-                            # adding rows to the pdf table
-                            tableData.append([str(row.DateOfTrade), Paragraph(str(row.TradeID), styleB), str(row.ProductID), str(row.BuyingParty), str(row.SellingParty), str(row.NotionalValue), str(row.NotionalCurrency), str(row.Quantity), str(row.MaturityDate), str(row.UnderlyingValue), str(row.UnderlyingCurrency), str(row.StrikePrice)])
-                            content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
-                        report['date'] = tradeDates[i].DateOfTrade
-                        report['content'] = content
-                        # adding the whole table for the single date into its own pdf file
-                        story.append(Table(tableData,colWidths=65, rowHeights=30, repeatRows=0, splitByRow=1, style=TableStyle([('FONTSIZE', (0,0), (-1,-1), 8)])))
-                        doc = SimpleDocTemplate('output.pdf', pagesize = landscape(A4), title = "Report")
-                        doc.build(story)
-                        encodedPDF = base64.b64encode(open("output.pdf", "rb").read()).decode()
-                        report['pdfFile'] = encodedPDF
-                        message['matches'].append(report)
-                        i += 1
+            if isDryRun == "true":
+                noOfMatches = results.count()
+                message['noOfMatches'] = noOfMatches
                 return message, 200
-            else:
-                return {'message' : 'Request Malformed'}, 400
-
+            res = []
+            for row in results:
+                dicto = {}
+                dicto['tradeID'] = row.TradeID
+                dicto['product'] = str(row.ProductID)
+                dicto['quantity'] = row.Quantity
+                dicto['buyingParty'] = row.BuyingParty
+                dicto['sellingParty'] = row.SellingParty
+                dicto['notionalPrice'] = row.NotionalValue
+                dicto['notionalCurrency'] = row.NotionalCurrency
+                dicto['underlyingPrice'] = row.UnderlyingValue
+                dicto['underlyingCurrency'] = row.UnderlyingCurrency
+                dicto['strikePrice'] = str(row.StrikePrice)
+                dicto['maturityDate'] = row.MaturityDate
+                dicto['tradeDate'] = row.DateOfTrade
+                dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
+                dicto['lastModifiedDate'] = row.DateOfTrade # need to be changed to the event log date
+                res.append(dicto)
+            message['matches'] = res
+            return message, 200
         except ValueError:
             traceback.print_exc(file=sys.stdout)
             return {'message': 'Date invalid'}, 400
         except exc.ProgrammingError:
             traceback.print_exc(file=sys.stdout)
             return {'message' : 'error occurred'}, 500
+
+def generateCSV(date):
+    # retrieve all trade data
+    results = models.DerivativeTradesModel.get_trades_between(date, date, 0, False, None)
+
+    # Headers for the CSV table
+    content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
+    for row in results:
+        content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
+
+    return content
+
+def generatePDF(date):
+    ####PDF-SETUP#########
+    story = [] # all relevant data for the pdf // array to store document content
+    styles = getSampleStyleSheet() # defining the styles/text style for the trades table in the pdf
+    styleB = styles['BodyText']
+    styleB.fontSize = 8
+    styleB.wordWrap = 'CJK' # adding text wrapping for the table cells in the pdf
+
+    # table headers for pdf
+    tableData = [['Date Of Trade', 'Trade ID', 'Product', 'Buying Party', 'Selling Party', 'Notional Value', 'Notional Currency', 'Quantity', 'Maturity Date', 'Underlying Value', Paragraph('Underlying Currency', styleB), 'Strike Price']]
+
+    # fetch results from table
+    results = models.DerivativeTradesModel.get_trades_between(date, date, 0, False, None)
+
+    for row in results:
+        tableData.append([str(row.DateOfTrade), Paragraph(str(row.TradeID), styleB), str(row.ProductID), str(row.BuyingParty), str(row.SellingParty), str(row.NotionalValue), str(row.NotionalCurrency), str(row.Quantity), str(row.MaturityDate), str(row.UnderlyingValue), str(row.UnderlyingCurrency), str(row.StrikePrice)])
+
+    # add table data to document content arrays
+    story.append(Table(tableData,colWidths=65, rowHeights=30, repeatRows=0, splitByRow=1, style=TableStyle([('FONTSIZE', (0,0), (-1,-1), 8)])))
+    doc = SimpleDocTemplate('output.pdf', pagesize = landscape(A4), title = "Report")
+    # create document
+    doc.build(story)
+    # JSON encoding
+    encodedPDF = base64.b64encode(open("output.pdf", "rb").read()).decode()
+
+    return encodedPDF
+
+class pdf(Resource):
+    def get(self):
+        if 'date' not in request.args:
+            return {'message': 'malformed filter'}, 400
+        date = request.args.get("date")
+        res = ex.submit(generatePDF, date)
+        return res.result(), 200
+
+class csv(Resource):
+    def get(self):
+        if 'date' not in request.args:
+            return {'message': 'malformed filter'}, 400
+        date = request.args.get("date")
+        res = ex.submit(generateCSV, date)
+        return res.result(), 200
 
 class Users(Resource):
     def get(self):
@@ -912,7 +944,7 @@ class Config(Resource):
     @classmethod
     def setNeighbours(self, neigbours):
         self.neighboursFromRules = neigbours
-    
+
     @classmethod
     def setPeriod(self, days):
         self.editingPeriod = days

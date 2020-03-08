@@ -1,60 +1,88 @@
-function addReportToUI(report) {
-    let s = "<button class=\"btn report-button d-block text-muted py-0 my-n1\"></button>";
-    let b = $(s).text(`Report ${report.date.toLocaleDateString()}`).data("report", report);
-    b.on("click", () => {
-        loadReportToForm(report);
-    })
-    let li = $("<li class=\"nav-item\"></li>").html(b);
-    $("#reports").append(li);
-}
+var currentTradesNum = 0;
+var currenDate = null;
 
 function loadReportToForm(report) {
-    $("#reportDateDayInput").val(report.date.getDate());
-    $("#reportDateMonthInput").val(report.date.getMonth()+1);
-    $("#reportDateYearInput").val(report.date.getFullYear());
-
-    renderTable(report.content, report.pdfFile, `report-${report.date.toLocaleDateString()}`);
-}
-
-function filterObjectFromForm() {
-    // TODO whole function needs error handling
-    let filter = new Filter();
-
-    if ($("#filter-creationDateLowerYearInput").val() !== "") {
-        if (!filter.dateCreated) { filter.dateCreated = {}; }
-        filter.dateCreated['after'] = new Date();
-        filter.dateCreated.after.setHours(0,0,0,0);
-        filter.dateCreated.after.setDate($("#filter-creationDateLowerDayInput").val());
-        filter.dateCreated.after.setMonth($("#filter-creationDateLowerMonthInput").val()-1);
-        filter.dateCreated.after.setFullYear($("#filter-creationDateLowerYearInput").val());
-        filter.dateCreated.after = filter.dateCreated.after.toISOString();
-    }
-
-    if ($("#filter-creationDateUpperYearInput").val() !== "") {
-        if (!filter.dateCreated) { filter.dateCreated = {}; }
-        filter.dateCreated['before'] = new Date();
-        filter.dateCreated.before.setHours(0,0,0,0);
-        filter.dateCreated.before.setDate($("#filter-creationDateUpperDayInput").val());
-        filter.dateCreated.before.setMonth($("#filter-creationDateUpperMonthInput").val()-1);
-        filter.dateCreated.before.setFullYear($("#filter-creationDateUpperYearInput").val());
-        filter.dateCreated.before = filter.dateCreated.before.toISOString();
-    }
-
-    return filter;
-}
-
-function renderTable(csv, pdf, name) {
-    status.innerText = "loading report...";
-    let blob = new Blob([csv], { type: "text/plain" });
+    let blob = new Blob([tradesToCSV(report.content, true)], { type: "text/plain" });
 
     CsvToHtmlTable.init({
         csv_path: URL.createObjectURL(blob),
-        pdf_path: `data:application/pdf;base64,${pdf}`,
+        //pdf_path: `data:application/pdf;base64,${pdf}`,
+        pdf_download: (f) => {
+            api.get.pdf(report.date, (r) => {
+                f(`data:application/pdf;base64,${r}`)
+            }, showError);
+        },
+        csv_download: (f) => {
+            api.get.csv(report.date, (r) => {
+                f(URL.createObjectURL(new Blob([r], { type: "text/plain" })));
+            }, showError);
+        },
         element: "table-container",
         allow_download: true,
         csv_options: {separator: ",", delimiter: "\""},
-        datatables_options: {"paging": true},
-        onComplete: () => { status.innerText = ""; },
-        downloadName: name
+        datatables_options: {
+            "paging": true,
+            "drawCallback": () => {
+                //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
+                //if so, need to load the next block of trades
+                $(".pagination").children().slice(-2).children().on("click", () => {
+                    setTimeout(() => {
+                        if ($(".pagination").children().slice(-2,-1).hasClass("active")) {
+                            getNextTradeBlock(false);
+                        }
+                    }, 50);
+                });
+            },
+        },
+        downloadName: `report-${report.date.toLocaleDateString()}`,
     });
+}
+
+function tradesToCSV(trades, header) {
+    let csv;
+    if (header)
+        csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
+    for (const trade of trades) {
+        let fields = [
+            trade.tradeId,
+            trade.tradeDate.toISOString().substring(0,10),
+            trade.product.name,
+            trade.buyingParty.name,
+            trade.sellingParty.name,
+            trade.notionalPrice,
+            trade.notionalCurrency.code,
+            trade.quantity,
+            trade.maturityDate.toISOString().substring(0,10),
+            trade.underlyingPrice,
+            trade.underlyingCurrency.code,
+            trade.strikePrice
+        ];
+
+
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (i === fields.length - 1) {
+                csv += `${field}\n`;
+            } else {
+                csv += `${field},`;
+            }
+        }
+    }
+
+    return csv;
+}
+
+function getNextTradeBlock(first) {
+    $("#resultsStatus").show();
+    getReport(currentDate, (report) => {
+        if (!report.content.length) return;
+        if (first) {
+            loadReportToForm(report)
+        } else {
+            let csv = tradesToCSV(report.content, false);
+            CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
+        }
+        $("#resultsStatus").hide();
+        currentTradesNum += report.content.length;
+    }, showError, currentTradesNum);
 }

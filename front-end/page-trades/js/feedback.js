@@ -51,10 +51,16 @@ function allSuggestionsResolved() {
 
 function ignoreAll() {
     Object.keys(suggestions).forEach(removeSuggestion);
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }
 
 function acceptAll() {
     Object.keys(suggestions).forEach(acceptSuggestion);
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }
 
 function acceptSuggestion(field) {
@@ -65,9 +71,7 @@ function acceptSuggestion(field) {
             break;
         case "maturityDate":
             value = new Date(value);
-            elements.maturityDateDayInput.val(value.getDate());
-            elements.maturityDateMonthInput.val(value.getMonth()+1);
-            elements.maturityDateYearInput.val(value.getFullYear());
+            elements.maturityDate.val(value.getDate());
             break;
         case "notionalCurrency":
             elements.underlyingCurrencyInput.val(value).tigger("change");
@@ -123,4 +127,7 @@ function removeSuggestion(field) {
     $(`#suggestions #${field}-suggestion`).remove();
 
     checkTradeValidity();
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }

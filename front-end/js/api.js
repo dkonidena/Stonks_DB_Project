@@ -28,11 +28,17 @@ const api = {
             }
             request("GET", `${API_ENDPOINT}/products?${options}`, res, err);
         },
-        trades: (filter, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/trades?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
+        trades: (filter, dryRun, res, err, offset) => {
+            request("GET", `${API_ENDPOINT}/trades?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}&offset=${offset}`, res, err);
         },
-        reports: (filter, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/reports?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
+        reports: (date, dryRun, res, err, offset) => {
+            request("GET", `${API_ENDPOINT}/reports?date=${date.toISOString()}&isDryRun=${dryRun}&offset=${offset}`, res, err);
+        },
+        pdf: (date, res, err) => {
+            request("GET", `${API_ENDPOINT}/pdf?date=${date.toISOString()}`, res, err);
+        },
+        csv: (date, res, err) => {
+            request("GET", `${API_ENDPOINT}/csv?date=${date.toISOString()}`, res, err);
         },
         config: (res, err) => {
             request("GET", `${API_ENDPOINT}/config`, res, err);

@@ -23,16 +23,7 @@ function isCompanyListEmpty() {
 }
 
 function filterObjectFromForm() {
-    if ($("#filter-creationDateLowerDayInput").val() !== "") {
-        let date = new Date();
-        date.setHours(0,0,0,0);
-        date.setDate($("#filter-creationDateLowerDayInput").val());
-        date.setMonth($("#filter-creationDateLowerMonthInput").val()-1);
-        date.setFullYear($("#filter-creationDateLowerYearInput").val());
-        return date;
-    } else {
-        return null;
-    }
+    return $("#filter-creationDateLowerInput").datepicker("getDate");
 }
 
 function showCompanyForm() {

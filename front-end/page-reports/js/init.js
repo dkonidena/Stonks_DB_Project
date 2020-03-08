@@ -1,27 +1,27 @@
-const filters = [
-    ["#filter-creationDateLowerDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerYearInput", /^\d{0,4}$/],
-    ["#filter-creationDateUpperDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
-];
+function init() {
 
-let status;
+    getCompanyList(null, 'mostBoughtFrom', (companies) => {
+        getProductList(null, $.noop);
+    });
+    getCurrencyList(null, $.noop);
+    getUserList($.noop);
 
-$(document).ready(() => {
-    status = document.querySelector("#status");
-
-    filters.forEach((x) => {
-        var t = $(x[0]);
-        setInputFilter(t, (v) => { return x[1].test(v) });
+    $('.date').datepicker({
+        format: "dd-mm-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+        maxViewMode: 3,
+        templates: {
+            leftArrow: '<i class="material-icons align-bottom">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons align-bottom">keyboard_arrow_right</i>',
+        },
     });
 
-
-    $("#doAdvancedSearch").click(() => {
-        let filter = filterObjectFromForm();
-        getReportList(filter, (reports) => {
-            reports.forEach(addReportToUI);
-        });
+    $('#filter-reportDateInput').datepicker().on("changeDate", (e) => {
+        currentDate = $('#filter-reportDateInput').datepicker("getDate");
+        currentTradesNum = 0;
+        getNextTradeBlock(true);
     });
-});
+}
+
+$(document).ready(() => { init(); });

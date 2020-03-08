@@ -24,11 +24,13 @@ api.add_resource(resources.Products, '/api/products')
 api.add_resource(resources.Trades, '/api/trades')
 api.add_resource(resources.CheckTrade, '/api/check_trade')
 api.add_resource(resources.Reports, '/api/reports')
+api.add_resource(resources.pdf, '/api/pdf')
+api.add_resource(resources.csv, '/api/csv')
 api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
 api.add_resource(resources.Events, '/api/events')
 api.add_resource(resources.Config, '/api/config')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_2.0.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_full.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

@@ -1,4 +1,4 @@
-var date;
+var currentTradesNum = 0;
 
 //search for elements needed only once to improve performance
 const elements = {
@@ -8,9 +8,7 @@ const elements = {
     productInput: $("#productInput"),
     buyingPartyInput: $("#buyingPartyInput"),
     sellingPartyInput: $("#sellingPartyInput"),
-    maturityDateDayInput: $("#maturityDateDayInput"),
-    maturityDateMonthInput: $("#maturityDateMonthInput"),
-    maturityDateYearInput: $("#maturityDateYearInput"),
+    maturityDateInput: $("#maturityDateInput"),
     notionalCurrencyInput: $("#notionalCurrencyInput"),
     notionalPriceInput: $("#notionalPriceInput"),
     underlyingCurrencyInput: $("#underlyingCurrencyInput"),
@@ -18,18 +16,10 @@ const elements = {
     quantityInput: $("#quantityInput"),
     strikePriceInput: $("#strikePriceInput"),
     filterTradeIdInput: $("#filter-tradeIDInput"),
-    filterModificationDateLowerYearInput: $("#filter-modificationDateLowerYearInput"),
-    filterModificationDateUpperYearInput: $("#filter-modificationDateUpperYearInput"),
-    filterModificationDateLowerMonthInput: $("#filter-modificationDateLowerMonthInput"),
-    filterModificationDateUpperMonthInput: $("#filter-modificationDateUpperMonthInput"),
-    filterModificationDateLowerDayInput: $("#filter-modificationDateLowerDayInput"),
-    filterModificationDateUpperDayInput: $("#filter-modificationDateUpperDayInput"),
-    filterCreationDateLowerYearInput: $("#filter-creationDateLowerYearInput"),
-    filterCreationDateUpperYearInput: $("#filter-creationDateUpperYearInput"),
-    filterCreationDateLowerMonthInput: $("#filter-creationDateLowerMonthInput"),
-    filterCreationDateUpperMonthInput: $("#filter-creationDateUpperMonthInput"),
-    filterCreationDateLowerDayInput: $("#filter-creationDateLowerDayInput"),
-    filterCreationDateUpperDayInput: $("#filter-creationDateUpperDayInput")
+    filterModificationDateLowerInput: $("#filter-modificationDateLowerInput"),
+    filterModificationDateUpperInput: $("#filter-modificationDateUpperInput"),
+    filterCreationDateLowerInput: $("#filter-creationDateLowerInput"),
+    filterCreationDateUpperInput: $("#filter-creationDateUpperInput"),
 }
 
 function addCurrencyToUI(cur) {
@@ -85,9 +75,6 @@ function loadTradeToForm(trade) {
         [elements.productInput, nullMemberAccess(trade.product, "name")],
         [elements.buyingPartyInput, nullMemberAccess(trade.buyingParty, "name")],
         [elements.sellingPartyInput, nullMemberAccess(trade.sellingParty, "name")],
-        [elements.maturityDateDayInput, trade.maturityDate.getDate()],
-        [elements.maturityDateMonthInput, trade.maturityDate.getMonth()+1],
-        [elements.maturityDateYearInput, trade.maturityDate.getFullYear()],
         [elements.notionalCurrencyInput, nullMemberAccess(trade.notionalCurrency, "code")],
         [elements.notionalPriceInput, trade.notionalPrice],
         [elements.underlyingCurrencyInput, nullMemberAccess(trade.underlyingCurrency, "code")],
@@ -100,8 +87,10 @@ function loadTradeToForm(trade) {
         $(x[0]).val(x[1]).trigger("change");
     });
 
-    date = trade.tradeDate;
-
+    let md = elements.maturityDateInput;
+    md.datepicker("setDate", trade.maturityDate);
+    md.datepicker("setStartDate", trade.tradeDate);
+    md.trigger("change");
     elements.tradeId.text(trade.tradeId);
     elements.tradeDate.text(trade.tradeDate.toISOString().substring(0,10));
     checkTradeValidity();
@@ -137,13 +126,11 @@ function tradeObjectFromForm() {
     trade.buyingParty = companyNameToObject(elements.buyingPartyInput.val());
     trade.sellingParty = companyNameToObject(elements.sellingPartyInput.val());
 
-    if (elements.maturityDateDayInput.val() === "" || elements.maturityDateMonthInput.val() === "" | elements.maturityDateYearInput.val() === "") {
+    if (elements.maturityDateInput.datepicker("getDate") === null) {
         throw new SyntaxError;
     }
 
-    trade.maturityDate.setDate(elements.maturityDateDayInput.val());
-    trade.maturityDate.setMonth(elements.maturityDateMonthInput.val()-1);
-    trade.maturityDate.setFullYear(elements.maturityDateYearInput.val());
+    trade.maturityDate = elements.maturityDateInput.datepicker("getDate");
 
     trade.notionalCurrency = currencies[elements.notionalCurrencyInput.val()];
     trade.notionalPrice = elements.notionalPriceInput.val();
@@ -188,13 +175,6 @@ function saveTrade() {
     if (isValidTrade()) {
         let t = tradeObjectFromForm();
         if (t.tradeId !== "") {
-            console.log(dateDifference(date, new Date()));
-            console.log(date);
-            if (dateDifference(date, new Date()) > editWindow) {
-                $("#tooOldModal").modal("show");
-                return;
-            }
-
             api.patch.trades(t.tradeId, t.getAPIObject(), () => {
                 showSuccess('Trade updated.');
                 resetState();
@@ -209,48 +189,49 @@ function saveTrade() {
     }
 }
 
+function resetFilter() {
+    elements.filterTradeIdInput.val("");
+    $("#filter-buyerInput").val("").trigger("change");
+    $("#filter-sellerInput").val("").trigger("change");
+    $("#filter-productInput").val("").trigger("change");
+    $("#filter-notionalCurrencyInput").val("").trigger("change");
+    $("#filter-underlyingCurrencyInput").val("").trigger("change");
+    $("#filter-userIDInput").val("").trigger("change");
+
+    elements.filterCreationDateLowerInput.val("").datepicker('clearDates');
+    elements.filterCreationDateUpperInput.val("").datepicker('clearDates');
+    elements.filterModificationDateLowerInput.val("").datepicker('clearDates');
+    elements.filterModificationDateUpperInput.val("").datepicker('clearDates');
+}
+
 function filterObjectFromForm() {
     // TODO whole function needs error handling
     let filter = new TradeFilter();
+    let d;
 
-    if (elements.filterCreationDateLowerYearInput.val() !== "") {
+    d = elements.filterCreationDateLowerInput.datepicker("getDate");
+    if (d !== null) {
         if (!filter.dateCreated) { filter.dateCreated = {}; }
-        filter.dateCreated['after'] =  new Date();
-        filter.dateCreated.after.setHours(0,0,0,0);
-        filter.dateCreated.after.setDate(elements.filterCreationDateLowerDayInput.val());
-        filter.dateCreated.after.setMonth(elements.filterCreationDateLowerMonthInput.val()-1);
-        filter.dateCreated.after.setFullYear(elements.filterCreationDateLowerYearInput.val());
-        filter.dateCreated.after = filter.dateCreated.after.toISOString();
+        console.log(d);
+        filter.dateCreated['after'] = d.toISOString();
     }
 
-    if (elements.filterCreationDateUpperYearInput.val() !== "") {
+    d = elements.filterCreationDateUpperInput.datepicker("getDate");
+    if (d !== null) {
         if (!filter.dateCreated) { filter.dateCreated = {}; }
-        filter.dateCreated['before'] =  new Date();
-        filter.dateCreated.before.setHours(0,0,0,0);
-        filter.dateCreated.before.setDate(elements.filterCreationDateUpperDayInput.val());
-        filter.dateCreated.before.setMonth(elements.filterCreationDateUpperMonthInput.val()-1);
-        filter.dateCreated.before.setFullYear(elements.filterCreationDateUpperYearInput.val());
-        filter.dateCreated.before = filter.dateCreated.before.toISOString();
+        filter.dateCreated['before'] = d.toISOString();
     }
 
-    if (elements.filterModificationDateLowerYearInput.val() !== "") {
+    d = elements.filterModificationDateLowerInput.datepicker("getDate");
+    if (d !== null) {
         if (!filter.dateModified) { filter.dateModified = {}; }
-        filter.dateModified['after'] =  new Date();
-        filter.dateModified.after.setHours(0,0,0,0);
-        filter.dateModified.after.setDate(elements.filterModificationDateLowerDayInput.val());
-        filter.dateModified.after.setMonth(elements.filterModificationDateLowerMonthInput.val()-1);
-        filter.dateModified.after.setFullYear(elements.filterModificationDateLowerYearInput.val());
-        filter.dateModified.after = filter.dateModified.after.toISOString();
+        filter.dateModified['after'] = d.toISOString();
     }
 
-    if (elements.filterModificationDateUpperYearInput.val() !== "") {
+    d = elements.filterModificationDateUpperInput.datepicker("getDate");
+    if (d !== null) {
         if (!filter.dateModified) { filter.dateModified = {}; }
-        filter.dateModified['before'] =  new Date();
-        filter.dateModified.before.setHours(0,0,0,0);
-        filter.dateModified.before.setDate(elements.filterModificationDateUpperDayInput.val());
-        filter.dateModified.before.setMonth(elements.filterModificationDateUpperMonthInput.val()-1);
-        filter.dateModified.before.setFullYear(elements.filterModificationDateUpperYearInput.val());
-        filter.dateModified.before = filter.dateModified.before.toISOString();
+        filter.dateModified['before'] = d.toISOString();
     }
 
     // this gets the labels from a select2 input box's return object
@@ -296,6 +277,20 @@ function resetState() {
     $("#startButtons").show();
 }
 
+//gets the next 1000 trades
+function getNextTradeBlock(first) {
+    getTradeList(currentFilter, (trades) => {
+        if (!trades.length) return;
+        if (first) {
+            renderTable(tradesToCSV(trades, true));
+        } else {
+            let csv = tradesToCSV(trades, false);
+            CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
+        }
+        currentTradesNum += trades.length;
+    }, currentTradesNum);
+}
+
 function renderTable(csv) {
     const blob = new Blob([csv], { type: "text/plain" });
     CsvToHtmlTable.init({
@@ -314,7 +309,16 @@ function renderTable(csv) {
                         return `<a id="trade-${data}" href="#" data-dismiss="modal">${data}</a>`
                     }
                 }
-            ]
+            ],
+            "drawCallback": () => {
+                //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
+                //if so, need to load the next block of trades
+                $(".pagination").children().slice(-2).children().on("click", () => {
+                    if ($(".pagination").children().slice(-2,-1).hasClass("active")) {
+                        getNextTradeBlock(false);
+                    }
+                });
+            }
         },
         onComplete: () => {
             $("#table-container tbody").on("click", "a", function () {
@@ -327,8 +331,10 @@ function renderTable(csv) {
     });
 }
 
-function tradesToCSV(trades) {
-    let csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
+function tradesToCSV(trades, header) {
+    let csv;
+    if (header)
+        csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"
     for (const trade of trades) {
         let fields = [
             trade.tradeId,

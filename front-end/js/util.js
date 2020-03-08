@@ -55,6 +55,10 @@ String.prototype.isBlank = function() {
     return (!this || /^\s*$/.test(this));
 }
 
+function isFunction(x) {
+    return typeof x === "function";
+}
+
 //use for accessing xxx.yyy where xxx can be null
 //optionally return a specified value instead of null
 function nullMemberAccess(parent, child, val = null) {

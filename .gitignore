@@ -1,5 +1,8 @@
 .DS_Store
 .vs/
+.vscode/
 __pycache__/
 .venv/
 .DS_Store
+.db
+.pdf
