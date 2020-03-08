@@ -290,10 +290,15 @@ function resetState() {
 }
 
 //gets the next 1000 trades
-function getNextTradeBlock() {
+function getNextTradeBlock(first) {
     getTradeList(currentFilter, (trades) => {
-        currentTrades = currentTrades.concat(tradesToCSV(trades));
-        renderTable(currentTrades);
+        if (first) {
+            renderTable(tradesToCSV(trades, true));
+        } else {
+            let csv = tradesToCSV(trades, false);
+            console.log("csv ready")
+            CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
+        }
         currentTradesNum += trades.length;
     }, currentTradesNum);
 }
@@ -316,7 +321,18 @@ function renderTable(csv) {
                         return `<a id="trade-${data}" href="#" data-dismiss="modal">${data}</a>`
                     }
                 }
-            ]
+            ],
+            "drawCallback": () => {
+                //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
+                //if so, need to load the next block of trades
+                $(".page-link[data-dt-idx='7'], .page-link[data-dt-idx='8']").parent().on("click", () => {
+                    console.log("here1");
+                    if ($(".page-link[data-dt-idx='7']").parent().hasClass("active")) {
+                        console.log("here")
+                        getNextTradeBlock(false);
+                    }
+                });
+            }
         },
         onComplete: () => {
             $("#table-container tbody").on("click", "a", function () {
@@ -325,17 +341,11 @@ function renderTable(csv) {
                 showTradeForm();
             });
             $("#resultsStatus").hide();
-            //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
-            //if so, need to load the next block of trades
-            $(".page-link[data-dt-idx='7'], .page-link[data-dt-idx='8']").parent().on("click", () => {
-                if ($(".page-link[data-dt-idx='7']").parent().hasClass("active"))
-                    getNextTradeBlock();
-            })
         }
     });
 }
 
-function tradesToCSV(trades, header = true) {
+function tradesToCSV(trades, header) {
     let csv;
     if (header)
         csv = "Trade ID,Date Of Trade,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"

@@ -128,7 +128,7 @@ function init() {
         $("#resultsStatus").show();
         $("#table-container").empty();
         $("#resultsModal").modal("show");
-        getNextTradeBlock();
+        getNextTradeBlock(true);
     });
 
     $("#resultsModal").on("hidden.bs.modal", () => {

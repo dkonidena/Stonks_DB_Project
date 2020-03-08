@@ -53,7 +53,7 @@ CsvToHtmlTable = {
                 }
                 $table.append($tableBody);
 
-                $table.DataTable(datatables_options);
+                table = $table.DataTable(datatables_options);
 
                 if (allow_download) {
                     $containerElement.append("<a class='btn btn-info' href='" + csv_path + "' download='" + downloadName + ".csv'><i class='glyphicon glyphicon-download'></i> Download as CSV</a>");
@@ -62,5 +62,14 @@ CsvToHtmlTable = {
 
                 onComplete();
             });
+    },
+    add_existing: (element, data, csv_options) => {
+        var csvData = $.csv.toArrays(data, csv_options);
+
+        for (const row of csvData) {
+            table.row.add(row);
+        }
+
+        table.draw("full-hold");
     }
 };
