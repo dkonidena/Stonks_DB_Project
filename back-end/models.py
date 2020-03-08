@@ -175,147 +175,204 @@ class DerivativeTradesModel(db.Model):
 
     # serves the get request for a filtered date
     @classmethod
-    def get_trades_after(cls, startDate, offset):
+    def get_trades_after(cls, startDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
     @classmethod
-    def get_trades_before(cls, endDate, offset):
+    def get_trades_before(cls, endDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
     @classmethod
-    def get_trades_between(cls, startDate, endDate, offset):
+    def get_trades_between(cls, startDate, endDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered date
     @classmethod
-    def get_trades_modified_after(cls, startDate, offset):
+    def get_trades_modified_after(cls, startDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
     @classmethod
-    def get_trades_modified_before(cls, endDate, offset):
+    def get_trades_modified_before(cls, endDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
     @classmethod
-    def get_trades_modified_between(cls, startDate, endDate, offset):
+    def get_trades_modified_between(cls, startDate, endDate, offset, limit):
         try:
-            return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate)).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
             # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered trade ID
     @classmethod
-    def get_trade_with_ID(cls, tradeID, offset):
+    def get_trade_with_ID(cls, tradeID, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.TradeID == tradeID).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.TradeID == tradeID).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.TradeID == tradeID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered selling party
     @classmethod
-    def get_trades_sold_by(cls, sellingParty, offset):
+    def get_trades_sold_by(cls, sellingParty, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered buying party
     @classmethod
-    def get_trades_bought_by(cls, buyingParty, offset):
+    def get_trades_bought_by(cls, buyingParty, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered product name
     @classmethod
-    def get_trade_by_product(cls, productID, offset):
+    def get_trade_by_product(cls, productID, offset, limit):
         try:
-            return cls.query.filter(cls.ProductID == productID).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(cls.ProductID == productID).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(cls.ProductID == productID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered notional currency
     @classmethod
-    def get_trades_by_notional_currency(cls, notionalCurrency, offset):
+    def get_trades_by_notional_currency(cls, notionalCurrency, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered underlying currency
     @classmethod
-    def get_trade_by_underlying_currency(cls, underlyingCurrency, offset):
+    def get_trade_by_underlying_currency(cls, underlyingCurrency, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered user ID
     @classmethod
-    def get_trades_by_user(cls, userID, offset):
+    def get_trades_by_user(cls, userID, offset, limit):
         try:
-            return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
     @classmethod
-    def get_trades_all(cls, offset):
+    def get_trades_all(cls, offset, limit):
         try:
-            return cls.query.offset(offset).limit(1000).all()
+            if limit:
+                return cls.query.offset(offset).limit(1000).all()
+            else:
+                return cls.query.all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
 
     # returns all dates the trades were made on
     @classmethod
-    def get_all_trade_dates(cls, offset):
+    def get_all_trade_dates(cls, offset, limit):
         try:
-            return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            if limit:
+                return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            else:
+                return cls.query.distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     @classmethod
-    def get_trade_dates_after(cls, startDate, offset):
+    def get_trade_dates_after(cls, startDate, offset, limit):
         try:
-            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
     
     @classmethod
-    def get_trade_dates_before(cls, endDate, offset):
+    def get_trade_dates_before(cls, endDate, offset, limit):
         try:
-            return cls.query.filter(parse_iso_date(endDate) >= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(parse_iso_date(endDate) >= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(parse_iso_date(endDate) >= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     # returns all dates trades happen between a certain start and end date -> used for reports generation
     @classmethod
-    def get_trade_dates_between(cls, startDate, endDate, offset):
+    def get_trade_dates_between(cls, startDate, endDate, offset, limit):
         try:
-            return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            if limit:
+                return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade).offset(offset).limit(1000)
+            else:
+                return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
     @classmethod
-    def get_trade_date_by_id(cls, id, offset):
+    def get_trade_date_by_id(cls, id, offset, limit):
         try:
-            return cls.query.filter(cls.TradeID == id).with_entities(cls.DateOfTrade).first()
+            if limit:
+                return cls.query.filter(cls.TradeID == id).with_entities(cls.DateOfTrade).first()
+            else:
+                return cls.query.filter(cls.TradeID == id).with_entities(cls.DateOfTrade).first()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
