@@ -677,23 +677,6 @@ class Trades(Resource):
             if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0, False).count() == 0:
                 return {'message': 'Trade id not present'}, 400
 
-            # Checking the editing period to see if the edit is legal
-            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False).DateOfTrade
-            print(trade_date)
-            # converting the date to datetime.date object
-            formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
-            # today's date
-            date_now = datetime.date.today()
-            print(Config.days)
-            editing_period = datetime.timedelta(Config.days) #placeholder
-            # buffer of 6 weeks
-            buffer = datetime.timedelta(weeks = 6)
-            if formatted_trade_date > date_now or date_now > formatted_trade_date + buffer + editing_period:
-                return {'message' : 'trade is beyond the editing period'}, 405
-            else:
-                print("Valid")
-                exit(0)
-
             models.DerivativeTradesModel.delete_trade(trade_ID)
             userAction = "User has deleted a record in the Trades table with the ID: " + trade_ID
             date_now = str(date_func.today())
