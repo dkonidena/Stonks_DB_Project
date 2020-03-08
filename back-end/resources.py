@@ -43,7 +43,7 @@ def returnCurrencySymbol(currencyCode):
     return symbol
 
 def get_trade_objects():
-    trades = models.DerivativeTradesModel.get_trades_all(0, False)
+    trades = models.DerivativeTradesModel.get_trades_all(0, False, 0)
     trade_object_list = []
     for t in trades:
         trade0 = trade(t.OriginalNotionalValue, t.NotionalValue, t.OriginalQuantity, t.Quantity)
@@ -603,7 +603,7 @@ class Trades(Resource):
 
             # Checking the editing period to see if the edit is legal
             trade_ID = request.args.get('id')
-            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False).DateOfTrade
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False, 0).DateOfTrade
             print(trade_date)
             # converting the date to datetime.date object
             formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
@@ -674,7 +674,7 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0, False).count() == 0:
+            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0, False, 0).count() == 0:
                 return {'message': 'Trade id not present'}, 400
 
             models.DerivativeTradesModel.delete_trade(trade_ID)
