@@ -720,8 +720,10 @@ class Reports(Resource):
                 return {'message' : 'filter not present'}, 400
             # this needs error checking
             isDryRun = request.args.get('isDryRun')
-            offset = 0
-            limit = False
+            if 'offset' not in request.args:
+                return {'message': 'malformed filter'}, 400
+            offset = request.args.get('offset')
+            limit = True
             # TODO add dateModified filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
