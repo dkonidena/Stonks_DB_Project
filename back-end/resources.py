@@ -707,7 +707,7 @@ class Reports(Resource):
                 return {'message': 'malformed filter'}, 400
             offset = int(request.args.get('offset'))
             limitFlag = True
-            limit = 50
+            limit = 500
             # TODO add dateModified filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
