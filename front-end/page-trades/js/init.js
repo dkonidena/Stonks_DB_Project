@@ -70,15 +70,6 @@ function init() {
         }
     });
 
-    $("#maturityDateYearInput").on("change", function () {
-        const year = parseInt($(this).val());
-        if (year < (new Date()).getFullYear()) {
-            $(this).addClass("is-invalid");
-        } else {
-            $(this).removeClass("is-invalid");
-        }
-    });
-
     $("#addTradeButton").on("click", () => {
         let t = new Trade();
         t.notionalCurrency = currencies['USD'];
