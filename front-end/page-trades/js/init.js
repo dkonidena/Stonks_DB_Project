@@ -111,6 +111,7 @@ function init() {
     });
 
     $("#searchTradesButton,#searchAgain").click(() => {
+        resetFilter();
         $("#advancedSearch").modal("show");
     });
 

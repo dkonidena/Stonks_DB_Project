@@ -189,6 +189,21 @@ function saveTrade() {
     }
 }
 
+function resetFilter() {
+    elements.filterTradeIdInput.val("");
+    $("#filter-buyerInput").val("").trigger("change");
+    $("#filter-sellerInput").val("").trigger("change");
+    $("#filter-productInput").val("").trigger("change");
+    $("#filter-notionalCurrencyInput").val("").trigger("change");
+    $("#filter-underlyingCurrencyInput").val("").trigger("change");
+    $("#filter-userIDInput").val("").trigger("change");
+
+    elements.filterCreationDateLowerInput.val("").datepicker('clearDates');
+    elements.filterCreationDateUpperInput.val("").datepicker('clearDates');
+    elements.filterModificationDateLowerInput.val("").datepicker('clearDates');
+    elements.filterModificationDateUpperInput.val("").datepicker('clearDates');
+}
+
 function filterObjectFromForm() {
     // TODO whole function needs error handling
     let filter = new TradeFilter();
