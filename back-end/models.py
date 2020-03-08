@@ -31,6 +31,13 @@ class CompanyModel(db.Model):
         except:
             print("Unknown Error occurred")
 
+    @classmethod
+    def retrieve_companies_on(cls, date):
+        try:
+            return cls.query.filter(func.DATE(CompanyModel.DateEnteredInSystem) == parse_iso_date(date), or_(parse_iso_date(date) != cls.DateDeleted, cls.DateDeleted == None))
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
+
     # gets all companies that existed before a date (serves get?)
     # should this be existed ON that date? something could've existed and closed
     @classmethod
