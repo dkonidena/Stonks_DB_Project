@@ -65,9 +65,7 @@ function acceptSuggestion(field) {
             break;
         case "maturityDate":
             value = new Date(value);
-            elements.maturityDateDayInput.val(value.getDate());
-            elements.maturityDateMonthInput.val(value.getMonth()+1);
-            elements.maturityDateYearInput.val(value.getFullYear());
+            elements.maturityDate.val(value.getDate());
             break;
         case "notionalCurrency":
             elements.underlyingCurrencyInput.val(value).tigger("change");

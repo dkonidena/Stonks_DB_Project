@@ -126,7 +126,7 @@ function tradeObjectFromForm() {
     trade.buyingParty = companyNameToObject(elements.buyingPartyInput.val());
     trade.sellingParty = companyNameToObject(elements.sellingPartyInput.val());
 
-    if (elements.maturityDateDayInput.val() === "" || elements.maturityDateMonthInput.val() === "" | elements.maturityDateYearInput.val() === "") {
+    if (elements.maturityDateInput.datepicker("getDate") === null) {
         throw new SyntaxError;
     }
 
