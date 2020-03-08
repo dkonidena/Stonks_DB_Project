@@ -51,10 +51,16 @@ function allSuggestionsResolved() {
 
 function ignoreAll() {
     Object.keys(suggestions).forEach(removeSuggestion);
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }
 
 function acceptAll() {
     Object.keys(suggestions).forEach(acceptSuggestion);
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }
 
 function acceptSuggestion(field) {
@@ -121,4 +127,7 @@ function removeSuggestion(field) {
     $(`#suggestions #${field}-suggestion`).remove();
 
     checkTradeValidity();
+    if (allSuggestionsResolved()) {
+        $("#suggestionsTable").hide(500);
+    }
 }
