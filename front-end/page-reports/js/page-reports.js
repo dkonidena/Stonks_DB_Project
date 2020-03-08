@@ -1,4 +1,5 @@
 var currentTradesNum = 0;
+var currenDate = null;
 
 function loadReportToForm(report) {
     let blob = new Blob([tradesToCSV(report.content, true)], { type: "text/plain" });
@@ -19,14 +20,22 @@ function loadReportToForm(report) {
         element: "table-container",
         allow_download: true,
         csv_options: {separator: ",", delimiter: "\""},
-        datatables_options: {"paging": true},
-        onComplete: () => { status.innerText = ""; },
+        datatables_options: {
+            "paging": true,
+            "drawCallback": () => {
+                //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
+                //if so, need to load the next block of trades
+                $(".pagination").children().slice(-2).children().on("click", () => {
+                    setTimeout(() => {
+                        if ($(".pagination").children().slice(-2,-1).hasClass("active")) {
+                            getNextTradeBlock(false);
+                        }
+                    }, 50);
+                });
+            },
+        },
         downloadName: `report-${report.date.toLocaleDateString()}`,
     });
-}
-
-function renderTable(csv, name) {
-
 }
 
 function tradesToCSV(trades, header) {
@@ -61,4 +70,19 @@ function tradesToCSV(trades, header) {
     }
 
     return csv;
+}
+
+function getNextTradeBlock(first) {
+    $("#resultsStatus").show();
+    getReport(currentDate, (report) => {
+        if (!report.content.length) return;
+        if (first) {
+            loadReportToForm(report)
+        } else {
+            let csv = tradesToCSV(report.content, false);
+            CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
+        }
+        $("#resultsStatus").hide();
+        currentTradesNum += report.content.length;
+    }, showError, currentTradesNum);
 }
