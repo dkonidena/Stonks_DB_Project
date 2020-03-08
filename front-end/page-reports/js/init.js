@@ -1,27 +1,38 @@
-const filters = [
-    ["#filter-creationDateLowerDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerYearInput", /^\d{0,4}$/],
-    ["#filter-creationDateUpperDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
-];
+function init() {
 
-let status;
-
-$(document).ready(() => {
-    status = document.querySelector("#status");
-
-    filters.forEach((x) => {
-        var t = $(x[0]);
-        setInputFilter(t, (v) => { return x[1].test(v) });
+    getCompanyList(null, 'mostBoughtFrom', (companies) => {
+        getProductList(null, $.noop);
     });
-
+    getCurrencyList(null, $.noop);
+    getUserList($.noop);
 
     $("#doAdvancedSearch").click(() => {
-        let filter = filterObjectFromForm();
-        getReportList(filter, (reports) => {
-            reports.forEach(addReportToUI);
-        }, $.noop, 0);
+        let date = $('#filter-reportDateInput').datepicker("getDate");
+        getReport(date, loadReportToForm, showError, 0);
     });
-});
+
+    $('.date').datepicker({
+        format: "dd-mm-yyyy",
+        todayHighlight: true,
+        maxViewMode: 3,
+        templates: {
+            leftArrow: '<i class="material-icons align-bottom">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons align-bottom">keyboard_arrow_right</i>',
+        },
+    });
+
+    $('#filter-reportDateInput').datepicker().on("changeDate", (e) => {
+        let date = $('#filter-reportDateInput').datepicker("getDate");
+        $("#resultsStatus").show();
+        getReport(date, (r) => {
+            loadReportToForm(r);
+            $("#resultsStatus").hide();
+        }, showError, 0);
+    });
+
+    $('#advancedSearch').on("show.bs.modal", () => {
+        $('#filter-reportDateInput').datepicker("setDate", new Date());
+    });
+}
+
+$(document).ready(() => { init(); });

@@ -290,21 +290,39 @@ class TradeFilter extends Filter {
 class Report {
     constructor() {
         this.date = new Date();
-        this.content = "";
+        this.content = [];
         this.pdfFile = "";
+        this.csvFile = "";
     }
 
-    populateFromServerJSON(o) {
+    populateFromServerJSON(o, date) {
         try {
-            this.date = new Date(o.date);
-            this.content = o.content;
-            this.pdfFile = o.pdfFile;
+            this.date = new Date(date);
+            for (let t of o) {
+                let trade = new Trade();
+                trade.populateFromServerJSON(t);
+                this.content.push(trade);
+            }
             return this;
         }
         catch {
             return null;
         }
     }
+}
+
+function getReport(date, res, err, offset) {
+    api.get.reports(date, false, (response) => {
+        if (response.matches === undefined) {
+            showError("Malformed server reponse for reports", "matches field not present");
+            return;
+        }
+
+        let report = new Report();
+        report.populateFromServerJSON(response.matches, date);
+
+        if (res !== undefined) { res(report); }
+    }, showError, offset);
 }
 
 function getReportList(filter, res, err, offset) {

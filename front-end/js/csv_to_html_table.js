@@ -4,9 +4,11 @@ CsvToHtmlTable = {
     init: function (options) {
         options = options || {};
         var csv_path = options.csv_path || "";
-        var pdf_path = options.pdf_path || "";
+        var pdf_download = options.pdf_download || null;
+        var csv_download = options.pdf_download || null;
         var el = options.element || "table-container";
         var allow_download = options.allow_download || false;
+        var generate_pdf = options.generate_pdf || null;
         var csv_options = options.csv_options || {};
         var datatables_options = options.datatables_options || {};
         var custom_formatting = options.custom_formatting || [];
@@ -56,8 +58,39 @@ CsvToHtmlTable = {
                 table = $table.DataTable(datatables_options);
 
                 if (allow_download) {
-                    $containerElement.append("<a class='btn btn-info' href='" + csv_path + "' download='" + downloadName + ".csv'><i class='glyphicon glyphicon-download'></i> Download as CSV</a>");
-                    $containerElement.append("<a class='btn btn-info' href='" + pdf_path + "' download='" + downloadName + ".pdf'><i class='glyphicon glyphicon-download'></i> Download as PDF</a>");
+                    let buttonTemplate = "class='btn btn-info text-light mx-3 my-2'";
+                    let icon1 = "<i class='align-bottom material-icons'>dynamic_feed</i>";
+                    let icon2 = "<i class='align-bottom material-icons'>get_app</i>";
+
+                    if(isFunction(csv_download)) {
+                        let b = $(`<button ${buttonTemplate}>${icon1}Generate CSV</button>`);
+                        b.on("click", () => {
+                            if (b.prop("href") !== undefined) return;
+                            b.html(`${icon1}Generating...`);
+                            b.prop("disabled", true);
+                            f = function(path) {
+                                let a = $(`<a ${buttonTemplate}>${icon2}Download as CSV</a>`).prop({"disabled": false, "href": path, "download": `${downloadName}.csv`});
+                                b.replaceWith(a);
+                            }
+                            csv_download(f);
+                        });
+                        $containerElement.append(b);
+                    }
+
+                    if(isFunction(pdf_download)) {
+                        let b = $(`<button ${buttonTemplate}>${icon1}Generate PDF</button>`);
+                        b.on("click", () => {
+                            if (b.prop("href") !== undefined) return;
+                            b.html(`${icon1}Generating...`).prop("disabled", true);
+                            f = function(path) {
+                                let a = $(`<a ${buttonTemplate}>${icon2}Download as PDF</a>`).prop({"disabled": false, "href": path, "download": `${downloadName}.pdf`});
+                                b.replaceWith(a);
+                            }
+                            pdf_download(f);
+                        });
+                        $containerElement.append(b);
+                    }
+
                 }
 
                 onComplete();
