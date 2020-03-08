@@ -7,21 +7,11 @@ function init() {
         [elements.notionalPriceInput, /^\d*\.?\d*$/],
         [elements.underlyingPriceInput, /^\d*\.?\d*$/],
         [elements.strikePriceInput, /^\d*\.?\d*$/],
-        [elements.maturityDateDayInput, /^\d{0,2}$/],
-        [elements.maturityDateMonthInput, /^\d{0,2}$/],
-        [elements.maturityDateYearInput, /^\d{0,4}$/],
-        [elements.filterCreationDateLowerDayInput, /^\d{0,2}$/],
-        [elements.filterCreationDateLowerMonthInput, /^\d{0,2}$/],
-        [elements.filterCreationDateLowerYearInput, /^\d{0,4}$/],
-        [elements.filterCreationDateUpperDayInput, /^\d{0,2}$/],
-        [elements.filterCreationDateUpperMonthInput, /^\d{0,2}$/],
-        [elements.filterCreationDateUpperYearInput, /^\d{0,4}$/],
-        [elements.filterModificationDateLowerDayInput, /^\d{0,2}$/],
-        [elements.filterModificationDateLowerMonthInput, /^\d{0,2}$/],
-        [elements.filterModificationDateLowerYearInput, /^\d{0,4}$/],
-        [elements.filterModificationDateUpperDayInput, /^\d{0,2}$/],
-        [elements.filterModificationDateUpperMonthInput, /^\d{0,2}$/],
-        [elements.filterModificationDateUpperYearInput, /^\d{0,4}$/],
+        [elements.maturityDateInput, /^[\d-]{0,10}$/],
+        [elements.filterCreationDateLowerInput, /^[\d-]{0,10}$/],
+        [elements.filterCreationDateUpperInput, /^[\d-]{0,10}$/],
+        [elements.filterModificationDateLowerInput, /^[\d-]{0,10}$/],
+        [elements.filterModificationDateUpperInput, /^[\d-]{0,10}$/],
     ];
 
     filters.forEach((x) => {
@@ -52,24 +42,6 @@ function init() {
             elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
             elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
         } catch (e) {}
-    });
-
-    $("#filter-creationDateLowerDayInput, #filter-creationDateUpperDayInput, #filter-modificationDateLowerDayInput, #filter-modificationDateUpperDayInput, #maturityDateDayInput").on("change", function () {
-        const day = parseInt($(this).val());
-        if (day > 31 || day < 1) {
-            $(this).addClass("is-invalid");
-        } else {
-            $(this).removeClass("is-invalid");
-        }
-    });
-
-    $("#filter-creationDateLowerMonthInput, #filter-creationDateUpperMonthInput, #filter-modificationDateLowerMonthInput, #filter-modificationDateUpperMonthInput, #maturityDateMonthInput").on("change", function () {
-        const month = parseInt($(this).val());
-        if (month > 12 || month < 1) {
-            $(this).addClass("is-invalid");
-        } else {
-            $(this).removeClass("is-invalid");
-        }
     });
 
     $("#maturityDateYearInput").on("change", function () {
@@ -179,6 +151,16 @@ function init() {
     $('.select2-filter').select2({
         theme: "bootstrap4",
         multiple: true,
+    });
+
+    $('.date').datepicker({
+        clearBtn: true,
+        format: "dd-mm-yyyy",
+        maxViewMode: 3,
+        templates: {
+            leftArrow: '<i class="material-icons align-bottom">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons align-bottom">keyboard_arrow_right</i>',
+        },
     });
 
     $("span[aria-labelledby='select2-notionalCurrencyInput-container']").css("background-color", "#e9ecef");
