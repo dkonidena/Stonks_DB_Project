@@ -1,5 +1,7 @@
 function init() {
 
+    $.fn.dataTable.ext.errMode = 'none';
+
     const filters = [
         [elements.quantityInput, /^\d*$/],
         [elements.notionalPriceInput, /^\d*\.?\d*$/],
