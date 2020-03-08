@@ -48,6 +48,13 @@ class CompanyModel(db.Model):
             return cls.query.filter(cls.CompanyCode == code)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
+    
+    @classmethod
+    def retrieve_company_by_name(cls, name):
+        try:
+            return cls.query.filter(cls.CompanyName == name)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("","",1)
 
     # gets all companies that existed before a date (serves get?)
     # should this be existed ON that date? something could've existed and closed
@@ -305,6 +312,13 @@ class DerivativeTradesModel(db.Model):
     def get_trade_dates_between(cls, startDate, endDate):
         try:
             return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade), func.DATE(cls.DateOfTrade) <= parse_iso_date(endDate)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
+        except exc.ProgrammingError:
+            raise exc.ProgrammingError("", "", 1)
+
+    @classmethod
+    def get_trade_date_by_id(cls, id):
+        try:
+            return cls.query.filter(cls.TradeID == id).with_entities(cls.DateOfTrade).first()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 

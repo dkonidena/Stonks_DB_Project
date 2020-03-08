@@ -1,14 +1,18 @@
-const TIMEOUT = 10000;
-const API_ENDPOINT = "http://localhost:8002/api";
+const TIMEOUT = 100000;
+const API_ENDPOINT = "/api";
 
 const api = {
-    getUserID: getCurrentUserID,
+    getUserID: () => { return getCurrentUserID() },
     get: {
         users: (dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/users?&isDryRun=${dryRun}`, res, err);
         },
         currencies: (date, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/currencies?date=${date.toISOString()}&isDryRun=${dryRun}`, res, err);
+            let options = `isDryRun=${dryRun}`;
+            if (date !== null) {
+                options += `&date=${date.toISOString()}`
+            }
+            request("GET", `${API_ENDPOINT}/currencies?${options}`, res, err);
         },
         companies: (date, order, dryRun, res, err) => {
             let options = `isDryRun=${dryRun}&order=${order}`;
@@ -30,8 +34,11 @@ const api = {
         reports: (filter, dryRun, res, err) => {
             request("GET", `${API_ENDPOINT}/reports?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
         },
-        rules: (filter, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/rules?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
+        config: (res, err) => {
+            request("GET", `${API_ENDPOINT}/config`, res, err);
+        },
+        events: (res, err) => {
+            request("GET", `${API_ENDPOINT}/events`, res, err);
         }
     },
     post: {
@@ -64,6 +71,9 @@ const api = {
         },
         products: (id, product, res, err) => {
             request("PATCH", `${API_ENDPOINT}/products?id=${id}`, res, err, product);
+        },
+        config: (config, res, err) => {
+            request("PATCH", `${API_ENDPOINT}/config`, res, err, config);
         }
     },
     delete: {

@@ -278,15 +278,6 @@ function filterObjectFromForm() {
     return filter;
 }
 
-function showResults(trades) {
-    $("#resultsStatus").show();
-    $("#table-container").empty();
-    $("#resultsModal").modal("show");
-    $('#resultsModal').on('shown.bs.modal', () => {
-        renderTable(tradesToCSV(trades));
-    });
-}
-
 function resetState() {
     $("#tradeEditorForm").hide();
     $("#saveTradeButton").hide();

@@ -61,7 +61,7 @@ function init() {
         if (id !== "") {
             api.delete.products(id, () => {
                 showSuccess('Product deleted');
-                resetState();
+                clearForm();
             },showError)
         }
     });

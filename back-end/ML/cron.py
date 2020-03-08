@@ -15,7 +15,7 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
     trades = list()
     # get the size of the trades list
     d = len(allTrades)
-    for i in range(100): # noOfIterations
+    for i in range(noOfIterations): # noOfIterations
         # pseudorandom number
         r = random.random()
         # now find the largest value i such that i(i+1) < rd(d+1)
@@ -36,10 +36,10 @@ def cronJob(allTrades, neigboursFromRules, noOfIterations):
         X_train_quantity.append([t.getPreviousQuantity()])
         y_train_quantity.append(t.getCurrentQuantity())
 
-    knn_notional = KNeighborsClassifier(n_neighbors=7) # neigboursFromRules
+    knn_notional = KNeighborsClassifier(n_neighbors=neigboursFromRules) # neigboursFromRules
     knn_notional.fit(X_train_notional, y_train_notional)
 
-    knn_quantity = KNeighborsClassifier(n_neighbors=7) # neigboursFromRules
+    knn_quantity = KNeighborsClassifier(n_neighbors=neigboursFromRules) # neigboursFromRules
     knn_quantity.fit(X_train_quantity, y_train_quantity)
 
     # now save the state of these objects to the server

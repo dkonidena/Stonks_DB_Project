@@ -3,7 +3,7 @@ import sys
 import uuid
 import json
 import zipfile
-from flask import Flask, request, abort, jsonify, send_from_directory, render_template
+from flask import Flask, request, abort, jsonify, send_from_directory, render_template, redirect
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -16,6 +16,8 @@ from time import sleep
 FULL_DATABASE = 'sqlite:///D:\\rohan\\Documents\\CS261 Coursework\\database_cs261_full.db'
 PARTIAL_DATABASE = 'sqlite:///database_cs261_2.0/db'
 
+
+app = Flask(__name__, static_url_path='', static_folder='../front-end')
 api = Api(app)
 CORS(app)
 
@@ -28,6 +30,7 @@ api.add_resource(resources.Reports, '/api/reports')
 api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
 api.add_resource(resources.Events, '/api/events')
+api.add_resource(resources.Config, '/api/config')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_2.0.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -38,7 +41,10 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-    return jsonify({'message':'Welcome to Deustche Bank'})
+    return redirect("/page-home/page-home.html", code=302)
 
 if __name__=="__main__":
-    app.run(debug=True,port=8002,host = '0.0.0.0')
+    port = 8002
+    host = '0.0.0.0'
+    print(f"\n\n > Address http://{host}:{port} <\n\n")
+    app.run(debug=True,port=port,host=host)
