@@ -1,10 +1,4 @@
 const filters = [
-    ["#filter-creationDateLowerDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateLowerYearInput", /^\d{0,4}$/],
-    ["#filter-creationDateUpperDayInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperMonthInput", /^\d{0,2}$/],
-    ["#filter-creationDateUpperYearInput", /^\d{0,4}$/],
 ];
 
 function init() {
@@ -68,6 +62,16 @@ function init() {
         getCompanyList(filterObjectFromForm(), 'mostBoughtFrom', (companies) => {
             companies.forEach(addCompanyToUI);
         })
+    });
+
+    $('.date').datepicker({
+        clearBtn: true,
+        format: "dd-mm-yyyy",
+        maxViewMode: 3,
+        templates: {
+            leftArrow: '<i class="material-icons align-bottom">keyboard_arrow_left</i>',
+            rightArrow: '<i class="material-icons align-bottom">keyboard_arrow_right</i>',
+        },
     });
 }
 
