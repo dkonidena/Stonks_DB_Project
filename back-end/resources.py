@@ -417,7 +417,10 @@ class Trades(Resource):
                 return {'message': 'malformed filter'}, 400
             isDryRun = request.args.get('isDryRun')
             offset = request.args.get('offset')
-            limitFlag = True
+            if len(filter) > 1:
+                limitFlag = False
+            else:
+                limitFlag = True
             limit = 1000
             results = list() # stores results for each query/filter that is applied by the user
 
@@ -481,9 +484,9 @@ class Trades(Resource):
 
             for each in results:
                 if final_results is None:
-                    final_results = each
+                    final_results = set(each)
                 else:
-                    final_results = final_results.intersect(each)
+                    final_results = final_results.intersection(set(each))
 
             if isDryRun == "true":
                 if filter == {}:
