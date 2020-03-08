@@ -1,3 +1,5 @@
+var editWindow;
+
 function init() {
 
     $.fn.dataTable.ext.errMode = 'none';
@@ -42,15 +44,6 @@ function init() {
             elements.underlyingPriceInput.prop("placeholder", curr.getPlaceholder());
             elements.strikePriceInput.prop("placeholder", curr.getPlaceholder);
         } catch (e) {}
-    });
-
-    $("#maturityDateYearInput").on("change", function () {
-        const year = parseInt($(this).val());
-        if (year < (new Date()).getFullYear()) {
-            $(this).addClass("is-invalid");
-        } else {
-            $(this).removeClass("is-invalid");
-        }
     });
 
     $("#addTradeButton").on("click", () => {
@@ -137,6 +130,10 @@ function init() {
     getUserList((users) => {
         users.forEach(addUserToUI);
     });
+
+    api.get.config((config) => {
+        editWindow = config.days;
+    }, showError);
 
     $('.select2-cur').select2({
         maximumInputLength: 3,

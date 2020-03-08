@@ -1,7 +1,18 @@
-# CS261DB_CSWK
-CS261 Software Engineering Coursework - Deutsche Bank
+### Requirements
+- Python 3.8 or later
 
-Group Project Requirements - 
+### How to Run
+```bash
+cd back-end
+pip install -r requirements.txt
+python run.py
+```
+Then open the link printed by the program in a web browser. It will be look like:
+```
+> Address http://0.0.0.0:8002 <
+```
+
+###### Group Project Requirements
   1. Allow a user to enter the details of a derivative trade, edit a previous trade or delete a trade that should not have been entered.
   2. Generate a daily report of trades, for the regulatory body.
   3. Detect possible errors and alert the user that corrections may be needed.

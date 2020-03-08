@@ -609,14 +609,11 @@ class Trades(Resource):
             formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
             # today's date
             date_now = datetime.date.today()
-            editing_period = datetime.timedelta(days = 30) #placeholder
+            editing_period = datetime.timedelta(Config.editingPeriod)
             # buffer of 6 weeks
             buffer = datetime.timedelta(weeks = 6)
             if formatted_trade_date > date_now or date_now > formatted_trade_date + editing_period + buffer:
                 return {'message' : 'trade is beyond the editing period'}, 405
-            else:
-                print("Valid")
-                exit(0)
 
             json_data = request.data
             data = json.loads(json_data)
@@ -749,7 +746,7 @@ class Reports(Resource):
 def generateCSV(date):
     # retrieve all trade data
     results = models.DerivativeTradesModel.get_trades_between(date, date, 0, False, None)
-    
+
     # Headers for the CSV table
     content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
     for row in results:
@@ -773,7 +770,7 @@ def generatePDF(date):
 
     for row in results:
         tableData.append([str(row.DateOfTrade), Paragraph(str(row.TradeID), styleB), str(row.ProductID), str(row.BuyingParty), str(row.SellingParty), str(row.NotionalValue), str(row.NotionalCurrency), str(row.Quantity), str(row.MaturityDate), str(row.UnderlyingValue), str(row.UnderlyingCurrency), str(row.StrikePrice)])
-      
+
     # add table data to document content arrays
     story.append(Table(tableData,colWidths=65, rowHeights=30, repeatRows=0, splitByRow=1, style=TableStyle([('FONTSIZE', (0,0), (-1,-1), 8)])))
     doc = SimpleDocTemplate('output.pdf', pagesize = landscape(A4), title = "Report")
@@ -940,18 +937,30 @@ class Events(Resource):
 
 class Config(Resource):
 
-    days = 30 ##(356/12) * 3 #3 Months is the preset period (Financial Quarter)
+    editingPeriod = int((356/12) * 3) #3 Months is the preset period (Financial Quarter)
     neighboursFromRules = 7
     noOfIterations = 100
 
+    @classmethod
+    def setNeighbours(self, neigbours):
+        self.neighboursFromRules = neigbours
+
+    @classmethod
+    def setPeriod(self, days):
+        self.editingPeriod = days
+
+    @classmethod
+    def setIterations(self, iterations):
+        self.noOfIterations = iterations
+
     ###NEEDS ERROR CHECKING###
     def get(self):
-        return {'days': self.days, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 200
+        return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 201
 
     def patch(self):
         json_data = request.data
         data = json.loads(json_data)
-        self.days = data['days']
-        self.neighboursFromRules = data['neighboursFromRules']
-        self.noOfIterations = data['noOfIterations']
-        return 'success', 200
+        Config.setPeriod(int(data['days']))
+        Config.setNeighbours(int(data['neighboursFromRules']))
+        Config.setIterations(int(data['noOfIterations']))
+        return 'success', 201

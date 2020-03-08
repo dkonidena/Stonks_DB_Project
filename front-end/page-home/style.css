@@ -41,7 +41,3 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
-
-#buttons > button:hover {
-    font-size: 3em;
-}
