@@ -291,7 +291,6 @@ function resetState() {
 function getNextTradeBlock(first) {
     getTradeList(currentFilter, (trades) => {
         if (first) {
-            currentTradesNum = 0;
             renderTable(tradesToCSV(trades, true));
         } else {
             let csv = tradesToCSV(trades, false);

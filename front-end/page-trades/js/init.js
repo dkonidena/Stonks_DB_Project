@@ -133,6 +133,7 @@ function init() {
 
     $("#resultsModal").on("hidden.bs.modal", () => {
         $("#table-container").DataTable().destroy();
+        currentTradesNum = 0;
     });
 
     $("#searchTradesButton,#searchAgain").click(() => {
