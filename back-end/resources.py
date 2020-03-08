@@ -40,7 +40,7 @@ def returnCurrencySymbol(currencyCode):
     return symbol
 
 def get_trade_objects():
-    trades = models.DerivativeTradesModel.get_trades_all(0)
+    trades = models.DerivativeTradesModel.get_trades_all(0, False)
     trade_object_list = []
     for t in trades:
         trade0 = trade(t.OriginalNotionalValue, t.NotionalValue, t.OriginalQuantity, t.Quantity)
@@ -417,7 +417,7 @@ class Trades(Resource):
                 return {'message': 'malformed filter'}, 400
             isDryRun = request.args.get('isDryRun')
             offset = request.args.get('offset')
-
+            limit = True
             results = list() # stores results for each query/filter that is applied by the user
 
             # TODO add dateModified filter
@@ -425,53 +425,53 @@ class Trades(Resource):
 
             # if the filter is empty then return all the trades
             if filter == {}:
-                results.append(models.DerivativeTradesModel.get_trades_all(offset))
+                results.append(models.DerivativeTradesModel.get_trades_all(offset, limit))
             else:
                 try:
                     if 'dateCreated' in filter:
                         if len(filter['dateCreated']) == 1:
                             if 'after' in filter['dateCreated']:
-                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after'], offset))
+                                results.append(models.DerivativeTradesModel.get_trades_after(filter['dateCreated']['after'], offset, limit))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before'], offset))
+                                results.append(models.DerivativeTradesModel.get_trades_before(filter['dateCreated']['before'], offset, limit))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before'], offset))
+                            results.append(models.DerivativeTradesModel.get_trades_between(filter['dateCreated']['after'], filter['dateCreated']['before'], offset, limit))
                     if 'dateModified' in filter:
                         if len(filter['dateModified']) == 1:
                             if 'after' in filter['dateModified']:
-                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after'], offset))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_after(filter['dateModified']['after'], offset, limit))
                             else:
-                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before'], offset))
+                                results.append(models.DerivativeTradesModel.get_trades_modified_before(filter['dateModified']['before'], offset, limit))
                         else:
-                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before'], offset))
+                            results.append(models.DerivativeTradesModel.get_trades_modified_between(filter['dateModified']['after'], filter['dateModified']['before'], offset, limit))
 
                     if 'tradeID' in filter:
                         for id in filter['tradeID']:
-                            results.append(models.DerivativeTradesModel.get_trade_with_ID(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trade_with_ID(id, offset, limit))
 
                     if 'buyingParty' in filter:
                         for id in filter['buyingParty']:
-                            results.append(models.DerivativeTradesModel.get_trades_bought_by(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trades_bought_by(id, offset, limit))
 
                     if 'sellingParty' in filter:
                         for id in filter['sellingParty']:
-                            results.append(models.DerivativeTradesModel.get_trades_sold_by(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trades_sold_by(id, offset, limit))
 
                     if 'product' in filter:
                         for id in filter['product']:
-                            results.append(models.DerivativeTradesModel.get_trade_by_product(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trade_by_product(id, offset, limit))
 
                     if 'notionalCurrency' in filter:
                         for id in filter['notionalCurrency']:
-                            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trades_by_notional_currency(id, offset, limit))
 
                     if 'underlyingCurrency' in filter:
                         for id in filter['underlyingCurrency']:
-                            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trade_by_underlying_currency(id, offset, limit))
 
                     if 'userIDcreatedBy' in filter:
                         for id in filter['userIDcreatedBy']:
-                            results.append(models.DerivativeTradesModel.get_trades_by_user(id, offset))
+                            results.append(models.DerivativeTradesModel.get_trades_by_user(id, offset, limit))
                 except:
                     return {'message': 'malformed filter'}, 400
 
@@ -603,7 +603,7 @@ class Trades(Resource):
 
             # Checking the editing period to see if the edit is legal
             trade_ID = request.args.get('id')
-            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0).DateOfTrade
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False).DateOfTrade
             print(trade_date)
             # converting the date to datetime.date object
             formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
@@ -674,11 +674,11 @@ class Trades(Resource):
             trade_ID = request.args.get('id')
             if 'id' not in request.args:
                 return {'message': 'Request malformed'}, 400
-            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0).count() == 0:
+            if models.DerivativeTradesModel.get_trade_with_ID(trade_ID, 0, False).count() == 0:
                 return {'message': 'Trade id not present'}, 400
 
             # Checking the editing period to see if the edit is legal
-            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0).DateOfTrade
+            trade_date =  models.DerivativeTradesModel.get_trade_date_by_id(trade_ID, 0, False).DateOfTrade
             print(trade_date)
             # converting the date to datetime.date object
             formatted_trade_date = datetime.datetime.strptime(trade_date, "%Y-%m-%d").date()
@@ -721,6 +721,7 @@ class Reports(Resource):
             # this needs error checking
             isDryRun = request.args.get('isDryRun')
             offset = 0
+            limit = False
             # TODO add dateModified filter
             # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
@@ -730,22 +731,22 @@ class Reports(Resource):
             if 'dateCreated' in filter:
                 if len(filter['dateCreated']) == 1:
                     if 'after' in filter['dateCreated']:
-                        tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'], offset)
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_after(filter['dateCreated']['after'], offset, limit)
                     else:
-                        tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'], offset)
+                        tradeDates = models.DerivativeTradesModel.get_trade_dates_before(filter['dateCreated']['before'], offset, limit)
                     noOfMatches = tradeDates.count()
                 elif len(filter['dateCreated']) == 2:
-                    tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'], offset)
+                    tradeDates = models.DerivativeTradesModel.get_trade_dates_between(filter['dateCreated']['after'], filter['dateCreated']['before'], offset, limit)
                     noOfMatches = tradeDates.count()
                 else:
-                    tradeDates = models.DerivativeTradesModel.get_all_trade_dates(offset)
+                    tradeDates = models.DerivativeTradesModel.get_all_trade_dates(offset, limit)
                     noOfMatches = len(tradeDates)
             else:
-                tradeDates = models.DerivativeTradesModel.get_all_trade_dates(offset)
+                tradeDates = models.DerivativeTradesModel.get_all_trade_dates(offset, limit)
                 noOfMatches = tradeDates.count()
 
             for each in tradeDates:
-                result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade, offset)
+                result = models.DerivativeTradesModel.get_trades_between(each.DateOfTrade, each.DateOfTrade, offset, limit)
                 results.append(result)
 
             # contents for the pdf file
