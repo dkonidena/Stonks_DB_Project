@@ -1,3 +1,5 @@
+var editWindow;
+
 function init() {
 
     const filters = [
@@ -150,6 +152,10 @@ function init() {
     getUserList((users) => {
         users.forEach(addUserToUI);
     });
+
+    api.get.config((config) => {
+        editWindow = config.days;
+    }, showError);
 
     $('.select2-cur').select2({
         maximumInputLength: 3,

@@ -24,6 +24,11 @@ function showError(error, debugData = 'no additional data', stringify = true) {
     showErrorDialogue(error, debugData);
 }
 
+function dateDifference(date1, date2) {
+    let diff = date2 - date1;
+    return diff / (1000 * 60 * 60 * 24);
+}
+
 function showSuccess(message = '(no message specified)') {
     $("#successModal #successMessage").text(message);
     $("#successModal").modal("show");
