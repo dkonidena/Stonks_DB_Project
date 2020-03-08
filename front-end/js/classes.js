@@ -307,7 +307,7 @@ class Report {
     }
 }
 
-function getReportList(filter, res, err) {
+function getReportList(filter, res, err, offset) {
     api.get.reports(filter.getAPIObject(), false, (response) => {
         if (response.matches === undefined) {
             showError("Malformed server reponse for reports", "matches field not present");
@@ -321,7 +321,7 @@ function getReportList(filter, res, err) {
         }
 
         if (res !== undefined) { res(reports); }
-    }, showError);
+    }, showError, offset);
 }
 
 class User {

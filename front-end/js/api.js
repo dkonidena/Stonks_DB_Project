@@ -31,8 +31,8 @@ const api = {
         trades: (filter, dryRun, res, err, offset) => {
             request("GET", `${API_ENDPOINT}/trades?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}&offset=${offset}`, res, err);
         },
-        reports: (filter, dryRun, res, err) => {
-            request("GET", `${API_ENDPOINT}/reports?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}`, res, err);
+        reports: (filter, dryRun, res, err, offset) => {
+            request("GET", `${API_ENDPOINT}/reports?filter=${JSON.stringify(filter)}&isDryRun=${dryRun}&offset=${offset}`, res, err);
         },
         config: (res, err) => {
             request("GET", `${API_ENDPOINT}/config`, res, err);

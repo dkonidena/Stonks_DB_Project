@@ -22,6 +22,6 @@ $(document).ready(() => {
         let filter = filterObjectFromForm();
         getReportList(filter, (reports) => {
             reports.forEach(addReportToUI);
-        });
+        }, $.noop, 0);
     });
 });

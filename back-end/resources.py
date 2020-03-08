@@ -611,7 +611,7 @@ class Trades(Resource):
             # today's date
             date_now = datetime.date.today()
             editing_period = datetime.timedelta(days = 30) #placeholder
-            # buffer of 6 weeks 
+            # buffer of 6 weeks
             buffer = datetime.timedelta(weeks = 6)
             if formatted_trade_date > date_now or date_now > formatted_trade_date + editing_period + buffer:
                 return {'message' : 'trade is beyond the editing period'}, 405
@@ -687,7 +687,7 @@ class Trades(Resource):
             date_now = datetime.date.today()
             print(Config.days)
             editing_period = datetime.timedelta(Config.days) #placeholder
-            # buffer of 6 weeks 
+            # buffer of 6 weeks
             buffer = datetime.timedelta(weeks = 6)
             if formatted_trade_date > date_now or date_now > formatted_trade_date + buffer + editing_period:
                 return {'message' : 'trade is beyond the editing period'}, 405
@@ -723,7 +723,7 @@ class Reports(Resource):
             isDryRun = request.args.get('isDryRun')
             if 'offset' not in request.args:
                 return {'message': 'malformed filter'}, 400
-            offset = request.args.get('offset')
+            offset = int(request.args.get('offset'))
             limitFlag = True
             limit = 50
             # TODO add dateModified filter
