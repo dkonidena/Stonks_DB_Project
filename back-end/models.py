@@ -242,9 +242,9 @@ class DerivativeTradesModel(db.Model):
     def get_trade_with_ID(cls, tradeID, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.TradeID == tradeID).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.TradeID.in_(tradeID)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.TradeID == tradeID)
+                return cls.query.filter(DerivativeTradesModel.TradeID.in_(tradeID))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -253,9 +253,9 @@ class DerivativeTradesModel(db.Model):
     def get_trades_sold_by(cls, sellingParty, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.SellingParty.in_(sellingParty)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.SellingParty == sellingParty)
+                return cls.query.filter(DerivativeTradesModel.SellingParty.in_(sellingParty))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -264,9 +264,9 @@ class DerivativeTradesModel(db.Model):
     def get_trades_bought_by(cls, buyingParty, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.BuyingParty.in_(buyingParty)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.BuyingParty == buyingParty)
+                return cls.query.filter(DerivativeTradesModel.BuyingParty.in_(buyingParty))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -275,9 +275,9 @@ class DerivativeTradesModel(db.Model):
     def get_trade_by_product(cls, productID, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(cls.ProductID == productID).offset(offset).limit(limit)
+                return cls.query.filter(cls.ProductID.in_(productID)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(cls.ProductID == productID)
+                return cls.query.filter(cls.ProductID.in_(productID))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -286,9 +286,9 @@ class DerivativeTradesModel(db.Model):
     def get_trades_by_notional_currency(cls, notionalCurrency, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.NotionalCurrency.in_(notionalCurrency)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.NotionalCurrency == notionalCurrency)
+                return cls.query.filter(DerivativeTradesModel.NotionalCurrency.in_(notionalCurrency))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -297,9 +297,9 @@ class DerivativeTradesModel(db.Model):
     def get_trade_by_underlying_currency(cls, underlyingCurrency, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.UnderlyingCurrency.in_(underlyingCurrency)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.TradeID == underlyingCurrency)
+                return cls.query.filter(DerivativeTradesModel.UnderlyingCurrency.in_(underlyingCurrency))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
 
@@ -308,9 +308,9 @@ class DerivativeTradesModel(db.Model):
     def get_trades_by_user(cls, userID, offset, limitFlag, limit):
         try:
             if limitFlag:
-                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID).offset(offset).limit(limit)
+                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy.in_(userID)).offset(offset).limit(limit)
             else:
-                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy == userID)
+                return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy.in_(userID))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
     @classmethod
