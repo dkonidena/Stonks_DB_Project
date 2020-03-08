@@ -18,6 +18,7 @@ import ML.main as ml
 from ML.tradeObj import trade
 import ML.cron
 import schedule
+from concurrent.futures import ThreadPoolExecutor
 
 #for PDF report generation
 from reportlab.pdfgen import canvas
@@ -25,6 +26,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, PageBreak, Table, TableStyle
+
+ex = ThreadPoolExecutor(4)
 
 CURRENCY = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
 
@@ -768,8 +771,7 @@ def generateCSV(date):
     content = """Date Of Trade,Trade ID,Product,Buying Party,Selling Party,Notional Value,Notional Currency,Quantity,Maturity Date,Underlying Value,Underlying Currency,Strike Price\n"""
     for row in results:
         content += str(row.DateOfTrade) + "," + str(row.TradeID) + "," + str(row.ProductID) + "," + str(row.BuyingParty) + "," + str(row.SellingParty) + "," + str(row.NotionalValue) + "," + str(row.NotionalCurrency) + "," + str(row.Quantity) + "," + str(row.MaturityDate) + "," + str(row.UnderlyingValue) + "," + str(row.UnderlyingCurrency) + "," + str(row.StrikePrice) + "\n"
-    
-    #print(content)
+
     return content
 
 def generatePDF(date):
@@ -797,20 +799,23 @@ def generatePDF(date):
     # JSON encoding
     encodedPDF = base64.b64encode(open("output.pdf", "rb").read()).decode()
 
-    print("Completed: ", encodedPDF)
     return encodedPDF
 
-class PDF(Resource):
+class pdf(Resource):
     def get(self):
+        if 'date' not in request.args:
+            return {'message': 'malformed filter'}, 400
         date = request.args.get("date")
-        generatePDF(date)
-        return
+        res = ex.submit(generatePDF, date)
+        return res.result(), 200
 
-class CSV(Resource):
+class csv(Resource):
     def get(self):
+        if 'date' not in request.args:
+            return {'message': 'malformed filter'}, 400
         date = request.args.get("date")
-        generateCSV(date)
-        return
+        res = ex.submit(generateCSV, date)
+        return res.result(), 200
 
 class Users(Resource):
     def get(self):
