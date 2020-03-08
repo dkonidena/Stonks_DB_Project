@@ -1,7 +1,8 @@
 .DS_Store
 .vs/
+.vscode/
 __pycache__/
 .venv/
 .DS_Store
-back-end/database_cs261_1_year.db
-back-end/database_cs261_full.db
+.db
+.pdf
