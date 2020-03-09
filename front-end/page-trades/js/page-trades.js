@@ -278,6 +278,12 @@ function filterObjectFromForm() {
 }
 
 function resetState() {
+    let t = new Trade("");
+    t.notionalCurrency = currencies.USD;
+    t.underlyingCurrency = currencies.USD;
+    loadTradeToForm(t);
+    elements.tradeDate.text("").trigger("change");
+    elements.maturityDateInput.datepicker("clearDates").trigger("change");
     $("#tradeEditorForm").hide();
     $("#saveTradeButton").hide();
     $("#suggestionsTable").hide();

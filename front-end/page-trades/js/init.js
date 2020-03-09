@@ -47,11 +47,6 @@ function init() {
     });
 
     $("#addTradeButton").on("click", () => {
-        let t = new Trade();
-        t.notionalCurrency = currencies['USD'];
-        t.underlyingCurrency = currencies['USD'];
-        trades[t.tradeId] = t;
-        loadTradeToForm(t);
         showTradeForm();
     });
 
@@ -82,11 +77,6 @@ function init() {
     });
 
     $("#discardChangesButton").on("click", () => {
-        let t = new Trade();
-        t.notionalCurrency = currencies['USD'];
-        t.underlyingCurrency = currencies['USD'];
-        trades[t.tradeId] = t;
-        loadTradeToForm(t);
         resetState();
     });
 
