@@ -1,5 +1,6 @@
 var currentTradesNum = 0;
 var date;
+var trades = {};
 
 //search for elements needed only once to improve performance
 const elements = {
@@ -292,15 +293,17 @@ function resetState() {
 
 //gets the next 1000 trades
 function getNextTradeBlock(first) {
-    getTradeList(currentFilter, (trades) => {
-        if (!trades.length) renderTable("");
+    getTradeList(currentFilter, (list, dict) => {
+        if (!list.length) renderTable("");
         if (first) {
-            renderTable(tradesToCSV(trades, true));
+            trades = {};
+            renderTable(tradesToCSV(list, true));
         } else {
-            let csv = tradesToCSV(trades, false);
+            let csv = tradesToCSV(list, false);
             CsvToHtmlTable.add_existing("#table-container", csv, {"separator": ",", "delimiter": "\""});
         }
-        currentTradesNum += trades.length;
+        trades = { ...trades, ...dict};
+        currentTradesNum += list.length;
     }, currentTradesNum);
 }
 

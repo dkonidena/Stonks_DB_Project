@@ -1,7 +1,6 @@
 var currencies = {};
 var companies = {};
 var products = {};
-var trades = {};
 var users = {};
 
 class Trade {
@@ -84,14 +83,14 @@ function getTradeList(filter, res, offset = 0) {
             return;
         }
 
-        trades = {};
+        let trades = {}
         for (let json of response.matches) {
             let trade = new Trade();
             trade.populateFromServerJSON(json);  // TODO error handling
             trades[trade.tradeId] = trade;
         }
 
-        res(Object.values(trades));
+        res(Object.values(trades), trades);
     }, showError, offset);
 }
 
