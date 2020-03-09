@@ -51,7 +51,9 @@ def get_trade_objects():
     return trade_object_list
 
 def run_cron_job():
-    ML.cron.job(get_trade_objects, 7, 100)
+    iterations = Config.noOfIterations
+    neighbours = Config.neighboursFromRules
+    ML.cron.job(get_trade_objects, iterations, neighbours)
 
 # run this in seperate thread?
 # or if we just have a call at the start of the program, then we can show that
