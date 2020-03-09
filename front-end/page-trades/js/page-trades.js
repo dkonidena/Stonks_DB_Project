@@ -1,4 +1,5 @@
 var currentTradesNum = 0;
+var date;
 
 //search for elements needed only once to improve performance
 const elements = {
@@ -86,6 +87,8 @@ function loadTradeToForm(trade) {
     fields.forEach((x) => {
         $(x[0]).val(x[1]).trigger("change");
     });
+
+    date = trade.tradeDate;
 
     let md = elements.maturityDateInput;
     md.datepicker("setDate", trade.maturityDate);
@@ -175,6 +178,10 @@ function saveTrade() {
     if (isValidTrade()) {
         let t = tradeObjectFromForm();
         if (t.tradeId !== "") {
+            if (dateDifference(date, new Date()) > editWindow) {
+                $("#tooOldModal").modal("show");
+                return;
+            }
             api.patch.trades(t.tradeId, t.getAPIObject(), () => {
                 showSuccess('Trade updated.');
                 resetState();
