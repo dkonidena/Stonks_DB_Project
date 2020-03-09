@@ -65,9 +65,9 @@ function loadCompanyToForm(company) {
     const fields = [
         ["#companyIdInput", company.id],
         ["#companyInput", company.name],
-        ["#companyDateDayInput", company.dateEnteredIntoSystem.getDate()],
-        ["#companyDateMonthInput", company.dateEnteredIntoSystem.getMonth()+1],
-        ["#companyDateYearInput", company.dateEnteredIntoSystem.getFullYear()],
+        ["#companyDayInput", company.dateEnteredIntoSystem.getDate()],
+        ["#companyMonthInput", company.dateEnteredIntoSystem.getMonth()+1],
+        ["#companyYearInput", company.dateEnteredIntoSystem.getFullYear()],
     ]
 
     fields.forEach((x) => {
