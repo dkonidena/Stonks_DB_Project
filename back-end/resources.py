@@ -483,7 +483,7 @@ class Trades(Resource):
                     dicto['maturityDate'] = row.MaturityDate
                     dicto['tradeDate'] = row.DateOfTrade
                     dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
-                    dicto['lastModifiedDate'] = row.DateOfTrade
+                    dicto['lastModifiedDate'] = row.LastModifiedDate
                     res.append(dicto)
                 message = {'matches' : res}
                 return message, 200
@@ -689,7 +689,7 @@ class Reports(Resource):
                 dicto['maturityDate'] = row.MaturityDate
                 dicto['tradeDate'] = row.DateOfTrade
                 dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
-                dicto['lastModifiedDate'] = row.DateOfTrade 
+                dicto['lastModifiedDate'] = row.LastModifiedDate 
                 res.append(dicto)
             message['matches'] = res
             return message, 200
