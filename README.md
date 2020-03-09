@@ -7,7 +7,7 @@ cd back-end
 pip install -r requirements.txt
 python run.py
 ```
-Then open the link printed by the program in a web browser. It will be look like:
+Then open the link printed by the program in Firefox. The link will look like:
 ```
 > Address http://0.0.0.0:8002 <
 ```
