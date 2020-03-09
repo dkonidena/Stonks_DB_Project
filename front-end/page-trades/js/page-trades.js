@@ -280,7 +280,7 @@ function resetState() {
 //gets the next 1000 trades
 function getNextTradeBlock(first) {
     getTradeList(currentFilter, (trades) => {
-        if (!trades.length) return;
+        if (!trades.length) renderTable("");
         if (first) {
             renderTable(tradesToCSV(trades, true));
         } else {
@@ -313,10 +313,12 @@ function renderTable(csv) {
             "drawCallback": () => {
                 //whenever the next button or the button for the last page is pressed, check if the last page button is the active one
                 //if so, need to load the next block of trades
-                $(".page-link[data-dt-idx='7'], .page-link[data-dt-idx='8']").parent().on("click", () => {
-                    if ($(".page-link[data-dt-idx='7']").parent().hasClass("active")) {
-                        getNextTradeBlock(false);
-                    }
+                $(".pagination").children().slice(-2).children().on("click", () => {
+                    setTimeout(() => {
+                        if ($(".pagination").children().slice(-2,-1).hasClass("active")) {
+                            getNextTradeBlock(false);
+                        }
+                    }, 50);
                 });
             }
         },

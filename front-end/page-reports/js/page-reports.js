@@ -2,7 +2,8 @@ var currentTradesNum = 0;
 var currenDate = null;
 
 function loadReportToForm(report) {
-    let blob = new Blob([tradesToCSV(report.content, true)], { type: "text/plain" });
+    let csv = tradesToCSV(report.content, true);
+    let blob = new Blob([csv], { type: "text/plain" });
 
     CsvToHtmlTable.init({
         csv_path: URL.createObjectURL(blob),
@@ -18,7 +19,7 @@ function loadReportToForm(report) {
             }, showError);
         },
         element: "table-container",
-        allow_download: true,
+        allow_download: report.content.length,
         csv_options: {separator: ",", delimiter: "\""},
         datatables_options: {
             "paging": true,
@@ -75,7 +76,10 @@ function tradesToCSV(trades, header) {
 function getNextTradeBlock(first) {
     $("#resultsStatus").show();
     getReport(currentDate, (report) => {
-        if (!report.content.length) return;
+        if (!report.content.length) {
+            let r = new Report();
+            loadReportToForm(r);
+        }
         if (first) {
             loadReportToForm(report)
         } else {
