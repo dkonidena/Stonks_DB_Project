@@ -483,7 +483,7 @@ class Trades(Resource):
                     dicto['maturityDate'] = row.MaturityDate
                     dicto['tradeDate'] = row.DateOfTrade
                     dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
-                    dicto['lastModifiedDate'] = row.DateOfTrade # need to be changed to the event log date
+                    dicto['lastModifiedDate'] = row.DateOfTrade
                     res.append(dicto)
                 message = {'matches' : res}
                 return message, 200
@@ -689,7 +689,7 @@ class Reports(Resource):
                 dicto['maturityDate'] = row.MaturityDate
                 dicto['tradeDate'] = row.DateOfTrade
                 dicto['userIDcreatedBy'] = str(row.UserIDCreatedBy)
-                dicto['lastModifiedDate'] = row.DateOfTrade # need to be changed to the event log date
+                dicto['lastModifiedDate'] = row.DateOfTrade 
                 res.append(dicto)
             message['matches'] = res
             return message, 200
@@ -908,7 +908,7 @@ class Config(Resource):
     @classmethod
     def setIterations(self, iterations):
         self.noOfIterations = iterations
-        
+
     def get(self):
         return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 201
 
