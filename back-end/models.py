@@ -38,8 +38,7 @@ class CompanyModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
-    # gets all companies that existed before a date (serves get?)
-    # should this be existed ON that date? something could've existed and closed
+    # gets all companies that existed before a date
     @classmethod
     def retrieve_companies_before(cls, date):
         try:
@@ -53,7 +52,7 @@ class CompanyModel(db.Model):
             return cls.query.filter(cls.CompanyCode == code)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
-    
+
     @classmethod
     def retrieve_company_by_name(cls, name):
         try:
@@ -61,8 +60,7 @@ class CompanyModel(db.Model):
         except exc.ProgrammingError:
             raise exc.ProgrammingError("","",1)
 
-    # gets all companies that existed before a date (serves get?)
-    # should this be existed ON that date? something could've existed and closed
+    # gets all companies that existed before a date
     @classmethod
     def retrieve_all_companies(cls):
         try:
@@ -190,8 +188,8 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def get_trades_before(cls, endDate, offset, limitFlag, limit):
         try:
@@ -200,8 +198,8 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def get_trades_between(cls, startDate, endDate, offset, limitFlag, limit):
         try:
@@ -210,7 +208,6 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.DateOfTrade) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.DateOfTrade) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered date
@@ -222,8 +219,8 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def get_trades_modified_before(cls, endDate, offset, limitFlag, limit):
         try:
@@ -232,8 +229,8 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def get_trades_modified_between(cls, startDate, endDate, offset, limitFlag, limit):
         try:
@@ -242,7 +239,6 @@ class DerivativeTradesModel(db.Model):
             else:
                 return cls.query.filter(func.DATE(DerivativeTradesModel.LastModifiedDate) >= parse_iso_date(startDate), func.DATE(DerivativeTradesModel.LastModifiedDate) <= parse_iso_date(endDate))
         except exc.ProgrammingError:
-            # is there a reason it's "", "" not "",""?
             raise exc.ProgrammingError("", "", 1)
 
     # serves the get request for a filtered trade ID
@@ -321,6 +317,7 @@ class DerivativeTradesModel(db.Model):
                 return cls.query.filter(DerivativeTradesModel.UserIDCreatedBy.in_(userID))
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
+
     @classmethod
     def get_trades_all(cls, offset, limitFlag, limit):
         try:
@@ -352,7 +349,7 @@ class DerivativeTradesModel(db.Model):
                 return cls.query.filter(parse_iso_date(startDate) <= func.DATE(cls.DateOfTrade)).distinct(cls.DateOfTrade).group_by(cls.DateOfTrade)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-    
+
     @classmethod
     def get_trade_dates_before(cls, endDate, offset, limitFlag, limit):
         try:
@@ -439,7 +436,7 @@ class EventLogModel(db.Model):
             return cls.query.filter(cls.DateOfEvent <= date).with_entities(EventLogModel.DateOfEvent, EventLogModel.UserAction)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-    
+
     @classmethod
     def get_actions_by_user(cls, id):
         try:
@@ -502,8 +499,6 @@ class ProductSellersModel(db.Model):
         except exc.IntegrityError:
             raise exc.IntegrityError("","",1)
 
-    # unsure what this does
-    # maybe checks if a comapny sells that product
     @classmethod
     def getProductID(cls, productID, companyCode):
         try:
@@ -588,7 +583,7 @@ class ProductModel(db.Model):
             return cls.query.all()
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-    
+
     @classmethod
     def retrieve_all_product_company_info(cls):
         try:
@@ -596,7 +591,7 @@ class ProductModel(db.Model):
             with_entities(cls.ProductID, ProductSellersModel.CompanyCode, cls.ProductName, cls.DateEnteredInSystem)
         except exc.ProgrammingError:
             raise exc.ProgrammingError("", "", 1)
-    
+
     @classmethod
     def retrieve_product_by_id(cls, id):
         try:

@@ -28,8 +28,3 @@ def suggestChange(trade):
     trade.setBothValues(y_test_notional[0], y_test_quantity[0])
 
     return trade
-'''
-TODO: get this called when a trade is entered
-- Someone from back-end to convert trade information to a Trade object
-- Someone from back-end to take this returned Trade object, which can then be processed further as the new values will have been populated
-'''

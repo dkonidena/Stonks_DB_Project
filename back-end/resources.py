@@ -31,9 +31,6 @@ ex = ThreadPoolExecutor(4)
 
 CURRENCY = {"USD": "$", "GBP": "£", "RWF": "RF", "AFN": "؋", "XOF" : "CFA", "INR" : "₹", "IDR":"Rp", "JPY":"¥", "QAR":"ر.ق"}
 
-# use models.date... instead of redefining date methods in here
-
-# class Machine(Resource):
 def returnCurrencySymbol(currencyCode):
     try:
         symbol = CURRENCY[currencyCode]
@@ -54,19 +51,6 @@ def run_cron_job():
     iterations = Config.noOfIterations
     neighbours = Config.neighboursFromRules
     ML.cron.job(get_trade_objects, iterations, neighbours)
-
-# run this in seperate thread?
-# or if we just have a call at the start of the program, then we can show that
-# the machine learning algorithm learns from previous trades by running the
-# program, adding a bunch of trades with the same mistake, and then closing
-# and reloading the program and adding a trade with the same error
-# this trade should be flagged by the algorithm
-
-# schedule.every().day.at("16:00").do(run_cron_job)
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(86400)
 
 class Currencies(Resource):
 
@@ -92,7 +76,6 @@ class Currencies(Resource):
                 for row in result:
                     dicto = {}
                     dicto['code'] = row.CurrencyCode
-                    # brokem until all currencies added
                     dicto['symbol'] = returnCurrencySymbol(row.CurrencyCode)
                     dicto['allowDecimal'] = True
                     dicto['valueInUSD'] = str(row.ValueInUSD) if hasattr(row, 'ValueInUSD') else ''
@@ -154,7 +137,6 @@ class Companies(Resource):
             return {'message':'error occurred'}, 500
 
     def post(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -182,7 +164,6 @@ class Companies(Resource):
             return {'message' : 'Interface Error occurred, please re-try entering the parameters'}, 500
 
     def patch(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -243,13 +224,11 @@ class Products(Resource):
         try:
             date = request.args.get('date')
             if date is None:
-                # TODO return all products when the date is not specifed, as per API spec
                 isDryRun = request.args.get('isDryRun')
                 if 'isDryRun' not in request.args:
                     return {'message': 'Request malformed'}, 400
                 if isDryRun == "true":
                     result = models.ProductModel.retrieve_all_products()
-                    # need error handling to deal with ValueError raised
                     message = {"noOfMatches" : len(result)}
                     return message, 201
                 elif isDryRun == "false":
@@ -272,7 +251,6 @@ class Products(Resource):
                 if 'isDryRun' not in request.args:
                     return {'message': 'Request malformed'}, 400
                 if isDryRun == "true":
-                    # need error handling to deal with ValueError raised
                     result = models.ProductModel.retrieve_products_on_date(date)
                     message = {"noOfMatches" : result.count()}
                     return message, 201
@@ -300,7 +278,6 @@ class Products(Resource):
             return {'message': 'error occurred'}, 500
 
     def post(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -341,7 +318,6 @@ class Products(Resource):
             return {'message': 'error occured'}, 500
 
     def patch(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -427,9 +403,6 @@ class Trades(Resource):
                 limitFlag = True
             limit = 1000
             results = list() # stores results for each query/filter that is applied by the user
-
-            # TODO add dateModified filter
-            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             # if the filter is empty then return all the trades
             if filter == {}:
@@ -524,7 +497,6 @@ class Trades(Resource):
             return {'message' : 'error occurred'}, 500
 
     def post(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if userID is None:
@@ -576,9 +548,6 @@ class Trades(Resource):
                 return {'message' : 'product not found'}, 404
             new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = models.parse_iso_date(maturityDate), UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, LastModifiedDate = date_now, UserIDCreatedBy = userID)
 
-
-            # need to implement checking if the currencies exist
-
             #If a the product or stock which the trade is linked to is found, then the trade
             new_trade = models.DerivativeTradesModel(TradeID = id, DateOfTrade = date_now, ProductID = result[0].ProductID, BuyingParty = buyingParty, SellingParty = sellingParty, OriginalNotionalValue = notionalValue, NotionalValue = notionalValue, OriginalQuantity = quantity, Quantity = quantity, NotionalCurrency = notionalCurrency, MaturityDate = maturityDate, UnderlyingValue = underlyingValue, UnderlyingCurrency = underlyingCurrency, StrikePrice = strikePrice, UserIDCreatedBy = userID)
             new_tradeID = new_trade.save_to_db()
@@ -596,7 +565,6 @@ class Trades(Resource):
             return {'message' : 'error occurred'}, 500
 
     def patch(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -690,24 +658,12 @@ class Reports(Resource):
 
     def get(self):
         try:
-            #try:
-            #    filter = json.loads(request.args.get('filter'))
-            #except json.JSONDecodeError:
-            #    return {'message': 'malformed filter'}, 400
-            #except:
-            #    return {'message': 'filter not present'}, 400
-#
-            #if filter == None:
-            #    return {'message' : 'filter not present'}, 400
-            # this needs error checking
             isDryRun = request.args.get('isDryRun')
             if 'offset' not in request.args:
                 return {'message': 'malformed filter'}, 400
             offset = int(request.args.get('offset'))
             limitFlag = True
             limit = 500
-            # TODO add dateModified filter
-            # TODO all these loops assumes filter[param] is a list, which may not be true if the input is malformed
 
             date = request.args.get("date")
             results = models.DerivativeTradesModel.get_trades_between(date, date, offset, limitFlag, limit)
@@ -835,7 +791,6 @@ class Rules(Resource):
 
 class CheckTrade(Resource):
     def post(self):
-        # needs error checking
         try:
             userID = request.headers.get('userID')
             if models.EmployeesModel.retrieve_by_user_id(userID) == None:
@@ -953,8 +908,7 @@ class Config(Resource):
     @classmethod
     def setIterations(self, iterations):
         self.noOfIterations = iterations
-
-    ###NEEDS ERROR CHECKING###
+        
     def get(self):
         return {'days': self.editingPeriod, 'neighboursFromRules': self.neighboursFromRules, 'noOfIterations' : self.noOfIterations}, 201
 
