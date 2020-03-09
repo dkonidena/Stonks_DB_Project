@@ -10,8 +10,9 @@ import ML.tradeObj
 import schedule
 
 # create the function which has this Trade[] object passed to it
-def cronJob(allTrades, neigboursFromRules, noOfIterations):
+def cronJob(getAllTrades, neigboursFromRules, noOfIterations):
     print("Training starting...")
+    allTrades = getAllTrades()
     trades = list()
     # get the size of the trades list
     d = len(allTrades)
