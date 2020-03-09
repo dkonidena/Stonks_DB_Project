@@ -30,7 +30,7 @@ api.add_resource(resources.Rules, '/api/rules')
 api.add_resource(resources.Users, '/api/users')
 api.add_resource(resources.Events, '/api/events')
 api.add_resource(resources.Config, '/api/config')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_cs261_full.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database_1_month.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
