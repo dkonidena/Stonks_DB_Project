@@ -8,14 +8,16 @@ function loadReportToForm(report) {
     CsvToHtmlTable.init({
         csv_path: URL.createObjectURL(blob),
         //pdf_path: `data:application/pdf;base64,${pdf}`,
-        pdf_download: (f) => {
+        pdf_download: (func) => {
             api.get.pdf(report.date, (r) => {
-                f(`data:application/pdf;base64,${r}`)
+                let x = `data:application/pdf;base64,${r}`;
+                func(x)
             }, showError);
         },
-        csv_download: (f) => {
+        csv_download: (func) => {
             api.get.csv(report.date, (r) => {
-                f(URL.createObjectURL(new Blob([r], { type: "text/plain" })));
+                let x = URL.createObjectURL(new Blob([r], { type: "text/plain" }));
+                func(x);
             }, showError);
         },
         element: "table-container",
